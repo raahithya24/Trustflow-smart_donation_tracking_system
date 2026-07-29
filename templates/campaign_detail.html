@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustFlow — Campaign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --teal:#0d3b47;--teal2:#0f4d5e;--teal3:#1a6070;
+  --orange:#f97316;--orange2:#fb923c;--orange-dark:#ea580c;
+  --green:#10b981;--purple:#8b5cf6;--blue:#3b82f6;--red:#ef4444;
+  --white:#fff;--bg:#f7f9fb;--card:#fff;
+  --text:#111827;--muted:#6b7280;--dim:#9ca3af;--border:#e5e7eb;--border2:#f3f4f6;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+a{text-decoration:none;color:inherit;}
+
+/* ── NAV ── */
+.nav{background:var(--teal);padding:0 2.5rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;}
+.nav-logo{display:flex;align-items:center;gap:.55rem;}
+.nav-logo-box{width:30px;height:30px;background:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.nav-logo-box svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.nav-logo-name{font-family:'Barlow Condensed',sans-serif;font-size:1.25rem;font-weight:900;color:#fff;letter-spacing:-.3px;}
+.nav-logo-name span{color:var(--orange2);}
+.nav-right{display:flex;align-items:center;gap:.7rem;}
+.nav-back{display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;color:rgba(255,255,255,.6);cursor:pointer;transition:color .18s;}
+.nav-back:hover{color:#fff;}
+.nav-back svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.btn-nav-donate{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem 1.2rem;background:var(--orange);color:#fff;border:none;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;}
+.btn-nav-donate:hover{background:var(--orange-dark);}
+.btn-nav-donate svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(130deg,var(--teal) 0%,var(--teal2) 55%,#245e72 100%);padding:2.8rem 2.5rem 0;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;right:-100px;bottom:-100px;width:450px;height:450px;border-radius:50%;border:1px solid rgba(249,115,22,.07);pointer-events:none;}
+.hero::after{content:'';position:absolute;right:-50px;bottom:-50px;width:280px;height:280px;border-radius:50%;border:1px solid rgba(249,115,22,.1);pointer-events:none;}
+.hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 340px;gap:3rem;align-items:start;position:relative;z-index:2;}
+.hero-left{}
+.hero-breadcrumb{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:1rem;}
+.hero-breadcrumb svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.hero-cat{display:inline-block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:.2rem .8rem;border-radius:99px;margin-bottom:.8rem;}
+.hc-med{background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid rgba(239,68,68,.25);}
+.hc-edu{background:rgba(59,130,246,.2);color:#93c5fd;border:1px solid rgba(59,130,246,.25);}
+.hc-env{background:rgba(16,185,129,.2);color:#6ee7b7;border:1px solid rgba(16,185,129,.25);}
+.hc-com{background:rgba(245,158,11,.2);color:#fcd34d;border:1px solid rgba(245,158,11,.25);}
+.hc-gen{background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.12);}
+.hc-child{background:rgba(236,72,153,.25);color:#fce7f3;border:1px solid rgba(236,72,153,.3);}
+.hc-women{background:rgba(168,85,247,.25);color:#ede9fe;border:1px solid rgba(168,85,247,.3);}
+.hc-elder{background:rgba(245,158,11,.25);color:#fef3c7;border:1px solid rgba(245,158,11,.3);}
+.hc-animal{background:rgba(16,185,129,.25);color:#d1fae5;border:1px solid rgba(16,185,129,.3);}
+.hc-dis{background:rgba(239,68,68,.25);color:#fee2e2;border:1px solid rgba(239,68,68,.3);}
+.hc-hunger{background:rgba(234,179,8,.25);color:#fef9c3;border:1px solid rgba(234,179,8,.3);}
+.hc-water{background:rgba(6,182,212,.25);color:#cffafe;border:1px solid rgba(6,182,212,.3);}
+.hc-rural{background:rgba(34,197,94,.25);color:#dcfce7;border:1px solid rgba(34,197,94,.3);}
+.hc-mental{background:rgba(139,92,246,.25);color:#f3e8ff;border:1px solid rgba(139,92,246,.3);}
+.hc-dis2{background:rgba(59,130,246,.25);color:#dbeafe;border:1px solid rgba(59,130,246,.3);}
+.hc-ht{background:rgba(244,63,94,.25);color:#fff1f2;border:1px solid rgba(244,63,94,.3);}
+.hc-sport{background:rgba(249,115,22,.25);color:#fff7ed;border:1px solid rgba(249,115,22,.3);}
+.hc-arts{background:rgba(217,70,239,.25);color:#fdf4ff;border:1px solid rgba(217,70,239,.3);}
+.hero-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:900;color:#fff;line-height:1.1;letter-spacing:-.3px;margin-bottom:.9rem;}
+.hero-desc{font-size:.88rem;color:rgba(255,255,255,.6);line-height:1.8;max-width:580px;margin-bottom:1.3rem;}
+.hero-meta{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;}
+.hero-ngo{display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.7);font-size:.8rem;}
+.hero-ngo svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.hero-badge-tag{display:inline-flex;align-items:center;gap:.3rem;padding:.18rem .65rem;border-radius:99px;font-size:.68rem;font-weight:700;}
+.hbt-verified{background:rgba(16,185,129,.18);color:#6ee7b7;border:1px solid rgba(16,185,129,.2);}
+.hbt-pending{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.18);}
+.hbt-bronze{background:rgba(249,115,22,.15);color:var(--orange2);border:1px solid rgba(249,115,22,.2);}
+.hbt-silver{background:rgba(100,116,139,.2);color:#cbd5e1;border:1px solid rgba(100,116,139,.25);}
+.hbt-gold{background:rgba(234,179,8,.15);color:#fde68a;border:1px solid rgba(234,179,8,.2);}
+.hbt-platinum{background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.2);}
+.hero-status{display:inline-flex;align-items:center;gap:.3rem;padding:.18rem .65rem;border-radius:99px;font-size:.68rem;font-weight:700;}
+.hs-approved{background:rgba(16,185,129,.15);color:#6ee7b7;}
+.hs-pending{background:rgba(245,158,11,.15);color:#fcd34d;}
+.hs-completed{background:rgba(59,130,246,.15);color:#93c5fd;}
+
+/* donate card (right side of hero) */
+.donate-card{background:rgba(255,255,255,.07);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:1.6rem;position:sticky;top:70px;}
+.dc-raised{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:900;color:var(--orange2);line-height:1;}
+.dc-target{font-size:.78rem;color:rgba(255,255,255,.45);margin-top:.2rem;margin-bottom:1rem;}
+.dc-prog-track{height:8px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin-bottom:.6rem;}
+.dc-prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--orange-dark),var(--orange2));transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+.dc-prog-meta{display:flex;justify-content:space-between;margin-bottom:1.2rem;}
+.dc-pct{font-size:.82rem;font-weight:700;color:var(--orange2);}
+.dc-donors{font-size:.78rem;color:rgba(255,255,255,.45);}
+.dc-stats{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1.3rem;}
+.dc-stat{background:rgba(255,255,255,.06);border-radius:8px;padding:.7rem;}
+.dc-stat-val{font-size:1rem;font-weight:700;color:#fff;line-height:1;}
+.dc-stat-lbl{font-size:.64rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;margin-top:.2rem;}
+.deadline-warn{background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.2);border-radius:8px;padding:.6rem .8rem;font-size:.76rem;color:var(--orange2);margin-bottom:1rem;display:flex;align-items:center;gap:.4rem;}
+.deadline-warn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;stroke-linecap:round;stroke-linejoin:round;}
+.btn-donate-big{width:100%;padding:.85rem;background:var(--orange);color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .22s;display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:.6rem;}
+.btn-donate-big:hover{background:var(--orange-dark);transform:translateY(-1px);box-shadow:0 8px 24px rgba(249,115,22,.35);}
+.btn-donate-big svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.dc-secure{font-size:.7rem;color:rgba(255,255,255,.3);text-align:center;display:flex;align-items:center;justify-content:center;gap:.3rem;}
+.dc-secure svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* urgency badge on hero */
+.urgency-bar{margin-top:2.5rem;padding:.9rem 0;border-top:1px solid rgba(255,255,255,.07);display:flex;gap:2rem;flex-wrap:wrap;}
+.ub-item{display:flex;flex-direction:column;gap:.2rem;}
+.ub-val{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:900;color:#fff;}
+.ub-lbl{font-size:.65rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.07em;font-weight:500;}
+
+/* ── TABS ── */
+.tabs-wrap{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:58px;z-index:100;}
+.tabs{max-width:1100px;margin:0 auto;padding:0 2.5rem;display:flex;gap:0;}
+.tab{padding:.9rem 1.2rem;font-size:.83rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;white-space:nowrap;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--orange);border-bottom-color:var(--orange);}
+
+/* ── BODY ── */
+.body{max-width:1100px;margin:0 auto;padding:2rem 2.5rem;display:grid;grid-template-columns:1fr 340px;gap:2.5rem;align-items:start;}
+.body-left{}
+.tab-panel{display:none;}.tab-panel.active{display:block;}
+
+/* content cards */
+.cc{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.2rem;}
+.cc-title{font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:1.1rem;display:flex;align-items:center;gap:.4rem;}
+.cc-title svg{width:15px;height:15px;fill:none;stroke:var(--orange);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.prose{font-size:.88rem;color:var(--muted);line-height:1.85;white-space:pre-wrap;}
+
+/* update timeline */
+.update-item{display:flex;gap:1rem;padding:.9rem 0 .9rem 1.4rem;border-bottom:1px solid var(--border2);position:relative;}
+.update-item::before{content:'';position:absolute;left:0;top:0;bottom:-1px;width:2px;background:linear-gradient(180deg,var(--teal),rgba(13,59,71,.08));}
+.update-item::after{content:'';position:absolute;left:-5px;top:1.1rem;width:10px;height:10px;border-radius:50%;background:var(--teal);border:2px solid white;box-shadow:0 0 0 1px var(--teal);}
+.update-item:last-child{border-bottom:none;}
+.update-item:last-child::before{bottom:auto;height:1.4rem;}
+.update-dot{width:10px;height:10px;border-radius:50%;background:var(--orange);flex-shrink:0;margin-top:.35rem;}
+.update-date{font-size:.7rem;color:var(--dim);margin-bottom:.3rem;}
+.update-text{font-size:.84rem;color:var(--text);line-height:1.7;}
+.update-proof{display:inline-flex;align-items:center;gap:.3rem;font-size:.74rem;color:var(--blue);margin-top:.4rem;cursor:pointer;}
+.update-proof svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.no-data{text-align:center;padding:2.5rem;color:var(--dim);font-size:.85rem;}
+
+/* expense table */
+.exp-table{width:100%;border-collapse:collapse;}
+.exp-table th{text-align:left;padding:.6rem .9rem;font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--dim);background:var(--bg);border-bottom:1px solid var(--border2);}
+.exp-table td{padding:.65rem .9rem;border-bottom:1px solid var(--border2);font-size:.82rem;color:var(--text);}
+.exp-table tbody tr:last-child td{border-bottom:none;}
+.exp-table tbody tr:hover td{background:var(--bg);}
+
+/* fund allocation donut labels */
+.alloc-list{display:flex;flex-direction:column;gap:.6rem;}
+.alloc-item{display:flex;align-items:center;justify-content:space-between;padding:.6rem .8rem;background:var(--bg);border-radius:8px;border:1px solid var(--border2);}
+.alloc-left{display:flex;align-items:center;gap:.6rem;}
+.alloc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.alloc-name{font-size:.82rem;font-weight:600;color:var(--text);}
+.alloc-desc{font-size:.72rem;color:var(--dim);}
+.alloc-amt{font-size:.88rem;font-weight:700;color:var(--teal);}
+
+/* donors list */
+.donor-item{display:flex;align-items:center;gap:.8rem;padding:.65rem 0;border-bottom:1px solid var(--border2);}
+.donor-item:last-child{border-bottom:none;}
+.donor-avatar{width:32px;height:32px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:900;color:#fff;flex-shrink:0;}
+.donor-name{font-size:.83rem;font-weight:600;color:var(--text);}
+.donor-date{font-size:.7rem;color:var(--dim);}
+.donor-amt{font-size:.85rem;font-weight:700;color:var(--orange);margin-left:auto;}
+
+/* beneficiary cards */
+.benef-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.9rem;}
+.benef-card{background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:1rem;}
+.benef-init{width:38px;height:38px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:900;color:#fff;margin-bottom:.6rem;}
+.benef-name{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:.2rem;}
+.benef-meta{font-size:.72rem;color:var(--dim);margin-bottom:.5rem;}
+.benef-story{font-size:.78rem;color:var(--muted);line-height:1.6;}
+
+/* ── SIDEBAR (right body column) ── */
+.side-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.3rem;margin-bottom:1rem;}
+.side-title{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.9rem;display:flex;align-items:center;gap:.35rem;}
+.side-title svg{width:13px;height:13px;fill:none;stroke:var(--orange);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.tbar-item{margin-bottom:.85rem;}
+.tbar-item:last-child{margin-bottom:0;}
+.tbar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;}
+.tbar-name{font-size:.76rem;font-weight:600;color:var(--text);}
+.tbar-val{font-size:.72rem;color:var(--muted);}
+.tbar-track{height:5px;background:var(--border2);border-radius:99px;overflow:hidden;}
+.tbar-fill{height:100%;border-radius:99px;}
+.tf-orange{background:linear-gradient(90deg,var(--orange-dark),var(--orange2));}
+.tf-teal{background:linear-gradient(90deg,var(--teal3),var(--teal2));}
+.tf-green{background:linear-gradient(90deg,#059669,#34d399);}
+.ngo-card-inner{display:flex;align-items:center;gap:.8rem;}
+.ngo-badge-hex{width:40px;height:44px;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ngo-badge-hex svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.nbh-bronze{background:linear-gradient(135deg,#c2702a,#f59e0b);}
+.nbh-silver{background:linear-gradient(135deg,#64748b,#94a3b8);}
+.nbh-gold{background:linear-gradient(135deg,#b45309,#eab308);}
+.nbh-platinum{background:linear-gradient(135deg,#4f46e5,#8b5cf6);}
+.ngo-name{font-size:.9rem;font-weight:700;color:var(--text);}
+.ngo-sub{font-size:.72rem;color:var(--muted);}
+.share-btns{display:flex;gap:.5rem;}
+.share-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;padding:.45rem;border:1px solid var(--border);border-radius:7px;font-size:.72rem;font-weight:600;color:var(--muted);background:var(--bg);cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s;}
+.share-btn:hover{border-color:var(--teal);color:var(--teal);background:#fff;}
+.share-btn svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── DONATE MODAL ── */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(5px);z-index:600;justify-content:center;align-items:center;padding:1rem;}
+.modal.open{display:flex;}
+.mbox{background:#fff;border-radius:16px;width:100%;max-width:440px;overflow:hidden;animation:mIn .22s ease;box-shadow:0 24px 60px rgba(0,0,0,.18);}
+@keyframes mIn{from{opacity:0;transform:translateY(-12px) scale(.97);}to{opacity:1;transform:none;}}
+.mhead{background:var(--teal);padding:1.4rem 1.6rem;position:relative;display:flex;align-items:center;gap:.6rem;}
+.mhead-icon{width:28px;height:28px;background:rgba(249,115,22,.25);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.mhead-icon svg{width:14px;height:14px;fill:none;stroke:var(--orange2);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.mhead-title{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800;color:#fff;}
+.mclose{position:absolute;top:.9rem;right:.9rem;width:26px;height:26px;background:rgba(255,255,255,.1);border:none;border-radius:50%;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;font-size:.85rem;transition:background .18s;}
+.mclose:hover{background:rgba(255,255,255,.22);}
+.mbody{padding:1.4rem 1.6rem;}
+.mfoot{padding:.7rem 1.6rem 1.4rem;display:flex;gap:.5rem;justify-content:flex-end;}
+.flabel{display:block;font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;}
+.finput{width:100%;padding:.6rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;color:var(--text);background:#fafafa;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;margin-bottom:.9rem;}
+.finput:focus{border-color:var(--teal);background:#fff;}
+.finput::placeholder{color:var(--dim);}
+.quick-amounts{display:flex;gap:.4rem;margin-bottom:.9rem;flex-wrap:wrap;}
+.qa-btn{padding:.38rem .9rem;background:var(--bg);color:var(--teal);border:1.5px solid var(--border);border-radius:7px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s;}
+.qa-btn:hover{background:var(--teal);color:#fff;border-color:var(--teal);}
+.fraud-warning{background:#fff5f5;border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.8rem;color:#dc2626;margin-bottom:.9rem;display:none;}
+.fraud-warning.show{display:block;}
+.btn-cancel{background:var(--bg);color:var(--muted);border:1.5px solid var(--border);padding:.58rem 1.2rem;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s;}
+.btn-cancel:hover{border-color:var(--teal);color:var(--teal);}
+.btn-submit{background:var(--orange);color:#fff;border:none;padding:.58rem 1.4rem;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:background .18s;display:inline-flex;align-items:center;gap:.35rem;}
+.btn-submit:hover{background:var(--orange-dark);}
+.btn-submit svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* toast */
+#toast{position:fixed;bottom:1.8rem;right:1.8rem;z-index:9999;background:var(--teal);border-left:4px solid var(--orange);color:#fff;padding:.8rem 1.3rem;border-radius:10px;font-size:.83rem;font-weight:600;transform:translateY(60px);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 8px 24px rgba(13,59,71,.2);max-width:280px;}
+#toast.show{transform:none;opacity:1;}
+
+/* loading skeleton */
+.skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#f8f8f8 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s ease-in-out infinite;border-radius:8px;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* responsive */
+@media(max-width:900px){
+  .hero-inner,.body{grid-template-columns:1fr;}
+  .donate-card{position:static;}
+  .body-right{display:none;}
+  .hero-inner .donate-card{display:none;}
+  .tabs{padding:0 1.2rem;overflow-x:auto;}
+  .hero{padding:2rem 1.2rem 0;}
+  .body{padding:1.5rem 1.2rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-box"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+    <div class="nav-logo-name">Trust<span>Flow</span></div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-back" onclick="goBack()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </div>
+    <button class="btn-nav-donate" onclick="openModal('donationModal')">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Donate Now
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-breadcrumb">
+        <span onclick="goBack()" style="cursor:pointer;">Campaigns</span>
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        <span id="heroBreadTitle">Loading...</span>
+      </div>
+      <div class="hero-cat hc-gen" id="heroCat">General</div>
+      <div class="hero-title" id="heroTitle">
+        <div class="skeleton" style="height:3rem;width:80%;"></div>
+      </div>
+      <div class="hero-desc" id="heroDesc">
+        <div class="skeleton" style="height:1rem;width:100%;margin-bottom:.5rem;"></div>
+        <div class="skeleton" style="height:1rem;width:75%;"></div>
+      </div>
+      <div class="hero-meta">
+        <div class="hero-ngo" id="heroNgo"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Loading...</span></div>
+        <div class="hero-badge-tag hbt-bronze" id="heroBadge">Bronze</div>
+        <div class="hero-status hs-pending" id="heroStatus">Pending</div>
+      </div>
+      <div class="urgency-bar">
+        <div class="ub-item"><div class="ub-val" id="heroUrgency">—</div><div class="ub-lbl">Urgency</div></div>
+        <div class="ub-item"><div class="ub-val" id="heroDeadline">—</div><div class="ub-lbl">Deadline</div></div>
+        <div class="ub-item"><div class="ub-val" id="heroDonors">—</div><div class="ub-lbl">Donors</div></div>
+        <div class="ub-item"><div class="ub-val" id="heroPct">—</div><div class="ub-lbl">Funded</div></div>
+      </div>
+    </div>
+    <div class="donate-card">
+      <div class="dc-raised" id="dcRaised">Rs.0</div>
+      <div class="dc-target" id="dcTarget">of Rs.0 goal</div>
+      <div class="dc-prog-track"><div class="dc-prog-fill" id="dcFill" style="width:0%"></div></div>
+      <div class="dc-prog-meta">
+        <span class="dc-pct" id="dcPct">0%</span>
+        <span class="dc-donors" id="dcDonors">0 donors</span>
+      </div>
+      <div class="dc-stats">
+        <div class="dc-stat"><div class="dc-stat-val" id="dcTarget2">Rs.0</div><div class="dc-stat-lbl">Target</div></div>
+        <div class="dc-stat"><div class="dc-stat-val" id="dcUrgency">5</div><div class="dc-stat-lbl">Urgency</div></div>
+      </div>
+      <div class="deadline-warn" id="dcDeadlineWarn" style="display:none;">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="dcDeadlineText">Deadline approaching</span>
+      </div>
+      <button class="btn-donate-big" id="mainDonateBtn" onclick="openModal('donationModal')">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Donate Now
+      </button>
+      <div class="dc-secure">
+        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Secure & fraud-protected donation
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-wrap">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('story',this)">Campaign Story</div>
+    <div class="tab" onclick="switchTab('updates',this)">Updates <span id="updatesCount" style="font-size:.7rem;"></span></div>
+    <div class="tab" onclick="switchTab('expenses',this)">Expenses</div>
+    <div class="tab" onclick="switchTab('donors',this)">Donors</div>
+    <div class="tab" onclick="switchTab('milestones',this)">Milestones</div>
+    <div class="tab" onclick="switchTab('qa',this)">Q&amp;A</div>
+    <div class="tab" onclick="switchTab('impact',this)">Impact</div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="body">
+  <!-- COMPLETION / CLOSED BANNER -->
+  <div id="completionBanner" style="display:none;grid-column:1/-1;margin-bottom:1.2rem;"></div>
+
+  <div class="body-left">
+
+    <!-- STORY TAB -->
+    <div class="tab-panel active" id="panel-story">
+      <div class="cc">
+        <div class="cc-title"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>About This Campaign</div>
+        <div class="prose" id="storyText">Loading...</div>
+      </div>
+      <div class="cc" id="benefSection" style="display:none;">
+        <div class="cc-title"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Beneficiaries</div>
+        <div class="benef-grid" id="benefGrid"></div>
+      </div>
+    </div>
+
+    <!-- UPDATES TAB -->
+    <div class="tab-panel" id="panel-updates">
+      <div class="cc">
+        <div class="cc-title"><svg viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg>Campaign Updates</div>
+        <div id="updatesList"><div class="no-data">Loading updates...</div></div>
+      </div>
+    </div>
+
+    <!-- EXPENSES TAB -->
+    <div class="tab-panel" id="panel-expenses">
+      <div class="cc">
+        <div class="cc-title"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Expense Breakdown</div>
+        <div style="overflow-x:auto;" id="expensesWrap">
+          <div class="no-data">Loading expenses...</div>
+        </div>
+      </div>
+      <div class="cc" id="allocSection" style="display:none;">
+        <div class="cc-title"><svg viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>Fund Allocations</div>
+        <div class="alloc-list" id="allocList"></div>
+      </div>
+    </div>
+
+    <!-- DONORS TAB -->
+    <div class="tab-panel" id="panel-donors">
+
+      <!-- Podium: Top 3 donors -->
+      <div id="podiumSection" style="display:none;margin-bottom:1.4rem;">
+        <div style="text-align:center;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1.2rem;">Top Donors</div>
+        <!-- Podium row: 2nd | 1st | 3rd -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;align-items:flex-end;margin-bottom:1.4rem;">
+
+          <!-- 2nd place -->
+          <div id="podium2" style="text-align:center;">
+            <div style="position:relative;display:inline-block;margin-bottom:.6rem;">
+              <div id="podium2Photo" style="width:70px;height:90px;border-radius:8px;object-fit:cover;background:var(--border);margin:0 auto;overflow:hidden;border:2px solid #c0c0c0;box-shadow:0 3px 12px rgba(0,0,0,.12);"></div>
+              <div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:22px;height:22px;background:#c0c0c0;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:900;color:white;">🥈</div>
+            </div>
+            <div id="podium2Name" style="font-size:.78rem;font-weight:700;color:var(--text);margin-top:.6rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            <div id="podium2Camp" style="font-size:.65rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            <div id="podium2Amt" style="font-size:.82rem;font-weight:700;color:var(--orange);margin-top:.2rem;"></div>
+            <div style="height:40px;background:linear-gradient(180deg,#e8e8e8,#c8c8c8);border-radius:6px 6px 0 0;margin-top:.5rem;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:900;color:#888;">2</div>
+          </div>
+
+          <!-- 1st place -->
+          <div id="podium1" style="text-align:center;">
+            <div style="font-size:1.1rem;margin-bottom:.3rem;">🏆</div>
+            <div style="position:relative;display:inline-block;margin-bottom:.6rem;">
+              <div id="podium1Photo" style="width:80px;height:104px;border-radius:8px;background:var(--border);margin:0 auto;overflow:hidden;border:3px solid #ffd700;box-shadow:0 6px 20px rgba(255,215,0,.35);"></div>
+              <div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:24px;height:24px;background:#ffd700;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white;">🥇</div>
+            </div>
+            <div id="podium1Name" style="font-size:.85rem;font-weight:700;color:var(--teal);margin-top:.6rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            <div id="podium1Camp" style="font-size:.68rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            <div id="podium1Amt" style="font-size:.9rem;font-weight:700;color:var(--orange);margin-top:.2rem;"></div>
+            <div style="height:60px;background:linear-gradient(180deg,#ffe97a,#ffd700);border-radius:6px 6px 0 0;margin-top:.5rem;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:900;color:#7a5c00;">1</div>
+          </div>
+
+          <!-- 3rd place -->
+          <div id="podium3" style="text-align:center;">
+            <div style="position:relative;display:inline-block;margin-bottom:.6rem;">
+              <div id="podium3Photo" style="width:70px;height:90px;border-radius:8px;background:var(--border);margin:0 auto;overflow:hidden;border:2px solid #cd7f32;box-shadow:0 3px 12px rgba(0,0,0,.12);"></div>
+              <div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:22px;height:22px;background:#cd7f32;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:900;color:white;">🥉</div>
+            </div>
+            <div id="podium3Name" style="font-size:.78rem;font-weight:700;color:var(--text);margin-top:.6rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            <div id="podium3Camp" style="font-size:.65rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            <div id="podium3Amt" style="font-size:.82rem;font-weight:700;color:var(--orange);margin-top:.2rem;"></div>
+            <div style="height:28px;background:linear-gradient(180deg,#e8b87a,#cd7f32);border-radius:6px 6px 0 0;margin-top:.5rem;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:900;color:#5c3000;">3</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Rest of leaderboard (rank 4-10) -->
+      <div class="cc">
+        <div class="cc-title">
+          <svg viewBox="0 0 24 24"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
+          All Donors
+        </div>
+        <div id="leaderboard"><div class="no-data">Loading...</div></div>
+      </div>
+
+    </div>
+
+    <!-- MILESTONES TAB -->
+    <div class="tab-panel" id="panel-milestones">
+      <div class="cc">
+        <div class="cc-title">
+          <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          Campaign Milestones
+        </div>
+        <div id="milestonesList"><div class="no-data">Loading milestones...</div></div>
+      </div>
+    </div>
+
+    <!-- Q&A TAB -->
+    <div class="tab-panel" id="panel-qa">
+      <div class="cc">
+        <div class="cc-title">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Donor Questions &amp; NGO Answers
+        </div>
+
+        <!-- Ask a question (only for logged-in donors) -->
+        <div id="qaAskBox" style="background:var(--bg);border-radius:10px;padding:1rem;margin-bottom:1.2rem;border:1px solid var(--border2);">
+          <div style="font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:.6rem;">Ask the NGO a question</div>
+          <textarea id="qaQuestion" placeholder="E.g. How will the funds be used? When will the project start?" style="width:100%;padding:.6rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.84rem;color:var(--text);background:var(--white);font-family:'Inter',sans-serif;outline:none;resize:vertical;min-height:72px;transition:border-color .2s;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          <div id="qaErr" style="display:none;font-size:.76rem;color:var(--red);margin:.4rem 0;"></div>
+          <button onclick="submitQuestion()" style="margin-top:.6rem;display:inline-flex;align-items:center;gap:.35rem;padding:.5rem 1.2rem;background:var(--teal);color:white;border:none;border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background .18s;" onmouseover="this.style.background='var(--teal2)'" onmouseout="this.style.background='var(--teal)'">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Submit Question
+          </button>
+        </div>
+
+        <div id="qaList"><div class="no-data">Loading questions...</div></div>
+      </div>
+    </div>
+
+    <!-- IMPACT TAB -->
+    <div class="tab-panel" id="panel-impact">
+      <div class="cc">
+        <div class="cc-title"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Transparency Score</div>
+        <div style="font-size:.82rem;color:var(--muted);line-height:1.8;margin-bottom:1.2rem;">This campaign's NGO maintains the following transparency metrics, updated in real time as expenses are logged and updates are posted.</div>
+        <div style="display:flex;flex-direction:column;gap:1rem;" id="impactBars">
+          <div class="tbar-item">
+            <div class="tbar-top"><span class="tbar-name">Document Score</span><span class="tbar-val" id="iDocScore">—</span></div>
+            <div class="tbar-track"><div class="tbar-fill tf-teal" id="iDocBar" style="width:0%"></div></div>
+          </div>
+          <div class="tbar-item">
+            <div class="tbar-top"><span class="tbar-name">Update Score</span><span class="tbar-val" id="iUpdScore">—</span></div>
+            <div class="tbar-track"><div class="tbar-fill tf-orange" id="iUpdBar" style="width:0%"></div></div>
+          </div>
+          <div class="tbar-item">
+            <div class="tbar-top"><span class="tbar-name">Avg Completion</span><span class="tbar-val" id="iCmpScore">—</span></div>
+            <div class="tbar-track"><div class="tbar-fill tf-green" id="iCmpBar" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="body-right" id="bodySidebar">
+
+    <!-- mobile donate card clone -->
+    <div class="side-card" id="mobileDonateCard" style="display:none;">
+      <div class="dc-raised" id="dcRaised2">Rs.0</div>
+      <div class="dc-target" id="dcTarget3" style="color:var(--muted);font-size:.78rem;margin:.2rem 0 .8rem;"></div>
+      <div class="dc-prog-track" style="background:var(--border2);"><div class="dc-prog-fill" id="dcFill2" style="width:0%"></div></div>
+      <button class="btn-donate-big" style="margin-top:.9rem;" onclick="openModal('donationModal')">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Donate Now
+      </button>
+    </div>
+
+    <div class="side-card">
+      <div class="side-title"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>About the NGO</div>
+      <div class="ngo-card-inner">
+        <div class="ngo-badge-hex nbh-bronze" id="ngoHex">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div>
+          <div class="ngo-name" id="ngoName">Loading...</div>
+          <div class="ngo-sub" id="ngoSub">NGO</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-card">
+      <div class="side-title"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Transparency</div>
+      <div class="tbar-item">
+        <div class="tbar-top"><span class="tbar-name">Funded</span><span class="tbar-val" id="sProgVal">0%</span></div>
+        <div class="tbar-track"><div class="tbar-fill tf-orange" id="sProgFill" style="width:0%"></div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:.8rem;flex-wrap:wrap;gap:.4rem;">
+        <div style="text-align:center;">
+          <div style="font-size:1.1rem;font-weight:700;color:var(--teal);" id="sDonors">—</div>
+          <div style="font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;">Donors</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:1.1rem;font-weight:700;color:var(--orange);" id="sUrgency">—</div>
+          <div style="font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;">Urgency</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:1.1rem;font-weight:700;color:var(--green);" id="sUpdates">—</div>
+          <div style="font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;">Updates</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-card">
+      <div class="side-title"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share this campaign</div>
+      <div class="share-btns">
+        <button class="share-btn" onclick="shareWhatsApp()"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>WhatsApp</button>
+        <button class="share-btn" onclick="shareUrl('copy')"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Copy Link</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- DONATION MODAL -->
+<div class="modal" id="donationModal">
+  <div class="mbox">
+    <div class="mhead">
+      <div class="mhead-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+      <span class="mhead-title" id="modalTitle">Make a Donation</span>
+      <button class="mclose" onclick="closeModal('donationModal')">&#x2715;</button>
+    </div>
+    <div class="mbody">
+      <div class="fraud-warning" id="fraudWarning"><strong>Transaction Flagged:</strong> <span id="fraudMsg"></span></div>
+      <label class="flabel">Campaign</label>
+      <select class="finput" id="campaignSelect"></select>
+      <label class="flabel">Payment Method</label>
+      <select class="finput" id="paymentMethod">
+        <option value="online">Online (Card)</option><option value="upi">UPI</option>
+        <option value="bank">Bank Transfer</option><option value="cash">Cash</option>
+      </select>
+      <label class="flabel">Amount (Rs.) *</label>
+      <div class="quick-amounts">
+        <button class="qa-btn" onclick="setAmount(500)">Rs.500</button>
+        <button class="qa-btn" onclick="setAmount(1000)">Rs.1,000</button>
+        <button class="qa-btn" onclick="setAmount(2000)">Rs.2,000</button>
+        <button class="qa-btn" onclick="setAmount(5000)">Rs.5,000</button>
+      </div>
+      <input type="number" class="finput" id="donationAmount" placeholder="Or enter amount" min="1">
+      <label class="flabel">Transaction ID <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--dim);">(optional)</span></label>
+      <input type="text" class="finput" id="transactionId" placeholder="UPI ref / bank ref">
+    </div>
+    <div class="mfoot">
+      <button class="btn-cancel" onclick="closeModal('donationModal')">Cancel</button>
+      <button class="btn-submit" onclick="confirmDonation()">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Donate Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ── helpers ── */
+const params = new URLSearchParams(location.search);
+const CAMPAIGN_ID = parseInt(params.get('id')) || 0;
+function goBack(){
+  if(window.history.length > 1){ window.history.back(); }
+  else { window.close(); }
+}
+
+let campaignData = null;
+
+const CAT_CLS = {
+  'Medical':'hc-med','Education':'hc-edu','Environment':'hc-env','Community':'hc-com',
+  'Child Welfare':'hc-child','Women Empowerment':'hc-women','Old Age & Elder Care':'hc-elder',
+  'Animal Welfare':'hc-animal','Disaster Relief':'hc-dis','Hunger & Food Security':'hc-hunger',
+  'Water & Sanitation':'hc-water','Rural Development':'hc-rural','Mental Health':'hc-mental',
+  'Disability Support':'hc-dis2','Human Trafficking':'hc-ht','Sports & Youth':'hc-sport',
+  'Arts & Culture':'hc-arts','Other':'hc-gen'
+};
+const BADGE_CLS = {bronze:'hbt-bronze',silver:'hbt-silver',gold:'hbt-gold',platinum:'hbt-platinum'};
+const NGO_HEX = {bronze:'nbh-bronze',silver:'nbh-silver',gold:'nbh-gold',platinum:'nbh-platinum'};
+const ALLOC_COLORS = ['#f97316','#0f4d5e','#10b981','#8b5cf6','#3b82f6','#ef4444'];
+
+function fmt(n){return 'Rs.'+(n||0).toLocaleString('en-IN');}
+function fmtDate(s){return s?new Date(s).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—';}
+
+/* ── init ── */
+if(!CAMPAIGN_ID){
+  document.getElementById('heroTitle').textContent='Campaign not found';
+} else {
+  loadCampaign();
+  loadAllCampaigns();
+}
+
+async function loadCampaign(){
+  // Guard: if no valid ID in URL, show friendly message
+  if(!CAMPAIGN_ID || CAMPAIGN_ID <= 0){
+    const titleEl = document.getElementById('heroTitle');
+    if(titleEl) titleEl.innerHTML = '<span style="color:var(--orange);">No Campaign Selected</span>';
+    const descEl = document.getElementById('heroDesc');
+    if(descEl) descEl.textContent = 'Please go back and select a campaign from the list.';
+    return;
+  }
+  try{
+    const r = await fetch(`/campaign_public/${CAMPAIGN_ID}`);
+    const d = await r.json();
+    if(d.status !== 'success'){
+      const titleEl = document.getElementById('heroTitle');
+      if(titleEl){
+        titleEl.innerHTML = '<span style="color:var(--orange);">Campaign Not Found</span>';
+      }
+      const descEl = document.getElementById('heroDesc');
+      if(descEl) descEl.textContent = 'This campaign does not exist or may have been removed. Please go back and choose another campaign.';
+      const breadEl = document.getElementById('heroBreadTitle');
+      if(breadEl) breadEl.textContent = 'Not Found';
+      return;
+    }
+    campaignData = d;
+    try{ renderHero(d.campaign); }catch(e){ console.error('renderHero:',e); }
+    try{ loadLeaderboard(); }catch(e){ console.error('loadLeaderboard:',e); }
+    try{ renderStory(d.campaign, d.beneficiaries); }catch(e){ console.error('renderStory:',e); }
+    try{ renderUpdates(d.updates); }catch(e){ console.error('renderUpdates:',e); }
+    try{ renderExpenses(d.expenses, d.allocations); }catch(e){ console.error('renderExpenses:',e); }
+    try{ renderDonors(d.recent_donors); }catch(e){ console.error('renderDonors:',e); }
+    try{ populateModal(d.campaign); }catch(e){ console.error('populateModal:',e); }
+  }catch(e){
+    document.getElementById('heroTitle').textContent = 'Failed to load campaign';
+    console.error('critical:',e);
+  }
+}
+
+function renderHero(c){
+  document.title = `TrustFlow — ${c.title}`;
+  document.getElementById('heroBreadTitle').textContent = c.title;
+  document.getElementById('heroTitle').innerHTML = c.title;
+  document.getElementById('heroDesc').textContent = c.description;
+
+  const catEl = document.getElementById('heroCat');
+  catEl.textContent = c.category;
+  catEl.className = 'hero-cat ' + (CAT_CLS[c.category]||'hc-gen');
+
+  document.getElementById('heroNgo').innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> ${c.ngo_name}`;
+
+  const badge = (c.trust_badge||'bronze').toLowerCase();
+  const badgeEl = document.getElementById('heroBadge');
+  badgeEl.textContent = badge.charAt(0).toUpperCase()+badge.slice(1)+' NGO';
+  badgeEl.className = 'hero-badge-tag ' + (BADGE_CLS[badge]||'hbt-bronze');
+
+  const statusEl = document.getElementById('heroStatus');
+  statusEl.textContent = c.status;
+  statusEl.className = 'hero-status hs-'+c.status;
+
+  const pct = c.target_amount ? Math.min(100,((c.collected_amount/c.target_amount)*100)).toFixed(1) : 0;
+  document.getElementById('heroUrgency').textContent = c.urgency_level+'/10';
+  document.getElementById('heroDeadline').textContent = fmtDate(c.deadline);
+  document.getElementById('heroDonors').textContent = c.total_donors;
+  document.getElementById('heroPct').textContent = pct+'%';
+
+  // donate card
+  document.getElementById('dcRaised').textContent = fmt(c.collected_amount);
+  document.getElementById('dcTarget').textContent = 'of '+fmt(c.target_amount)+' goal';
+  document.getElementById('dcFill').style.width = pct+'%';
+  document.getElementById('dcPct').textContent = pct+'%';
+  // Milestone markers on progress bar
+  fetch('/get_milestones/'+CAMPAIGN_ID).then(r=>r.json()).then(md=>{
+    if(!md.milestones||!md.milestones.length||!c.target_amount) return;
+    [document.getElementById('dcFill')].forEach(fill=>{
+      if(!fill) return;
+      const track=fill.parentElement;
+      track.querySelectorAll('.ms-marker').forEach(m=>m.remove());
+      track.style.position='relative';
+      md.milestones.forEach(m=>{
+        const pos=Math.min(100,(m.amount/c.target_amount*100));
+        const mark=document.createElement('div');
+        mark.className='ms-marker';
+        mark.title=m.title+' \u2014 Rs.'+m.amount.toLocaleString('en-IN');
+        mark.style.cssText='position:absolute;top:-2px;bottom:-2px;width:2px;'
+          +'background:'+(m.reached?'#10b981':'rgba(255,255,255,.6)')+';'
+          +'left:'+pos+'%;z-index:3;border-radius:99px;cursor:pointer;';
+        track.appendChild(mark);
+      });
+    });
+  }).catch(()=>{});
+  // Smart donate button text
+  const _dbtn=document.getElementById('mainDonateBtn');
+  if(_dbtn){
+    if(c.status==='completed'){_dbtn.textContent='Campaign Complete';_dbtn.style.opacity='.6';_dbtn.disabled=true;}
+    else if(c.status==='rejected'){_dbtn.textContent='Campaign Closed';_dbtn.style.opacity='.5';_dbtn.disabled=true;}
+    else if(parseFloat(pct)>=90){_dbtn.innerHTML='\uD83C\uDFAF Help Complete This Campaign!';}
+    else if(parseFloat(pct)>=75){_dbtn.textContent='Nearly There \u2014 Donate Now';}
+  }
+  document.getElementById('dcDonors').textContent = c.total_donors+' donors';
+  document.getElementById('dcTarget2').textContent = fmt(c.target_amount);
+  document.getElementById('dcUrgency').textContent = (c.urgency_level||5)+'/10';
+
+  if(c.deadline){
+    const days = Math.ceil((new Date(c.deadline)-Date.now())/86400000);
+    if(days>=0&&days<=14){
+      document.getElementById('dcDeadlineWarn').style.display='flex';
+      document.getElementById('dcDeadlineText').textContent = days===0?'Deadline is today!':days===1?'1 day left!':days+' days left';
+    }
+  }
+
+  // Completion/closed banner
+  renderCompletionBanner(c);
+
+  // NGO sidebar
+  document.getElementById('ngoName').textContent = c.ngo_name;
+  document.getElementById('ngoSub').textContent = (c.is_verified?'✓ Verified ':'') + badge.charAt(0).toUpperCase()+badge.slice(1)+' NGO';
+  document.getElementById('ngoHex').className = 'ngo-badge-hex ' + (NGO_HEX[badge]||'nbh-bronze');
+
+  document.getElementById('sProgVal').textContent = pct+'%';
+  document.getElementById('sProgFill').style.width = pct+'%';
+  document.getElementById('sDonors').textContent = c.total_donors;
+  document.getElementById('sUrgency').textContent = c.urgency_level+'/10';
+}
+
+function renderStory(c, beneficiaries){
+  document.getElementById('storyText').textContent = c.description || 'No description available.';
+  if(beneficiaries && beneficiaries.length){
+    document.getElementById('benefSection').style.display='block';
+    document.getElementById('benefGrid').innerHTML = beneficiaries.map(b=>`
+      <div class="benef-card">
+        <div class="benef-init">${b.name[0]||'B'}</div>
+        <div class="benef-name">${b.name}</div>
+        <div class="benef-meta">${[b.age?b.age+' yrs':'',b.location].filter(Boolean).join(' · ')}</div>
+        <div class="benef-story">${b.story||''}</div>
+      </div>`).join('');
+  }
+}
+
+function renderUpdates(updates){
+  const el = document.getElementById('updatesList');
+  document.getElementById('updatesCount').textContent = updates.length ? `(${updates.length})` : '';
+  document.getElementById('sUpdates').textContent = updates.length;
+  if(!updates.length){ el.innerHTML='<div class="no-data">No updates posted yet. Check back soon.</div>'; return; }
+  el.innerHTML = updates.map(u=>`
+    <div class="update-item">
+      <div class="update-dot"></div>
+      <div>
+        <div class="update-date">${fmtDate(u.date)}</div>
+        <div class="update-text">${u.text}</div>
+        ${u.proof?`<a href="${u.proof}" target="_blank" class="update-proof"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>View Proof Document</a>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function renderExpenses(expenses, allocations){
+  const wrap = document.getElementById('expensesWrap');
+  if(!expenses.length){ wrap.innerHTML='<div class="no-data">No expenses logged yet.</div>'; }
+  else{
+    wrap.innerHTML=`<table class="exp-table">
+      <thead><tr><th>Expense</th><th>Amount</th><th>Date</th><th>Description</th></tr></thead>
+      <tbody>${expenses.map(e=>`<tr>
+        <td style="font-weight:600;">${e.title}</td>
+        <td style="font-weight:700;color:var(--teal);">${fmt(e.amount)}</td>
+        <td style="color:var(--muted);">${fmtDate(e.date)}</td>
+        <td style="color:var(--muted);font-size:.76rem;">${e.description||'—'}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  }
+  if(allocations && allocations.length){
+    document.getElementById('allocSection').style.display='block';
+    document.getElementById('allocList').innerHTML = allocations.map((a,i)=>`
+      <div class="alloc-item">
+        <div class="alloc-left">
+          <div class="alloc-dot" style="background:${ALLOC_COLORS[i%ALLOC_COLORS.length]}"></div>
+          <div><div class="alloc-name">${a.category}</div><div class="alloc-desc">${a.description||''}</div></div>
+        </div>
+        <div class="alloc-amt">${fmt(a.amount)}</div>
+      </div>`).join('');
+  }
+}
+
+function renderDonors(donors){
+  const el = document.getElementById('leaderboard');
+  if(!el) return;
+  if(!donors||!donors.length){ el.innerHTML='<div class="no-data">No donations yet. Be the first to contribute!</div>'; return; }
+  el.innerHTML = donors.map(d=>`
+    <div class="donor-item">
+      <div class="donor-avatar">${(d.name||'?')[0]}</div>
+      <div><div class="donor-name">${d.name||'Anonymous'}</div><div class="donor-date">${fmtDate(d.date)}</div></div>
+      <div class="donor-amt">${fmt(d.amount)}</div>
+    </div>`).join('');
+}
+
+async function loadAllCampaigns(){
+  try{
+    const r = await fetch('/campaigns');
+    const data = await r.json();
+    const sel = document.getElementById('campaignSelect');
+    sel.innerHTML = '<option value="">-- Select Campaign --</option>'+
+      data.filter(c=>c.status==='approved'||c.status==='pending')
+          .map(c=>`<option value="${c.campaign_id}"${c.campaign_id===CAMPAIGN_ID?' selected':''}>${c.title}</option>`).join('');
+  }catch(e){}
+}
+
+function populateModal(c){
+  document.getElementById('modalTitle').textContent = 'Donate to '+c.title;
+}
+
+/* ── tabs ── */
+function switchTab(name, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  if(name==='milestones') loadMilestones();
+  if(name==='qa')         loadQA();
+  if(name==='donors')     loadLeaderboard();
+}
+
+/* ── donation ── */
+function setAmount(a){ document.getElementById('donationAmount').value=a; }
+
+async function confirmDonation(){
+  const cid = document.getElementById('campaignSelect').value;
+  const amt = document.getElementById('donationAmount').value;
+  const method = document.getElementById('paymentMethod').value;
+  const txn = document.getElementById('transactionId').value;
+  if(!cid){showToast('Please select a campaign');return;}
+  if(!amt||amt<=0){showToast('Please enter a valid amount');return;}
+  document.getElementById('fraudWarning').classList.remove('show');
+  try{
+    const r = await fetch('/donate',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({campaign_id:parseInt(cid),amount:parseFloat(amt),payment_method:method,transaction_id:txn||null})});
+    const d = await r.json();
+    if(d.status==='success'){
+      closeModal('donationModal');
+      showToast('Donation successful! Thank you for your generosity.');
+      setTimeout(()=>loadCampaign(),1000);
+    } else if(d.status==='fraud'){
+      document.getElementById('fraudMsg').textContent=d.flags?d.flags.join(' | '):d.message;
+      document.getElementById('fraudWarning').classList.add('show');
+    } else if(d.status==='payment_failed'){
+      showToast('Payment failed. Please try a different method and retry.');
+    } else if(d.status==='blocked'){
+      showToast('Your account has been restricted. Please contact support.');
+    } else if(d.status==='error' && d.message==='Login required'){
+      showToast('Please log in to donate.');
+      setTimeout(()=>window.location.href='/?login=1',1200);
+    } else {
+      showToast('Error: '+(d.message||'Unknown error'));
+    }
+  }catch(e){showToast('Network error. Please try again.');}
+}
+
+/* ── share ── */
+function shareWhatsApp(){
+  const title=campaignData&&campaignData.campaign?campaignData.campaign.title:'this campaign';
+  const url=encodeURIComponent(window.location.href);
+  const text=encodeURIComponent('Support '+title+' on TrustFlow \u2014 '+window.location.href);
+  window.open('https://wa.me/?text='+text,'_blank');
+}
+function shareUrl(type){
+  const url = window.location.href;
+  const title = campaignData?.campaign?.title||'TrustFlow Campaign';
+  if(type==='whatsapp'){
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(title+' — Support this cause: '+url)}`,'_blank');
+  } else {
+    navigator.clipboard.writeText(url).then(()=>showToast('Link copied to clipboard!'));
+  }
+}
+
+/* ── modal ── */
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+window.addEventListener('click',e=>{if(e.target.classList.contains('modal'))e.target.classList.remove('open');});
+
+/* ── toast ── */
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
+
+/* ── Completion banner ───────────────────────────────── */
+function renderCompletionBanner(c){
+  const banner = document.getElementById('completionBanner');
+  if(!banner) return;
+  const pct = c.target_amount ? Math.min(100,((c.collected_amount/c.target_amount)*100)).toFixed(1) : 0;
+
+  if(c.status === 'completed'){
+    banner.style.display = 'block';
+    banner.innerHTML = `
+      <div style="background:linear-gradient(120deg,#0d3b47,#1a6070);border-radius:14px;padding:2rem 2.2rem;color:white;text-align:center;position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 80% 50%,rgba(249,115,22,.12),transparent 60%);pointer-events:none;"></div>
+        <div style="font-size:2rem;margin-bottom:.5rem;">🎉</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;margin-bottom:.4rem;letter-spacing:-.3px;">Campaign Successfully Completed!</div>
+        <div style="font-size:.9rem;color:rgba(255,255,255,.7);margin-bottom:1.2rem;">This campaign reached its goal. Thank you to every single donor who made this possible.</div>
+        <div style="display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:900;color:var(--orange2);">Rs.${(c.collected_amount||0).toLocaleString('en-IN')}</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.07em;">Total Raised</div></div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:900;color:#6ee7b7;">${c.total_donors||0}</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.07em;">Donors</div></div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:900;color:#c4b5fd;">${pct}%</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.07em;">Funded</div></div>
+        </div>
+        <div style="margin-top:1.2rem;font-size:.82rem;color:rgba(255,255,255,.55);font-style:italic;">"The smallest act of kindness is worth more than the grandest intention."</div>
+      </div>`;
+  } else if(c.status === 'rejected' || c.status === 'closed'){
+    const msg = c.close_message || 'This campaign has ended.';
+    banner.style.display = 'block';
+    banner.innerHTML = `
+      <div style="background:white;border:1px solid var(--border);border-left:4px solid var(--orange);border-radius:12px;padding:1.6rem 2rem;">
+        <div style="display:flex;align-items:flex-start;gap:1rem;">
+          <div style="width:44px;height:44px;background:rgba(249,115,22,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.3rem;">😔</div>
+          <div>
+            <div style="font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:.4rem;">This campaign has been closed</div>
+            <div style="font-size:.86rem;color:var(--muted);line-height:1.7;">${msg}</div>
+            <div style="margin-top:.8rem;font-size:.8rem;color:var(--teal);font-weight:600;">Rs.${(c.collected_amount||0).toLocaleString('en-IN')} was raised by ${c.total_donors||0} generous donors. Every contribution mattered.</div>
+          </div>
+        </div>
+      </div>`;
+  }
+}
+
+/* ── Leaderboard ────────────────────────────────────── */
+async function loadLeaderboard(){
+  if(!CAMPAIGN_ID) return;
+  try{
+    const r = await fetch(`/campaign_leaderboard/${CAMPAIGN_ID}`);
+    const data = await r.json();
+
+    const avatarColors = ['#0d3b47','#0f4d5e','#1a6070','#f97316','#10b981','#8b5cf6','#3b82f6','#ef4444','#f59e0b','#06b6d4'];
+
+    function makeAvatar(d, w, h, fs){
+      const initials = (d.donor_name||'?').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+      const bg = avatarColors[d.rank % avatarColors.length];
+      if(d.profile_photo){
+        return '<img src="'+d.profile_photo+'" style="width:'+w+';height:'+h+';object-fit:cover;display:block;" alt="'+d.donor_name+'">';
+      }
+      return '<div style="width:'+w+';height:'+h+';background:'+bg+';display:flex;align-items:center;'
+        +'justify-content:center;font-family:\'Barlow Condensed\',sans-serif;font-size:'+fs
+        +';font-weight:900;color:white;">'+initials+'</div>';
+    }
+
+    // Podium: top 3
+    const podiumEl = document.getElementById('podiumSection');
+    if(podiumEl && data.length > 0){
+      podiumEl.style.display = 'block';
+      [[1,'80px','104px','1.1rem'],[2,'70px','90px','.95rem'],[3,'70px','90px','.95rem']].forEach(([rank,w,h,fs])=>{
+        const d = data[rank-1];
+        const photoEl = document.getElementById('podium'+rank+'Photo');
+        const nameEl  = document.getElementById('podium'+rank+'Name');
+        const campEl  = document.getElementById('podium'+rank+'Camp');
+        const amtEl   = document.getElementById('podium'+rank+'Amt');
+        if(!d){
+          const slot = document.getElementById('podium'+rank);
+          if(slot) slot.style.opacity='0.3';
+          return;
+        }
+        if(photoEl) photoEl.innerHTML = makeAvatar(d, w, h, fs);
+        if(nameEl)  nameEl.textContent = d.donor_name;
+        if(campEl)  campEl.textContent = d.campaign_title ? 'For: '+d.campaign_title : '';
+        if(amtEl)   amtEl.textContent  = 'Rs.'+d.total_donated.toLocaleString('en-IN');
+      });
+    }
+
+    // Full leaderboard list (all ranks)
+    const el = document.getElementById('leaderboard');
+    if(!el) return;
+    if(!data.length){ el.innerHTML='<div class="no-data">No donations yet. Be the first!</div>'; return; }
+
+    el.innerHTML = data.map((d,i)=>{
+      const borderCol = i===0?'#ffd700':i===1?'#c0c0c0':i===2?'#cd7f32':'var(--border)';
+      const rowBg     = i===0?'rgba(255,215,0,.05)':i===1?'rgba(192,192,192,.05)':i===2?'rgba(205,127,50,.05)':'';
+      const initials  = (d.donor_name||'?').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+      const bg        = avatarColors[i%avatarColors.length];
+      const avatarHtml = d.profile_photo
+        ? `<img src="${d.profile_photo}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid ${borderCol};flex-shrink:0;" alt="${d.donor_name}">`
+        : `<div style="width:36px;height:36px;border-radius:50%;background:${bg};border:2px solid ${borderCol};display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:900;color:white;flex-shrink:0;">${initials}</div>`;
+      const medals = ['🥇','🥈','🥉'];
+      return `
+      <div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .4rem;border-bottom:1px solid var(--border2);border-radius:6px;background:${rowBg};">
+        <div style="width:24px;text-align:center;font-size:${i<3?'1.1':'1'}rem;flex-shrink:0;">${medals[i]||`<span style="font-size:.75rem;font-weight:700;color:var(--dim);">#${d.rank}</span>`}</div>
+        ${avatarHtml}
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:.83rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.donor_name}</div>
+          <div style="font-size:.68rem;color:var(--dim);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.campaign_title?'For: '+d.campaign_title:''} \u2022 ${d.num_donations} donation${d.num_donations===1?'':'s'}</div>
+        </div>
+        <div style="font-size:.88rem;font-weight:700;color:var(--orange);flex-shrink:0;">Rs.${d.total_donated.toLocaleString('en-IN')}</div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    const el=document.getElementById('leaderboard');
+    if(el) el.innerHTML='<div class="no-data">Failed to load leaderboard.</div>';
+  }
+}
+
+async function loadMilestones(){
+  if(!CAMPAIGN_ID) return;
+  const el = document.getElementById('milestonesList');
+  if(!el) return;
+  try{
+    const r = await fetch(`/get_milestones/${CAMPAIGN_ID}`);
+    const d = await r.json();
+    if(!d.milestones||!d.milestones.length){
+      el.innerHTML='<div class="no-data">No milestones set for this campaign yet.</div>';
+      return;
+    }
+    el.innerHTML = d.milestones.map(m=>{
+      const pct = Math.min(100, (d.collected / m.amount * 100)).toFixed(0);
+      const done = m.reached;
+      return `
+        <div style="display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border2);align-items:flex-start;">
+          <div style="width:40px;height:40px;border-radius:50%;border:2px solid ${done?'var(--green)':'var(--border)'};background:${done?'var(--green)':'white'};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;">${done?'✓':'🎯'}</div>
+          <div style="flex:1;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem;flex-wrap:wrap;gap:.4rem;">
+              <div style="font-size:.88rem;font-weight:700;color:var(--text);${done?'text-decoration:line-through;color:var(--muted);':''}">${m.title}</div>
+              <div style="font-size:.82rem;font-weight:700;color:${done?'var(--green)':'var(--orange)'};">Rs.${m.amount.toLocaleString('en-IN')}</div>
+            </div>
+            ${m.description?`<div style="font-size:.78rem;color:var(--muted);line-height:1.6;margin-bottom:.5rem;">${m.description}</div>`:''}
+            <div style="height:5px;background:var(--border2);border-radius:99px;overflow:hidden;">
+              <div style="height:100%;width:${done?100:pct}%;background:${done?'var(--green)':'linear-gradient(90deg,var(--teal3),var(--orange2))'};border-radius:99px;transition:width 1s;"></div>
+            </div>
+            <div style="font-size:.68rem;color:var(--dim);margin-top:.2rem;">${done?'✓ Reached on '+new Date(m.reached_at).toLocaleDateString('en-IN'):pct+'% towards this milestone'}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }catch(e){ el.innerHTML='<div class="no-data">Failed to load milestones.</div>'; }
+}
+
+/* ── Q&A ────────────────────────────────────────────── */
+async function loadQA(){
+  if(!CAMPAIGN_ID) return;
+  const el = document.getElementById('qaList');
+  if(!el) return;
+  try{
+    const r = await fetch(`/get_questions/${CAMPAIGN_ID}`);
+    const data = await r.json();
+    if(!data.length){ el.innerHTML='<div class="no-data">No questions yet. Be the first to ask!</div>'; return; }
+    el.innerHTML = data.map(q=>`
+      <div style="padding:.9rem 0;border-bottom:1px solid var(--border2);">
+        <div style="display:flex;align-items:flex-start;gap:.7rem;margin-bottom:${q.answer?'.7rem':'0'};">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:900;color:white;flex-shrink:0;">${q.donor_name[0]}</div>
+          <div>
+            <div style="font-size:.78rem;font-weight:600;color:var(--text);">${q.donor_name} <span style="font-weight:400;color:var(--dim);">· ${new Date(q.asked_at).toLocaleDateString('en-IN')}</span></div>
+            <div style="font-size:.86rem;color:var(--text);margin-top:.2rem;line-height:1.6;">${q.question}</div>
+          </div>
+        </div>
+        ${q.answer?`
+        <div style="display:flex;align-items:flex-start;gap:.7rem;margin-left:2rem;background:var(--bg);padding:.7rem;border-radius:8px;border-left:3px solid var(--teal);">
+          <div style="width:24px;height:24px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:white;flex-shrink:0;">NGO</div>
+          <div>
+            <div style="font-size:.75rem;font-weight:600;color:var(--teal);margin-bottom:.15rem;">${q.answered_by||'NGO'} <span style="font-weight:400;color:var(--dim);">· ${new Date(q.answered_at).toLocaleDateString('en-IN')}</span></div>
+            <div style="font-size:.84rem;color:var(--text);line-height:1.6;">${q.answer}</div>
+          </div>
+        </div>`:'<div style="margin-left:2.2rem;font-size:.75rem;color:var(--dim);font-style:italic;">Awaiting response from NGO...</div>'}
+      </div>`).join('');
+  }catch(e){ el.innerHTML='<div class="no-data">Failed to load questions.</div>'; }
+}
+
+async function submitQuestion(){
+  const q    = document.getElementById('qaQuestion')?.value?.trim();
+  const errEl = document.getElementById('qaErr');
+  if(errEl) errEl.style.display='none';
+  if(!q){ if(errEl){errEl.textContent='Please enter a question.';errEl.style.display='block';} return; }
+  try{
+    const r = await fetch('/ask_question',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({campaign_id:CAMPAIGN_ID,question:q})});
+    const d = await r.json();
+    if(d.status==='success'){
+      document.getElementById('qaQuestion').value='';
+      showToast('Question submitted! The NGO will respond shortly.');
+      loadQA();
+    } else if(d.status==='error' && d.message==='Login required'){
+      showToast('Please log in to ask a question.');
+      setTimeout(()=>window.location.href='/?login=1',1200);
+    } else {
+      if(errEl){errEl.textContent=d.message||'Failed to submit.';errEl.style.display='block';}
+    }
+  }catch(e){ if(errEl){errEl.textContent='Network error.';errEl.style.display='block';} }
+}
+
+/* ── Certificate download (from history track button) ── */
+function downloadCertificate(donationId){
+  window.location.href = `/generate_certificate/${donationId}`;
+}
+</script>
+</body>
+</html>

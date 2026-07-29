@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustFlow — Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --teal:#0d3b47;--teal2:#0f4d5e;--teal3:#1a6070;--teal-light:#e8f4f8;
+  --orange:#f97316;--orange2:#fb923c;--orange-dark:#ea580c;
+  --bg:#f2f6f8;--white:#fff;--text:#111827;--muted:#6b7280;--dim:#9ca3af;
+  --border:#e5e7eb;--red:#ef4444;
+}
+html,body{height:100%;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;}
+
+/* ── SPLIT LAYOUT ── */
+.page{display:flex;min-height:100vh;}
+
+/* left panel — branding */
+.left{
+  width:42%;flex-shrink:0;
+  background:linear-gradient(150deg,var(--teal) 0%,var(--teal2) 50%,#245e72 100%);
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:3rem;position:relative;overflow:hidden;
+}
+.left::before{
+  content:'';position:absolute;right:-80px;bottom:-80px;
+  width:380px;height:380px;border-radius:50%;
+  border:1px solid rgba(249,115,22,.1);pointer-events:none;
+}
+.left::after{
+  content:'';position:absolute;right:-30px;bottom:-30px;
+  width:220px;height:220px;border-radius:50%;
+  border:1px solid rgba(249,115,22,.15);pointer-events:none;
+}
+.left-top{}
+.logo{display:flex;align-items:center;gap:.55rem;margin-bottom:3rem;}
+.logo-box{width:38px;height:38px;background:var(--orange);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.logo-box svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.logo-name{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;color:#fff;letter-spacing:-.3px;}
+.logo-name span{color:var(--orange2);}
+.left-headline{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:900;color:#fff;line-height:1.1;letter-spacing:-.3px;margin-bottom:1rem;}
+.left-headline span{color:var(--orange2);}
+.left-sub{font-size:.9rem;color:rgba(255,255,255,.55);line-height:1.75;max-width:360px;}
+.left-features{margin-top:2.5rem;display:flex;flex-direction:column;gap:.85rem;}
+.feat{display:flex;align-items:center;gap:.75rem;}
+.feat-icon{width:32px;height:32px;border-radius:8px;background:rgba(249,115,22,.18);border:1px solid rgba(249,115,22,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.feat-icon svg{width:15px;height:15px;fill:none;stroke:var(--orange2);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.feat-text{font-size:.82rem;color:rgba(255,255,255,.65);}
+.left-bottom{font-size:.75rem;color:rgba(255,255,255,.25);position:relative;z-index:2;}
+
+/* right panel — form */
+.right{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:2rem;background:var(--bg);
+}
+.form-wrap{width:100%;max-width:400px;}
+.form-title{font-family:'Barlow Condensed',sans-serif;font-size:1.9rem;font-weight:900;color:var(--teal);letter-spacing:-.3px;margin-bottom:.3rem;}
+.form-sub{font-size:.85rem;color:var(--muted);margin-bottom:2rem;}
+.form-sub a{color:var(--orange);font-weight:600;text-decoration:none;}
+.form-sub a:hover{text-decoration:underline;}
+
+.field{margin-bottom:1.1rem;}
+.flabel{display:block;font-size:.75rem;font-weight:600;color:var(--teal);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em;}
+.finput-wrap{position:relative;}
+.finput{
+  width:100%;padding:.75rem 1rem;
+  border:1.5px solid var(--border);border-radius:9px;
+  font-size:.9rem;color:var(--text);background:var(--white);
+  font-family:'Inter',sans-serif;outline:none;transition:all .2s;
+}
+.finput:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,59,71,.06);}
+.finput::placeholder{color:var(--dim);}
+.finput.error{border-color:var(--red);}
+.pw-toggle{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--dim);transition:color .18s;}
+.pw-toggle:hover{color:var(--teal);}
+.pw-toggle svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+.forgot{display:block;text-align:right;font-size:.76rem;color:var(--muted);margin-top:.4rem;cursor:pointer;transition:color .18s;}
+.forgot:hover{color:var(--teal);}
+
+/* error box */
+.err-box{
+  background:#fff5f5;border:1px solid #fecaca;border-radius:8px;
+  padding:.65rem 1rem;font-size:.82rem;color:var(--red);
+  margin-bottom:1rem;display:none;align-items:center;gap:.5rem;
+}
+.err-box.show{display:flex;}
+.err-box svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;stroke-linecap:round;stroke-linejoin:round;}
+
+/* submit */
+.btn-submit{
+  width:100%;padding:.85rem;
+  background:var(--teal);color:#fff;border:none;border-radius:9px;
+  font-size:.95rem;font-weight:700;cursor:pointer;
+  font-family:'Inter',sans-serif;transition:all .22s;
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+  margin-top:.4rem;
+}
+.btn-submit:hover{background:var(--teal2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(13,59,71,.2);}
+.btn-submit:active{transform:none;}
+.btn-submit.loading{opacity:.75;pointer-events:none;}
+.btn-submit svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.spin{animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.divider span{font-size:.75rem;color:var(--dim);white-space:nowrap;}
+
+.btn-register{
+  width:100%;padding:.75rem;
+  background:var(--white);color:var(--teal);
+  border:1.5px solid var(--border);border-radius:9px;
+  font-size:.88rem;font-weight:600;cursor:pointer;
+  font-family:'Inter',sans-serif;transition:all .2s;
+  text-align:center;text-decoration:none;display:block;
+}
+.btn-register:hover{border-color:var(--teal);background:var(--teal-light);}
+
+/* role redirect banner */
+.redirect-banner{
+  background:var(--teal-light);border:1px solid rgba(13,59,71,.15);
+  border-radius:8px;padding:.65rem 1rem;font-size:.8rem;color:var(--teal2);
+  margin-bottom:1.2rem;display:none;align-items:center;gap:.5rem;
+}
+.redirect-banner.show{display:flex;}
+.redirect-banner svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;stroke-linecap:round;stroke-linejoin:round;}
+
+/* success state */
+.success-box{
+  background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;
+  padding:.65rem 1rem;font-size:.82rem;color:#065f46;
+  margin-bottom:1rem;display:none;align-items:center;gap:.5rem;
+}
+.success-box.show{display:flex;}
+.success-box svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;stroke-linecap:round;stroke-linejoin:round;}
+
+/* responsive */
+@media(max-width:768px){
+  .left{display:none;}
+  .right{padding:1.5rem;}
+  .form-wrap{max-width:100%;}
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <!-- LEFT BRANDING -->
+  <div class="left">
+    <div class="left-top">
+      <div class="logo">
+        <div class="logo-box"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="logo-name">Trust<span>Flow</span></div>
+      </div>
+      <div class="left-headline">Give with<br>confidence.<br><span>Impact with</span><br>transparency.</div>
+      <div class="left-sub">TrustFlow connects verified donors to trusted NGOs using AI-powered fraud detection and real-time transparency scoring.</div>
+      <div class="left-features">
+        <div class="feat">
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <div class="feat-text">3-layer AI fraud detection on every transaction</div>
+        </div>
+        <div class="feat">
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div class="feat-text">Real-time transparency scores for every NGO</div>
+        </div>
+        <div class="feat">
+          <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="feat-text">Instant PDF receipts and tax statements</div>
+        </div>
+      </div>
+    </div>
+    <div class="left-bottom">© 2026 TrustFlow. Secure donation platform.</div>
+  </div>
+
+  <!-- RIGHT FORM -->
+  <div class="right">
+    <div class="form-wrap">
+      <div class="form-title">Welcome back</div>
+      <div class="form-sub">Don't have an account? <a href="/" onclick="event.preventDefault();window.location.href='/?register=1'">Create one free</a></div>
+
+      <!-- redirect hint (shown when redirected from a protected page) -->
+      <div class="redirect-banner" id="redirectBanner">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="redirectMsg">Please sign in to continue.</span>
+      </div>
+
+      <!-- success -->
+      <div class="success-box" id="successBox">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>Signed in! Redirecting you now…</span>
+      </div>
+
+      <!-- error -->
+      <div class="err-box" id="errBox">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        <span id="errMsg">Invalid email or password.</span>
+      </div>
+
+      <!-- form -->
+      <div class="field">
+        <label class="flabel">Email address</label>
+        <input class="finput" type="email" id="email" placeholder="you@example.com" autocomplete="email" autofocus>
+      </div>
+
+      <div class="field">
+        <label class="flabel">Password</label>
+        <div class="finput-wrap">
+          <input class="finput" type="password" id="password" placeholder="Your password" autocomplete="current-password" style="padding-right:2.8rem;">
+          <div class="pw-toggle" onclick="togglePw()" id="pwToggle">
+            <svg id="eyeIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+        </div>
+        <span class="forgot" onclick="showForgot()">Forgot password?</span>
+      </div>
+
+      <button class="btn-submit" id="submitBtn" onclick="doLogin()">
+        <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Sign In
+      </button>
+
+      <div class="divider"><span>new to TrustFlow?</span></div>
+      <a href="/" class="btn-register" onclick="event.preventDefault();window.location.href='/?register=1'">Create a free account</a>
+
+      <div style="margin-top:1.5rem;text-align:center;font-size:.74rem;color:var(--dim);">
+        Are you an admin? <a href="/admin-login" style="color:var(--muted);font-weight:600;">Admin portal →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Show redirect hint from query param ── */
+const p = new URLSearchParams(location.search);
+if(p.get('reason') === 'auth'){
+  const b = document.getElementById('redirectBanner');
+  b.classList.add('show');
+  const msgs = {
+    donor:'Sign in as a donor to continue.',
+    ngo:'Sign in as an NGO to access your dashboard.',
+    admin:'Admin access required. Please sign in.',
+  };
+  document.getElementById('redirectMsg').textContent = msgs[p.get('role')] || 'Please sign in to continue.';
+}
+
+// Get Started redirect — switch to register tab automatically
+if(p.get('action') === 'register'){
+  const loginForm  = document.querySelector('.right');
+  const registerEl = document.getElementById('registerSection');
+  // If page has a dedicated register section, show it
+  if(registerEl){
+    document.getElementById('loginSection')?.style && (document.getElementById('loginSection').style.display='none');
+    registerEl.style.display='block';
+  } else {
+    // The login.html has a single form — switch to register link behaviour
+    // Show a top banner prompting registration
+    const regBanner = document.createElement('div');
+    regBanner.style.cssText='background:linear-gradient(90deg,var(--teal),var(--teal2));color:white;padding:.7rem 1.2rem;border-radius:10px;margin-bottom:1.2rem;font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:.6rem;';
+    regBanner.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+      +'<span>Create your free account below, or <a href="#" onclick="this.parentElement.parentElement.remove()" style="color:var(--orange2);text-decoration:underline;">sign in</a> if you already have one.</span>';
+    const formWrap = document.querySelector('.form-wrap');
+    if(formWrap) formWrap.insertBefore(regBanner, formWrap.firstChild);
+    // Scroll to register link
+    const regLink = document.querySelector('.btn-register');
+    if(regLink) regLink.scrollIntoView({behavior:'smooth', block:'center'});
+    // Highlight the create account button
+    if(regLink){
+      regLink.style.background='var(--orange)';
+      regLink.style.color='white';
+      regLink.style.borderColor='var(--orange)';
+      setTimeout(()=>{
+        regLink.style.background='';
+        regLink.style.color='';
+        regLink.style.borderColor='';
+      }, 2000);
+    }
+  }
+}
+
+/* ── Toggle password visibility ── */
+function togglePw(){
+  const inp = document.getElementById('password');
+  const ico = document.getElementById('eyeIcon');
+  if(inp.type === 'password'){
+    inp.type = 'text';
+    ico.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    inp.type = 'password';
+    ico.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+/* ── Enter key submits ── */
+document.getElementById('password').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
+document.getElementById('email').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
+
+/* ── Login ── */
+async function doLogin(){
+  const email    = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const errBox   = document.getElementById('errBox');
+  const btn      = document.getElementById('submitBtn');
+
+  errBox.classList.remove('show');
+  document.getElementById('email').classList.remove('error');
+  document.getElementById('password').classList.remove('error');
+
+  if(!email){ showErr('Please enter your email address.'); document.getElementById('email').classList.add('error'); return; }
+  if(!password){ showErr('Please enter your password.'); document.getElementById('password').classList.add('error'); return; }
+
+  btn.classList.add('loading');
+  btn.innerHTML = '<svg class="spin" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Signing in…';
+
+  try{
+    const res  = await fetch('/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({email, password})
+    });
+    const data = await res.json();
+
+    if(data.status === 'success'){
+      document.getElementById('successBox').classList.add('show');
+      btn.style.display = 'none';
+      // redirect based on role
+      const dest = p.get('next') || roleRoute(data.role);
+      setTimeout(() => window.location.href = dest, 900);
+    } else {
+      showErr(data.message || 'Invalid email or password.');
+      btn.classList.remove('loading');
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> Sign In';
+    }
+  } catch(e){
+    showErr('Network error. Please check your connection and try again.');
+    btn.classList.remove('loading');
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> Sign In';
+  }
+}
+
+function roleRoute(role){
+  if(role === 'admin')  return '/web/admin';
+  if(role === 'ngo')    return '/web/ngo';
+  return '/web/donor';
+}
+
+function showErr(msg){
+  document.getElementById('errMsg').textContent = msg;
+  document.getElementById('errBox').classList.add('show');
+}
+
+function showForgot(){
+  showErr('Password reset is not available yet. Please contact support.');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustFlow — Smart Donation Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --teal:#0d3b47;--teal2:#0f4d5e;--teal3:#1a6070;
+  --orange:#f97316;--orange2:#fb923c;--orange-dark:#ea580c;
+  --white:#fff;--off:#f4f8fa;--text:#1a2c35;--muted:#5a7a85;--border:#d0e8ef;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Barlow',sans-serif;background:var(--white);color:var(--text);overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+.wrap{max-width:1260px;margin:0 auto;padding:0 2rem;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--teal3);border-radius:99px;}
+
+/* ── TOPBAR ───────────────────────────────────────────── */
+.topbar{background:var(--teal);padding:.48rem 2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;}
+.topbar-l,.topbar-r{display:flex;align-items:center;gap:1.8rem;}
+.topbar span{font-size:.76rem;color:rgba(255,255,255,.68);display:flex;align-items:center;gap:.45rem;}
+.topbar span b{color:var(--orange2);font-weight:600;}
+.tsoc{display:flex;gap:.45rem;}
+.tsoc a{width:22px;height:22px;border-radius:4px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.tsoc a:hover{background:var(--orange);}
+.tsoc svg{width:11px;height:11px;fill:currentColor;}
+
+/* ── NAV ──────────────────────────────────────────────── */
+nav{background:var(--white);position:sticky;top:0;z-index:1000;box-shadow:0 2px 18px rgba(13,59,71,.08);padding:.85rem 2rem;display:flex;align-items:center;justify-content:space-between;transition:box-shadow .3s;}
+nav.scrolled{box-shadow:0 4px 28px rgba(13,59,71,.14);}
+.nlogo{display:flex;align-items:center;gap:.55rem;}
+.nlogo-mark{width:36px;height:36px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.nlogo-mark svg{width:20px;height:20px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.nlogo-text{font-family:'Barlow Condensed',sans-serif;font-size:1.65rem;font-weight:900;color:var(--teal);letter-spacing:-.5px;}
+.nlogo-text span{color:var(--orange);}
+.nlinks{display:flex;gap:1.9rem;align-items:center;}
+.nlinks a{font-size:.9rem;font-weight:600;color:var(--text);padding:.35rem 0;border-bottom:2px solid transparent;transition:all .2s;}
+.nlinks a:hover,.nlinks a.active{color:var(--orange);border-bottom-color:var(--orange);}
+.nbtns{display:flex;gap:.6rem;}
+.btn-out{padding:.5rem 1.2rem;border:2px solid var(--teal);border-radius:6px;font-size:.87rem;font-weight:700;color:var(--teal);background:transparent;cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif;}
+.btn-out:hover{background:var(--teal);color:white;}
+.btn-fill{padding:.5rem 1.4rem;background:var(--orange);border:2px solid var(--orange);border-radius:6px;font-size:.87rem;font-weight:700;color:white;cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif;position:relative;overflow:hidden;}
+.btn-fill:hover{background:var(--orange-dark);border-color:var(--orange-dark);}
+
+.cat-filters{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.8rem;padding:0;}
+.cat-pill{padding:.38rem 1rem;border:1.5px solid var(--border);border-radius:99px;font-size:.78rem;font-weight:700;color:var(--muted);background:white;cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif;white-space:nowrap;}
+.cat-pill:hover{border-color:var(--teal);color:var(--teal);}
+.cat-pill.active{background:var(--teal);color:white;border-color:var(--teal);}
+/* ── HAMBURGER ────────────────────────────────────────── */
+.burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:.4rem;}
+.burger span{display:block;width:24px;height:2.5px;background:var(--teal);border-radius:2px;transition:all .3s;}
+.burger.open span:nth-child(1){transform:translateY(7.5px) rotate(45deg);}
+.burger.open span:nth-child(2){opacity:0;}
+.burger.open span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg);}
+.mmenu{display:none;position:fixed;inset:0;background:var(--teal);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:2.2rem;opacity:0;transform:translateY(-18px);transition:all .3s;}
+.mmenu.open{display:flex;opacity:1;transform:none;}
+.mmenu a{font-family:'Barlow Condensed',sans-serif;font-size:2.3rem;font-weight:900;color:white;letter-spacing:.04em;transition:color .2s;}
+.mmenu a:hover{color:var(--orange);}
+.mmenu-btns{display:flex;gap:1rem;margin-top:.8rem;}
+
+/* ── HERO ─────────────────────────────────────────────── */
+.hero{background:var(--teal);min-height:92vh;display:flex;align-items:center;padding:5rem 2rem 3rem;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;overflow:hidden;}
+.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.45;filter:grayscale(0%);}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg, rgba(13,59,71,.95) 40%, rgba(13,59,71,.25) 100%);}
+.hero-orange-slice{position:absolute;bottom:0;right:0;width:42%;height:100%;background:linear-gradient(135deg,transparent 30%,rgba(249,115,22,.09) 100%);clip-path:polygon(18% 0,100% 0,100% 100%,0 100%);}
+.hero-ring{position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.04);pointer-events:none;}
+.hero-ring:nth-child(1){width:680px;height:680px;top:-240px;right:-180px;animation:spin 28s linear infinite;}
+.hero-ring:nth-child(2){width:430px;height:430px;top:-90px;right:-30px;animation:spin 20s linear infinite reverse;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.hero-in{max-width:1260px;margin:0 auto;display:grid;grid-template-columns:1.1fr .9fr;gap:4rem;align-items:center;width:100%;position:relative;z-index:2;}
+.hero-pill{display:inline-flex;align-items:center;gap:.6rem;background:rgba(249,115,22,.14);border:1px solid rgba(249,115,22,.3);color:var(--orange2);padding:.35rem 1.1rem;border-radius:99px;font-size:.76rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.5rem;}
+.hero-pill-dot{width:6px;height:6px;background:var(--orange);border-radius:50%;animation:blink 1.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+.hero h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(3rem,5.5vw,4.7rem);font-weight:900;line-height:1.02;color:white;letter-spacing:-.5px;margin-bottom:1.3rem;}
+.hero h1 .hl{color:var(--orange);}
+.hero-p{font-size:.97rem;color:rgba(255,255,255,.7);line-height:1.8;max-width:500px;margin-bottom:2.5rem;}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3rem;}
+.btn-hp{display:inline-flex;align-items:center;gap:.55rem;padding:.9rem 2.1rem;background:var(--orange);color:white;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:6px;border:2px solid var(--orange);cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.btn-hp:hover{background:var(--orange-dark);border-color:var(--orange-dark);transform:translateY(-2px);box-shadow:0 10px 28px rgba(249,115,22,.34);}
+.btn-hp svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.btn-hg{display:inline-flex;align-items:center;gap:.55rem;padding:.9rem 2.1rem;background:transparent;color:white;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:6px;border:2px solid rgba(255,255,255,.35);cursor:pointer;transition:all .25s;}
+.btn-hg:hover{border-color:white;background:rgba(255,255,255,.07);}
+.btn-hg svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.hero-trust{display:flex;align-items:center;gap:.9rem;font-size:.83rem;color:rgba(255,255,255,.5);}
+.hero-trust-imgs{display:flex;}
+.hero-trust-imgs img{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.15);margin-left:-8px;}
+.hero-trust-imgs img:first-child{margin-left:0;}
+
+/* Hero stat cards */
+.hcards{display:flex;flex-direction:column;gap:1.2rem;}
+.hcard{background:rgba(13,59,71,.55);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:1.4rem 1.8rem;position:relative;overflow:hidden;transition:transform .3s;}
+.hcard:hover{transform:translateX(8px);}
+.hcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--orange);}
+.hcard:nth-child(2){margin-left:2rem;}
+.hcard-lbl{font-size:.71rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.4rem;}
+.hcard-val{font-family:'Barlow Condensed',sans-serif;font-size:2.3rem;font-weight:900;color:white;line-height:1;}
+.hcard-sub{font-size:.77rem;color:var(--orange2);margin-top:.3rem;}
+
+/* ── PARTNERS ─────────────────────────────────────────── */
+.partners{padding:2rem 2rem;background:var(--off);border-bottom:1px solid var(--border);}
+.partners-in{max-width:1260px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;}
+.partners-lbl{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;}
+.partners-logos{display:flex;gap:2.5rem;align-items:center;flex-wrap:wrap;}
+.plogo{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;color:var(--muted);opacity:.4;transition:all .2s;}
+.plogo:hover{opacity:.85;color:var(--teal);}
+
+/* ── EYEBROW / SECTION HEADINGS ───────────────────────── */
+.eyebrow{display:inline-block;background:rgba(249,115,22,.1);color:var(--orange-dark);font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.26rem .82rem;border-radius:4px;margin-bottom:1.1rem;}
+.sh2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.85rem,3.2vw,2.7rem);font-weight:900;color:var(--teal);line-height:1.12;letter-spacing:-.3px;margin-bottom:1rem;}
+.sh2 span{color:var(--orange);}
+.sp{color:var(--muted);line-height:1.8;font-size:.93rem;margin-bottom:1.6rem;}
+
+/* ── ABOUT ────────────────────────────────────────────── */
+.about{padding:6rem 2rem;background:white;}
+.about-in{max-width:1260px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+.checklist{display:grid;grid-template-columns:1fr 1fr;gap:.6rem 1.2rem;margin-bottom:1.8rem;}
+.ci{display:flex;align-items:center;gap:.55rem;font-size:.87rem;font-weight:600;color:var(--text);}
+.ci-icon{width:18px;height:18px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ci-icon svg{width:10px;height:10px;fill:none;stroke:white;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.about-cta{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;}
+.about-phone{display:flex;align-items:center;gap:.7rem;}
+.phone-ic{width:42px;height:42px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.phone-ic svg{width:18px;height:18px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.phone-ic + div small{display:block;font-size:.72rem;color:var(--muted);}
+.phone-ic + div strong{font-size:.92rem;color:var(--teal);}
+
+/* About image */
+.about-vis{position:relative;padding-bottom:3.5rem;}
+.about-img{width:100%;height:420px;border-radius:10px;overflow:hidden;position:relative;}
+.about-img img{width:100%;height:100%;object-fit:cover;border-radius:10px;transition:transform .6s;}
+.about-img:hover img{transform:scale(1.03);}
+.abadge{position:absolute;bottom:0;left:-1rem;background:var(--orange);color:white;border-radius:10px;padding:1.1rem 1.4rem;font-family:'Barlow Condensed',sans-serif;box-shadow:0 10px 28px rgba(249,115,22,.28);z-index:2;}
+.abadge .n{font-size:2.2rem;font-weight:900;line-height:1;}
+.abadge .l{font-size:.77rem;font-weight:600;opacity:.9;}
+.abadge2{position:absolute;bottom:0;right:1rem;background:var(--teal);color:white;border-radius:10px;padding:1.1rem 1.4rem;font-family:'Barlow Condensed',sans-serif;box-shadow:0 10px 28px rgba(13,59,71,.24);z-index:2;}
+.abadge2 .n{font-size:2.2rem;font-weight:900;line-height:1;}
+.abadge2 .l{font-size:.77rem;font-weight:600;opacity:.85;}
+
+/* ── STATS SECTION ────────────────────────────────────── */
+.stats{background:var(--off);padding:6rem 2rem;}
+.stats-in{max-width:1260px;margin:0 auto;display:grid;grid-template-columns:1fr 2fr;gap:4rem;align-items:start;}
+.stats-left h2{font-family:'Barlow Condensed',sans-serif;font-size:2.6rem;font-weight:900;color:var(--teal);line-height:1.1;letter-spacing:-.5px;margin-bottom:1rem;}
+.stats-left p{font-size:.9rem;color:var(--muted);line-height:1.8;margin-bottom:1.8rem;}
+.stats-photo{width:100%;height:210px;border-radius:10px;overflow:hidden;}
+.stats-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+.stats-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.scard{background:var(--white);border-radius:12px;padding:2rem 1.8rem;border:1.5px solid var(--border);transition:all .3s;position:relative;overflow:hidden;}
+.scard:hover{border-color:var(--teal3);transform:translateY(-4px);box-shadow:0 12px 32px rgba(13,59,71,.08);}
+.scard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--border);transition:background .3s;}
+.scard:hover::before{background:var(--teal3);}
+.scard-icon{width:44px;height:44px;background:rgba(13,59,71,.06);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:1.2rem;}
+.scard-icon svg{width:22px;height:22px;fill:none;stroke:var(--teal3);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.scard-num{font-family:'Barlow Condensed',sans-serif;font-size:2.8rem;font-weight:900;color:var(--teal);line-height:1;margin-bottom:.3rem;letter-spacing:-1px;}
+.scard-num span{color:var(--teal3);}
+.scard-lbl{font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;}
+
+/* ── CAMPAIGNS ────────────────────────────────────────── */
+.campaigns{padding:6rem 2rem;background:var(--off);}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3rem;flex-wrap:wrap;gap:1rem;}
+.cgrid{max-width:1260px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.8rem;}
+.ccard{background:white;border-radius:10px;overflow:hidden;box-shadow:0 4px 20px rgba(13,59,71,.06);transition:all .3s;}
+.ccard:hover{transform:translateY(-7px);box-shadow:0 18px 44px rgba(13,59,71,.13);}
+.ccard-img{height:200px;position:relative;overflow:hidden;}
+.ccard-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s;}
+.ccard:hover .ccard-img img{transform:scale(1.06);}
+.ccat{position:absolute;top:1rem;left:1rem;padding:.28rem .85rem;border-radius:99px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.curg{position:absolute;top:1rem;right:1rem;padding:.28rem .85rem;border-radius:99px;font-size:.7rem;font-weight:700;display:flex;align-items:center;gap:.35rem;}
+.urg-critical{background:#fee2e2;color:#dc2626;}
+.urg-high{background:#fef3c7;color:#d97706;}
+.urg-low{background:#d1fae5;color:#065f46;}
+.udot{width:6px;height:6px;border-radius:50%;flex-shrink:0;animation:pdot 1.4s ease-in-out infinite;}
+.urg-critical .udot{background:#dc2626;}
+.urg-high .udot{background:#d97706;}
+.urg-low .udot{background:#065f46;}
+@keyframes pdot{0%,100%{transform:scale(1);}50%{transform:scale(1.7);opacity:.4;}}
+.cbody{padding:1.4rem 1.6rem;}
+.ctitle{font-family:'Barlow Condensed',sans-serif;font-size:1.22rem;font-weight:800;color:var(--teal);margin-bottom:.45rem;line-height:1.25;}
+.cdesc{font-size:.83rem;color:var(--muted);line-height:1.62;margin-bottom:1.1rem;}
+.cbar{height:5px;background:#e5eef2;border-radius:99px;overflow:hidden;margin-bottom:.45rem;}
+.cfill{height:100%;border-radius:99px;transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+.cmeta{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:1.2rem;}
+.cmeta strong{color:var(--teal);}
+.cbtn{display:block;width:100%;padding:.72rem;text-align:center;background:var(--teal);color:white;font-family:'Barlow Condensed',sans-serif;font-size:.92rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;border-radius:6px;border:2px solid var(--teal);cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.cbtn:hover{background:var(--orange);border-color:var(--orange);}
+
+.fill-med{background:linear-gradient(90deg,#ef4444,#f97316);}
+.fill-edu{background:linear-gradient(90deg,#3b82f6,#6366f1);}
+.fill-env{background:linear-gradient(90deg,#10b981,#059669);}
+.fill-com{background:linear-gradient(90deg,#f59e0b,#f97316);}
+.fill-gen{background:linear-gradient(90deg,var(--teal),var(--teal3));}
+.cat-med{background:#fee2e2;color:#991b1b;}
+.cat-edu{background:#dbeafe;color:#1e40af;}
+.cat-env{background:#d1fae5;color:#065f46;}
+.cat-com{background:#fef3c7;color:#92400e;}
+.cat-gen{background:#e5e7eb;color:#374151;}
+.cat-child{background:#fce7f3;color:#9d174d;}
+.cat-women{background:#ede9fe;color:#5b21b6;}
+.cat-elder{background:#fef3c7;color:#92400e;}
+.cat-animal{background:#d1fae5;color:#065f46;}
+.cat-dis{background:#fee2e2;color:#7f1d1d;}
+.cat-hunger{background:#fef9c3;color:#713f12;}
+.cat-water{background:#cffafe;color:#164e63;}
+.cat-rural{background:#ecfdf5;color:#14532d;}
+.cat-mental{background:#f3e8ff;color:#581c87;}
+.cat-dis2{background:#e0f2fe;color:#0c4a6e;}
+.cat-ht{background:#fff1f2;color:#9f1239;}
+.cat-sport{background:#fff7ed;color:#7c2d12;}
+.cat-arts{background:#fdf4ff;color:#701a75;}
+.cat-women{background:#fdf2f8;color:#831843;}
+.fill-child{background:linear-gradient(90deg,#ec4899,#db2777);}
+.fill-women{background:linear-gradient(90deg,#a855f7,#7c3aed);}
+.fill-elder{background:linear-gradient(90deg,#f59e0b,#d97706);}
+.fill-animal{background:linear-gradient(90deg,#10b981,#059669);}
+.fill-dis{background:linear-gradient(90deg,#ef4444,#b91c1c);}
+.fill-hunger{background:linear-gradient(90deg,#eab308,#ca8a04);}
+.fill-water{background:linear-gradient(90deg,#06b6d4,#0891b2);}
+.fill-rural{background:linear-gradient(90deg,#22c55e,#16a34a);}
+.fill-mental{background:linear-gradient(90deg,#8b5cf6,#6d28d9);}
+.fill-dis2{background:linear-gradient(90deg,#3b82f6,#1d4ed8);}
+.fill-ht{background:linear-gradient(90deg,#f43f5e,#e11d48);}
+.fill-sport{background:linear-gradient(90deg,#f97316,#ea580c);}
+.fill-arts{background:linear-gradient(90deg,#d946ef,#a21caf);}
+
+/* ── HOW ──────────────────────────────────────────────── */
+.how{padding:6rem 2rem;background:white;}
+.steps{max-width:1260px;margin:3.5rem auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;position:relative;}
+.steps::before{content:'';position:absolute;top:3.5rem;left:16.6%;right:16.6%;height:2px;background:linear-gradient(90deg,var(--orange),var(--teal));z-index:0;}
+.step{text-align:center;position:relative;z-index:1;}
+.step-ring{width:70px;height:70px;border-radius:50%;background:white;border:3px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 1.4rem;font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:900;color:var(--teal);position:relative;transition:all .3s;box-shadow:0 4px 14px rgba(13,59,71,.07);}
+.step:hover .step-ring{background:var(--orange);border-color:var(--orange);color:white;transform:scale(1.12);}
+.step-ic{position:absolute;top:-7px;right:-7px;width:26px;height:26px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.step-ic svg{width:12px;height:12px;fill:none;stroke:white;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.step h3{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800;color:var(--teal);margin-bottom:.6rem;}
+.step p{font-size:.87rem;color:var(--muted);line-height:1.72;}
+
+/* ── ROLES ────────────────────────────────────────────── */
+.roles{padding:6rem 2rem;background:var(--off);}
+.roles-grid{max-width:1260px;margin:3.5rem auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;}
+.rcard{background:white;border-radius:10px;overflow:hidden;box-shadow:0 4px 20px rgba(13,59,71,.06);transition:all .3s;border-top:4px solid var(--border);}
+.rcard:hover{transform:translateY(-6px);box-shadow:0 18px 42px rgba(13,59,71,.11);}
+.rcard-donor:hover{border-top-color:var(--orange);}
+.rcard-ngo:hover{border-top-color:var(--teal);}
+.rcard-admin:hover{border-top-color:#7c3aed;}
+.rimg{height:180px;overflow:hidden;position:relative;}
+.rimg img{width:100%;height:100%;object-fit:cover;transition:transform .4s;}
+.rcard:hover .rimg img{transform:scale(1.05);}
+.rimg-overlay{position:absolute;inset:0;display:flex;align-items:flex-end;padding:1rem;}
+.rimg-tag{background:rgba(13,59,71,.75);color:white;padding:.3rem .8rem;border-radius:6px;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;backdrop-filter:blur(4px);}
+.rbody{padding:1.5rem 1.7rem 1.8rem;}
+.reyebrow{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem;}
+.rcard-donor .reyebrow{color:var(--orange);}
+.rcard-ngo   .reyebrow{color:var(--teal);}
+.rcard-admin .reyebrow{color:#7c3aed;}
+.rh3{font-family:'Barlow Condensed',sans-serif;font-size:1.45rem;font-weight:900;color:var(--teal);margin-bottom:.6rem;}
+.rp{font-size:.86rem;color:var(--muted);line-height:1.7;margin-bottom:1.2rem;}
+.rlist{list-style:none;display:flex;flex-direction:column;gap:.42rem;margin-bottom:1.4rem;}
+.rlist li{font-size:.84rem;color:var(--text);display:flex;align-items:center;gap:.5rem;}
+.rlist li svg{width:14px;height:14px;fill:none;stroke:var(--orange);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.rcta{display:block;width:100%;padding:.68rem;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;border-radius:6px;cursor:pointer;transition:all .22s;}
+.rcta-donor{background:var(--orange);color:white;border:2px solid var(--orange);}
+.rcta-donor:hover{background:var(--orange-dark);}
+.rcta-ngo{background:var(--teal);color:white;border:2px solid var(--teal);}
+.rcta-ngo:hover{background:var(--teal2);}
+.rcta-admin{background:#7c3aed;color:white;border:2px solid #7c3aed;}
+.rcta-admin:hover{background:#6d28d9;}
+
+/* ── TRUST ────────────────────────────────────────────── */
+.trust{padding:6rem 2rem;background:var(--teal);}
+.tgrid{max-width:1260px;margin:3.5rem auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;}
+.tcard{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:1.8rem;transition:all .3s;}
+.tcard:hover{background:rgba(255,255,255,.1);transform:translateY(-4px);}
+.tic{width:50px;height:50px;border-radius:10px;background:rgba(249,115,22,.18);border:1px solid rgba(249,115,22,.25);display:flex;align-items:center;justify-content:center;margin-bottom:1.1rem;}
+.tic svg{width:24px;height:24px;fill:none;stroke:var(--orange2);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.tcard h4{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;color:white;margin-bottom:.45rem;}
+.tcard p{font-size:.83rem;color:rgba(255,255,255,.57);line-height:1.65;}
+
+/* ── FOOTER ───────────────────────────────────────────── */
+footer{background:#071e26;padding:4rem 2rem 2rem;}
+.footer-in{max-width:1260px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;}
+.fb-name{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:900;color:white;}
+.fb-name span{color:var(--orange);}
+.fb-p{font-size:.85rem;color:rgba(255,255,255,.42);line-height:1.8;margin-top:.8rem;max-width:260px;}
+.fcol h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;color:white;margin-bottom:1.1rem;}
+.fcol ul{list-style:none;display:flex;flex-direction:column;gap:.62rem;}
+.fcol a{font-size:.85rem;color:rgba(255,255,255,.42);transition:color .2s;}
+.fcol a:hover{color:var(--orange);}
+.footer-bot{max-width:1260px;margin:0 auto;padding-top:1.8rem;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.footer-bot p{font-size:.8rem;color:rgba(255,255,255,.3);}
+.fbadge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.2);color:var(--orange2);padding:.28rem .9rem;border-radius:99px;font-size:.73rem;font-weight:600;}
+
+/* ── MODALS ───────────────────────────────────────────── */
+.modal{display:none;position:fixed;inset:0;background:rgba(7,30,38,.82);backdrop-filter:blur(6px);z-index:2000;justify-content:center;align-items:center;padding:1rem;}
+.modal.open{display:flex;}
+.mbox{background:white;border-radius:14px;width:100%;max-width:415px;overflow:hidden;animation:mIn .25s ease;box-shadow:0 30px 60px rgba(0,0,0,.26);}
+@keyframes mIn{from{opacity:0;transform:translateY(-18px) scale(.97);}to{opacity:1;transform:none;}}
+.mhead{background:var(--teal);padding:1.8rem 2rem;position:relative;}
+.mhead-title{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:900;color:white;}
+.mhead-sub{font-size:.82rem;color:rgba(255,255,255,.6);margin-top:.3rem;}
+.mclose{position:absolute;top:1rem;right:1rem;width:28px;height:28px;background:rgba(255,255,255,.1);border:none;border-radius:50%;color:white;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;font-family:inherit;}
+.mclose:hover{background:rgba(255,255,255,.25);}
+.mbody{padding:1.8rem 2rem;}
+.flabel{display:block;font-size:.79rem;font-weight:700;color:var(--teal);margin-bottom:.38rem;text-transform:uppercase;letter-spacing:.05em;}
+.finput{width:100%;padding:.72rem 1rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;color:var(--text);background:var(--off);transition:border-color .2s;outline:none;font-family:'Barlow',sans-serif;margin-bottom:1.1rem;}
+.finput:focus{border-color:var(--teal);background:white;}
+.finput::placeholder{color:#a0b4bc;}
+.rtabs{display:flex;gap:.5rem;margin-bottom:1.3rem;}
+.rtab{flex:1;padding:.58rem;border-radius:6px;background:var(--off);border:1.5px solid var(--border);color:var(--muted);font-size:.83rem;font-weight:700;cursor:pointer;text-align:center;transition:all .2s;font-family:'Barlow',sans-serif;}
+.rtab.active{background:var(--teal);border-color:var(--teal);color:white;}
+.msub{width:100%;padding:.82rem;background:var(--orange);color:white;font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;border:none;border-radius:7px;cursor:pointer;transition:all .2s;margin-top:.3rem;position:relative;overflow:hidden;}
+.msub:hover{background:var(--orange-dark);}
+.mswitch{text-align:center;margin-top:1.1rem;font-size:.83rem;color:var(--muted);}
+.mswitch a{color:var(--orange);font-weight:700;cursor:pointer;}
+.merr{background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;padding:.65rem 1rem;border-radius:6px;font-size:.81rem;margin-bottom:1rem;display:none;}
+.msuc{background:#d1fae5;border:1px solid #6ee7b7;color:#065f46;padding:.65rem 1rem;border-radius:6px;font-size:.81rem;margin-bottom:1rem;display:none;}
+.mload{text-align:center;padding:.4rem;display:none;}
+.spin{display:inline-block;width:20px;height:20px;border:2.5px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spinn .8s linear infinite;}
+@keyframes spinn{to{transform:rotate(360deg);}}
+
+/* ── SCROLL REVEAL ────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .62s ease,transform .62s ease;}
+.reveal.left{transform:translateX(-36px);}
+.reveal.right{transform:translateX(36px);}
+.reveal.visible{opacity:1;transform:none;}
+.d1{transition-delay:.08s;}.d2{transition-delay:.18s;}.d3{transition-delay:.28s;}.d4{transition-delay:.38s;}
+
+/* ── TOAST ────────────────────────────────────────────── */
+#toast{position:fixed;bottom:2rem;right:2rem;z-index:9999;background:var(--teal);border-left:4px solid var(--orange);color:white;padding:.85rem 1.4rem;border-radius:8px;font-size:.86rem;font-weight:600;transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 8px 24px rgba(13,59,71,.24);}
+#toast.show{transform:none;opacity:1;}
+
+/* ── RESPONSIVE ───────────────────────────────────────── */
+@media(max-width:1024px){
+  .hero-in,.about-in,.stats-in{grid-template-columns:1fr;}
+  .hcards{display:grid;grid-template-columns:repeat(3,1fr);}
+  .hcard:nth-child(2){margin-left:0;}
+  .footer-in{grid-template-columns:1fr 1fr;}
+  .tgrid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:768px){
+  .topbar{display:none;}
+  .nlinks,.nbtns{display:none;}
+  .burger{display:flex;}
+  .hcards{grid-template-columns:1fr 1fr;}
+  .steps,.roles-grid,.tgrid{grid-template-columns:1fr;}
+  .steps::before{display:none;}
+  .cgrid{grid-template-columns:1fr;}
+  .checklist{grid-template-columns:1fr;}
+  .about-vis{padding-bottom:0;}
+  .abadge,.abadge2{position:static;display:inline-block;margin-top:1rem;margin-right:.8rem;}
+  .footer-in{grid-template-columns:1fr;}
+  .footer-bot{flex-direction:column;text-align:center;}
+  .partners-in{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-l">
+    <span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      24 × 7 Support
+    </span>
+    <span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Supporting causes across <b>India</b>
+    </span>
+  </div>
+  <div class="topbar-r">
+    <span>Connect with us:</span>
+    <div class="tsoc">
+      <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+      <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+      <a href="#" aria-label="Twitter"><svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg></a>
+      <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></a>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nlogo">
+    <div class="nlogo-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </div>
+    <div class="nlogo-text">Trust<span>Flow</span></div>
+  </div>
+  <div class="nlinks">
+    <a href="#home" class="active">Home</a>
+    <a href="#campaigns">Campaigns</a>
+    <a href="#how">How It Works</a>
+    <a href="#roles">Join</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="nbtns">
+    <button class="btn-out" onclick="openModal('loginModal')">Sign In</button>
+    <button class="btn-fill" onclick="window.location.href='/web/login?action=register'">Get Started</button>
+  </div>
+  <div class="burger" id="burger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mmenu" id="mmenu">
+  <a href="#home"      onclick="closeMenu()">Home</a>
+  <a href="#campaigns" onclick="closeMenu()">Campaigns</a>
+  <a href="#how"       onclick="closeMenu()">How It Works</a>
+  <a href="#roles"     onclick="closeMenu()">Join</a>
+  <a href="#contact"   onclick="closeMenu()">Contact</a>
+  <div class="mmenu-btns">
+    <button class="btn-out" style="color:white;border-color:rgba(255,255,255,.35);" onclick="closeMenu();openModal('loginModal')">Sign In</button>
+    <button class="btn-fill" onclick="closeMenu();openModal('registerModal')">Register</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg">
+    <img src="https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=1600&q=80" alt="People helping community">
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-orange-slice"></div>
+  <div class="hero-ring"></div>
+  <div class="hero-ring"></div>
+  <div class="hero-in">
+    <div>
+      <div class="hero-pill">
+        <span class="hero-pill-dot"></span>
+        Transparent · Trusted · Verified
+      </div>
+      <h1>Give With <span class="hl">Confidence.</span><br>Change Lives With<br><span class="hl">Every Rupee.</span></h1>
+      <p class="hero-p">TrustFlow connects verified NGOs with conscious donors through smart campaign matching, real-time fraud protection, and complete financial transparency — so every donation truly counts.</p>
+      <div class="hero-btns">
+        <button class="btn-hp" onclick="openModal('registerModal')">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Start Donating
+        </button>
+        <a href="#campaigns" class="btn-hg">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Browse Campaigns
+        </a>
+      </div>
+      <div class="hero-trust">
+        <div class="hero-trust-imgs">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&q=80" alt="Donor">
+          <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=60&q=80" alt="Donor">
+          <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=60&q=80" alt="Donor">
+          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&q=80" alt="Donor">
+        </div>
+        <span>Trusted by donors and NGOs across India</span>
+      </div>
+    </div>
+    <div class="hcards">
+      <div class="hcard">
+        <div class="hcard-lbl">Total Raised</div>
+        <div class="hcard-val" id="heroRaised">Loading...</div>
+        <div class="hcard-sub">Growing every day</div>
+      </div>
+      <div class="hcard">
+        <div class="hcard-lbl">Active Campaigns</div>
+        <div class="hcard-val" id="heroCampaigns">—</div>
+        <div class="hcard-sub">Verified and live</div>
+      </div>
+      <div class="hcard">
+        <div class="hcard-lbl">Fraud Prevention</div>
+        <div class="hcard-val">99.2%</div>
+        <div class="hcard-sub">AI detection rate</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<div class="partners">
+  <div class="partners-in">
+    <div class="partners-lbl">Trusted by organisations</div>
+    <div class="partners-logos">
+      <div class="plogo">CRY India</div>
+      <div class="plogo">HelpAge India</div>
+      <div class="plogo">GiveIndia</div>
+      <div class="plogo">Akshaya Patra</div>
+      <div class="plogo">Milaap Fund</div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-in wrap">
+    <div class="reveal left">
+      <div class="eyebrow">About TrustFlow</div>
+      <h2 class="sh2">We Make Sure Your <span>Donation Reaches</span> The Right Hands</h2>
+      <p class="sp">TrustFlow is India's smart donation platform — built on AI, secured by fraud detection, and grounded in full financial transparency. Every NGO is verified, every rupee is tracked, and every donor receives proof of real impact.</p>
+      <div class="checklist">
+        <div class="ci"><div class="ci-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>AI Campaign Matching</div>
+        <div class="ci"><div class="ci-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Real-Time Fraud Detection</div>
+        <div class="ci"><div class="ci-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Verified NGOs Only</div>
+        <div class="ci"><div class="ci-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Full Expense Transparency</div>
+        <div class="ci"><div class="ci-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Instant PDF Receipts</div>
+        <div class="ci"><div class="ci-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Impact Tracker</div>
+        <div class="ci"><div class="ci-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Year-End Giving Statements</div>
+        <div class="ci"><div class="ci-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Complete Audit Trail</div>
+      </div>
+      <div class="about-cta">
+        <button class="btn-hp" onclick="openModal('registerModal')">
+          Join Now
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+        <div class="about-phone">
+          <div class="phone-ic">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.25h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.84a16 16 0 0 0 6.07 6.07l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/></svg>
+          </div>
+          <div>
+            <small>Have Questions?</small>
+            <strong>+91 98765 43210</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="about-vis reveal right">
+      <div class="about-img">
+        <img src="https://images.unsplash.com/photo-1593113598332-cd288d649433?w=700&q=80" alt="Volunteers helping community members">
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- STATS SECTION -->
+<section class="stats">
+  <div class="stats-in">
+    <div class="reveal left">
+      <h2 class="stats-left" style="font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:900;color:var(--teal);line-height:1.1;letter-spacing:-.5px;margin-bottom:1rem;">Numbers That<br>Tell The Story</h2>
+      <p style="font-size:.9rem;color:var(--muted);line-height:1.8;margin-bottom:1.8rem;">Every number here represents a real person helped, a real campaign funded, and a real rupee that reached its intended cause.</p>
+      <div class="stats-photo">
+        <img src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=600&q=80" alt="Community impact through donations">
+      </div>
+    </div>
+    <div class="stats-cards reveal right">
+      <div class="scard d1">
+        <div class="scard-icon">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="scard-num" id="statRaised">—</div>
+        <div class="scard-lbl">Total Raised</div>
+      </div>
+      <div class="scard d2">
+        <div class="scard-icon">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="scard-num"><span id="statDonors">—</span><span>+</span></div>
+        <div class="scard-lbl">Registered Donors</div>
+      </div>
+      <div class="scard d3">
+        <div class="scard-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div class="scard-num"><span id="statNGOs">—</span><span>+</span></div>
+        <div class="scard-lbl">Verified NGOs</div>
+      </div>
+      <div class="scard d4">
+        <div class="scard-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="scard-num">99<span>%</span></div>
+        <div class="scard-lbl">Fraud Prevention Rate</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAMPAIGNS -->
+<section class="campaigns" id="campaigns">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="eyebrow">Live Campaigns</div>
+        <h2 class="sh2">Causes That Need <span>Your Help</span> Right Now</h2>
+      </div>
+      <button class="btn-out" onclick="openModal('loginModal')">View All Campaigns</button>
+    </div>
+    <!-- Category filter pills -->
+    <div class="cat-filters reveal" id="catFilters">
+      <button class="cat-pill active" onclick="filterByCategory('all',this)">All</button>
+      <button class="cat-pill" onclick="filterByCategory('Medical',this)">Medical</button>
+      <button class="cat-pill" onclick="filterByCategory('Education',this)">Education</button>
+      <button class="cat-pill" onclick="filterByCategory('Child Welfare',this)">Child Welfare</button>
+      <button class="cat-pill" onclick="filterByCategory('Animal Welfare',this)">Animal Welfare</button>
+      <button class="cat-pill" onclick="filterByCategory('Environment',this)">Environment</button>
+      <button class="cat-pill" onclick="filterByCategory('Disaster Relief',this)">Disaster Relief</button>
+      <button class="cat-pill" onclick="filterByCategory('Women Empowerment',this)">Women Empowerment</button>
+      <button class="cat-pill" onclick="filterByCategory('Old Age & Elder Care',this)">Elder Care</button>
+      <button class="cat-pill" onclick="filterByCategory('Hunger & Food Security',this)">Food Security</button>
+      <button class="cat-pill" onclick="filterByCategory('Rural Development',this)">Rural Dev</button>
+      <button class="cat-pill" onclick="filterByCategory('Other',this)">Other</button>
+    </div>
+    <div class="cgrid" id="cgrid">
+      <!-- skeletons -->
+      <div style="background:white;border-radius:10px;overflow:hidden;box-shadow:0 4px 20px rgba(13,59,71,.06);">
+        <div style="height:200px;background:#e5eef2;animation:sk 1.4s ease-in-out infinite;"></div>
+        <div style="padding:1.4rem;display:flex;flex-direction:column;gap:.7rem;">
+          <div style="height:13px;width:42%;background:#e5eef2;border-radius:4px;animation:sk 1.4s ease-in-out infinite;"></div>
+          <div style="height:17px;width:78%;background:#e5eef2;border-radius:4px;animation:sk 1.4s ease-in-out infinite;"></div>
+          <div style="height:5px;background:#e5eef2;border-radius:99px;animation:sk 1.4s ease-in-out infinite;"></div>
+        </div>
+      </div>
+      <div style="background:white;border-radius:10px;overflow:hidden;box-shadow:0 4px 20px rgba(13,59,71,.06);">
+        <div style="height:200px;background:#e5eef2;animation:sk 1.4s ease-in-out infinite .15s;"></div>
+        <div style="padding:1.4rem;display:flex;flex-direction:column;gap:.7rem;">
+          <div style="height:13px;width:50%;background:#e5eef2;border-radius:4px;animation:sk 1.4s ease-in-out infinite;"></div>
+          <div style="height:17px;width:68%;background:#e5eef2;border-radius:4px;animation:sk 1.4s ease-in-out infinite;"></div>
+          <div style="height:5px;background:#e5eef2;border-radius:99px;animation:sk 1.4s ease-in-out infinite;"></div>
+        </div>
+      </div>
+      <div style="background:white;border-radius:10px;overflow:hidden;box-shadow:0 4px 20px rgba(13,59,71,.06);">
+        <div style="height:200px;background:#e5eef2;animation:sk 1.4s ease-in-out infinite .3s;"></div>
+        <div style="padding:1.4rem;display:flex;flex-direction:column;gap:.7rem;">
+          <div style="height:13px;width:46%;background:#e5eef2;border-radius:4px;animation:sk 1.4s ease-in-out infinite;"></div>
+          <div style="height:17px;width:82%;background:#e5eef2;border-radius:4px;animation:sk 1.4s ease-in-out infinite;"></div>
+          <div style="height:5px;background:#e5eef2;border-radius:99px;animation:sk 1.4s ease-in-out infinite;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<style>@keyframes sk{0%,100%{opacity:.4;}50%{opacity:.9;}}</style>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="wrap">
+    <div style="text-align:center;" class="reveal">
+      <div class="eyebrow" style="display:inline-block;">Simple Process</div>
+      <h2 class="sh2" style="text-align:center;">Start Donating in <span>3 Simple Steps</span></h2>
+      <p style="color:var(--muted);max-width:520px;margin:.7rem auto 0;font-size:.93rem;line-height:1.75;">No complicated forms. Find a cause, give what you can, and watch your impact grow in real time.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal d1">
+        <div class="step-ring">01
+          <div class="step-ic">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+        </div>
+        <div style="position:absolute;top:-.8rem;left:-.5rem;font-family:'Barlow Condensed',sans-serif;font-size:5rem;font-weight:900;color:var(--teal);opacity:.06;line-height:1;pointer-events:none;z-index:0;">01</div>
+        <h3 style="position:relative;z-index:1;">Create Your Account</h3>
+        <p>Register as a Donor or NGO in under 2 minutes. Free forever. No credit card required to browse campaigns.</p>
+      </div>
+      <div class="step reveal d2">
+        <div class="step-ring">02
+          <div class="step-ic">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+        </div>
+        <h3>Discover Campaigns</h3>
+        <p>Browse campaigns by category, urgency, and transparency score. Every NGO is reviewed and verified by our team.</p>
+      </div>
+      <div class="step reveal d3">
+        <div class="step-ring">03
+          <div class="step-ic">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <h3>Donate and Track Impact</h3>
+        <p>Give securely, get your receipt instantly, and track how every rupee was spent with our live impact dashboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROLES -->
+<section class="roles" id="roles">
+  <div class="wrap">
+    <div style="text-align:center;" class="reveal">
+      <div class="eyebrow" style="display:inline-block;">Who Is It For?</div>
+      <h2 class="sh2" style="text-align:center;">One Platform. <span>Three Roles.</span></h2>
+    </div>
+    <div class="roles-grid">
+      <div class="rcard rcard-donor reveal d1">
+        <div class="rimg">
+          <img src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=500&q=80" alt="Donor giving to charity">
+          <div class="rimg-overlay"><span class="rimg-tag">For Donors</span></div>
+        </div>
+        <div class="rbody">
+          <div class="reyebrow">For Donors</div>
+          <div class="rh3">Give Smart. Give Safe.</div>
+          <p class="rp">Donate to verified causes and see exactly where your money goes — from campaign to expense receipt.</p>
+          <ul class="rlist">
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>AI-recommended campaigns</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Download PDF receipts instantly</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Track impact per donation</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Year-end 80G tax statement</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Fraud-protected every transaction</li>
+          </ul>
+          <button class="rcta rcta-donor" onclick="openModal('registerModal')">Join as Donor</button>
+        </div>
+      </div>
+      <div class="rcard rcard-ngo reveal d2">
+        <div class="rimg">
+          <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=500&q=80" alt="NGO volunteers working together">
+          <div class="rimg-overlay"><span class="rimg-tag">For NGOs</span></div>
+        </div>
+        <div class="rbody">
+          <div class="reyebrow">For NGOs</div>
+          <div class="rh3">Build Trust. Raise More.</div>
+          <p class="rp">Create campaigns, post updates, log expenses, and earn a transparency badge donors genuinely trust.</p>
+          <ul class="rlist">
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Create and manage campaigns</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Post updates with proof</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Log fund allocations</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Earn verified trust badges</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Add beneficiary stories</li>
+          </ul>
+          <button class="rcta rcta-ngo" onclick="openModal('registerModal')">Register NGO</button>
+        </div>
+      </div>
+      <div class="rcard rcard-admin reveal d3">
+        <div class="rimg">
+          <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=500&q=80" alt="Admin team reviewing reports">
+          <div class="rimg-overlay"><span class="rimg-tag">For Admins</span></div>
+        </div>
+        <div class="rbody">
+          <div class="reyebrow">For Admins</div>
+          <div class="rh3">Protect. Verify. Control.</div>
+          <p class="rp">Keep the platform healthy — approve campaigns, review fraud flags, verify NGOs, and maintain full accountability.</p>
+          <ul class="rlist">
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approve or reject campaigns</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Review AI fraud flags</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Verify and badge NGOs</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Export donation reports</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Full audit trail access</li>
+          </ul>
+          <button class="rcta rcta-admin" onclick="window.location.href='/admin-login'">Admin Login</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="trust" id="contact">
+  <div class="wrap">
+    <div style="text-align:center;" class="reveal">
+      <div class="eyebrow" style="display:inline-block;background:rgba(249,115,22,.18);color:var(--orange2);">Why Trust Us</div>
+      <h2 class="sh2" style="text-align:center;color:white;">Security Built Into <span>Every Layer</span></h2>
+    </div>
+    <div class="tgrid">
+      <div class="tcard reveal d1">
+        <div class="tic"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <h4>End-to-End Encryption</h4>
+        <p>All donation data encrypted in transit and at rest. Passwords use scrypt hashing — never stored plain.</p>
+      </div>
+      <div class="tcard reveal d2">
+        <div class="tic"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h4>3-Layer Fraud Detection</h4>
+        <p>Duplicate checks, velocity limits, and unusual amount detection block bad actors before they succeed.</p>
+      </div>
+      <div class="tcard reveal d3">
+        <div class="tic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+        <h4>Full Audit Trail</h4>
+        <p>Every change to every record is logged with timestamp and user — nothing is ever silently edited.</p>
+      </div>
+      <div class="tcard reveal d1">
+        <div class="tic"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <h4>Admin-Verified NGOs</h4>
+        <p>Every NGO goes through admin review before appearing to donors. Trust badges are earned, not automatic.</p>
+      </div>
+      <div class="tcard reveal d2">
+        <div class="tic"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <h4>Expense Transparency</h4>
+        <p>NGOs log every expense. Donors see exactly how their money was used — down to the last rupee.</p>
+      </div>
+      <div class="tcard reveal d3">
+        <div class="tic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+        <h4>Role-Based Access</h4>
+        <p>Donors, NGOs, and admins each see only what they should. No data leaks across roles ever.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-in">
+    <div>
+      <div class="fb-name">Trust<span>Flow</span></div>
+      <p class="fb-p">India's smart, secure, and transparent donation platform. Connecting donors with verified NGOs powered by AI.</p>
+    </div>
+    <div class="fcol"><h4>Platform</h4><ul><li><a href="#campaigns">Browse Campaigns</a></li><li><a href="#how">How It Works</a></li><li><a href="#roles">Join Us</a></li><li><a href="#about">About</a></li></ul></div>
+    <div class="fcol"><h4>For You</h4><ul><li><a href="#" onclick="openModal('registerModal')">Register as Donor</a></li><li><a href="#" onclick="openModal('registerModal')">Register NGO</a></li><li><a href="#" onclick="openModal('loginModal')">Sign In</a></li></ul></div>
+    <div class="fcol"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Help Centre</a></li><li><a href="#">Contact Us</a></li></ul></div>
+  </div>
+  <div class="footer-bot">
+    <p>© 2025 TrustFlow. All Rights Reserved. <a href="/admin-login" style="color:rgba(255,255,255,.07);font-size:.72rem;text-decoration:none;margin-left:.5rem;transition:color .3s;" onmouseover="this.style.color='rgba(255,255,255,.25)'" onmouseout="this.style.color='rgba(255,255,255,.07)'">&#9632;</a></p>
+    <div class="fbadge">Fraud-Protected · 100% Transparent · 24×7 Available</div>
+  </div>
+</footer>
+
+<!-- LOGIN MODAL -->
+<div id="loginModal" class="modal">
+  <div class="mbox">
+    <div class="mhead">
+      <div class="mhead-title">Welcome Back</div>
+      <div class="mhead-sub">Sign in to your TrustFlow account</div>
+      <button class="mclose" onclick="closeModal('loginModal')">x</button>
+    </div>
+    <div class="mbody">
+      <div id="lErr" class="merr"></div>
+      <div id="lSuc" class="msuc"></div>
+      <div id="lLoad" class="mload"><div class="spin"></div></div>
+      <form onsubmit="doLogin(event)">
+        <label class="flabel">Email Address</label>
+        <input type="email" id="lEmail" class="finput" placeholder="you@example.com" required>
+        <label class="flabel">Password</label>
+        <input type="password" id="lPass" class="finput" placeholder="Your password" required>
+        <button type="submit" class="msub">Sign In</button>
+      </form>
+      <div class="mswitch">No account? <a onclick="sw2reg()">Register here</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div id="registerModal" class="modal">
+  <div class="mbox">
+    <div class="mhead">
+      <div class="mhead-title">Create Account</div>
+      <div class="mhead-sub">Join thousands of donors and NGOs</div>
+      <button class="mclose" onclick="closeModal('registerModal')">x</button>
+    </div>
+    <div class="mbody">
+      <div id="rErr" class="merr"></div>
+      <div id="rSuc" class="msuc"></div>
+      <div id="rLoad" class="mload"><div class="spin"></div></div>
+      <!-- Visual role cards -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.2rem;">
+        <div id="roleCardDonor" onclick="selRole('donor')" style="border:2px solid var(--teal);border-radius:10px;padding:.9rem;cursor:pointer;transition:all .2s;background:var(--teal-light);text-align:center;">
+          
+          <div style="font-size:.85rem;font-weight:700;color:var(--teal);">I want to donate</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:.2rem;">Browse campaigns & give</div>
+        </div>
+        <div id="roleCardNGO" onclick="selRole('ngo')" style="border:2px solid var(--border);border-radius:10px;padding:.9rem;cursor:pointer;transition:all .2s;background:white;text-align:center;">
+          
+          <div style="font-size:.85rem;font-weight:700;color:var(--muted);">I represent an NGO</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:.2rem;">Create campaigns & raise funds</div>
+        </div>
+      </div>
+      <input type="hidden" id="roleVal" value="donor">
+      <form onsubmit="doRegister(event)">
+        <label class="flabel">Full Name</label>
+        <input type="text" id="rName" class="finput" placeholder="Your full name" required>
+        <label class="flabel">Email Address</label>
+        <input type="email" id="rEmail" class="finput" placeholder="you@example.com" required>
+        <label class="flabel">Password</label>
+        <input type="password" id="rPass" class="finput" placeholder="Create a password" required>
+        <label class="flabel">Confirm Password</label>
+        <input type="password" id="rConf" class="finput" placeholder="Repeat password" required>
+        <button type="submit" class="msub">Create Account</button>
+      </form>
+      <div class="mswitch">Already have an account? <a onclick="sw2login()">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ── session ── */
+(async()=>{try{const r=await fetch('/check_session');const d=await r.json();if(d.logged_in)goTo(d.role);}catch(e){}})();
+function goTo(r){const m={donor:'/web/donor',admin:'/web/admin',ngo:'/web/ngo'};window.location.href=m[r]||'/';}
+
+/* ── stats: load live from /campaigns (no auth needed) ── */
+(async()=>{
+  try{
+    const r    = await fetch('/campaigns');
+    const data = await r.json();
+    if(!Array.isArray(data)) return;
+
+    const approved     = data.filter(c => c.status === 'approved');
+    const totalRaised  = data.reduce((s,c) => s + (parseFloat(c.collected_amount)||0), 0);
+    const totalDonors  = data.reduce((s,c) => s + (parseInt(c.total_donors)||0), 0);
+    const uniqueNGOs   = new Set(data.map(c => c.ngo_id)).size;
+    const activeCamps  = approved.length;
+
+    // Hero cards
+    document.getElementById('heroCampaigns').textContent = activeCamps > 0 ? activeCamps + '+' : '—';
+    const rs = totalRaised > 0
+      ? (totalRaised >= 100000 ? 'Rs.' + (totalRaised/100000).toFixed(1) + 'L+' : 'Rs.' + Math.floor(totalRaised).toLocaleString('en-IN'))
+      : '—';
+    document.getElementById('heroRaised').textContent = rs;
+
+    // Stats section (scroll-triggered animation)
+    document.getElementById('statRaised').textContent = rs;
+    if(totalDonors > 0)  anim('statDonors', totalDonors);
+    else document.getElementById('statDonors').textContent = '—';
+    if(uniqueNGOs > 0)   anim('statNGOs', uniqueNGOs);
+    else document.getElementById('statNGOs').textContent = '—';
+
+  }catch(e){
+    // Network fail — show dashes
+    ['heroRaised','heroCampaigns','statRaised','statDonors','statNGOs']
+      .forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent='—'; });
+  }
+})();
+function anim(id,target,suf=''){
+  const el=document.getElementById(id);if(!el)return;
+  // Set seed value immediately
+  el.textContent=Math.floor(target).toLocaleString('en-IN')+suf;
+  // Re-animate when element scrolls into view
+  const observer=new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting){
+      let v=0;const s=target/60;
+      const t=setInterval(()=>{v=Math.min(v+s,target);el.textContent=Math.floor(v).toLocaleString('en-IN')+suf;if(v>=target)clearInterval(t);},22);
+      observer.disconnect();
+    }
+  },{threshold:0.3});
+  observer.observe(el);
+}
+
+/* ── campaign images by category ── */
+const CAT_IMG={
+  'Medical':              'https://images.unsplash.com/photo-1564732005956-20420ebdab60?q=80&w=1170',
+  'Education':            'https://images.unsplash.com/photo-1673724534205-c1cc5519a26b?w=600',
+  'Child Welfare':        'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&q=80',
+  'Women Empowerment':    'https://images.unsplash.com/photo-1759738101500-6d8d522b2681?w=600',
+  'Old Age & Elder Care': 'https://images.unsplash.com/photo-1644379911960-2d66cb3e4396?q=80&w=1332',
+  'Animal Welfare':       'https://images.unsplash.com/photo-1626648701445-1f67aeb6e49c?q=80&w=1170',
+  'Environment':          'https://plus.unsplash.com/premium_photo-1663953003855-8dc706b24154?w=600',
+  'Disaster Relief':      'https://plus.unsplash.com/premium_photo-1681492228360-7665972aa5ab?w=600',
+  'Hunger & Food Security':'https://images.unsplash.com/photo-1617878227827-8360231f7f03?w=600',
+  'Water & Sanitation':   'https://images.unsplash.com/photo-1694723173349-78ce68fcf38a?w=600',
+  'Rural Development':    'https://images.unsplash.com/photo-1562658601-0ae4a690ae1f?w=600',
+  'Mental Health':        'https://images.unsplash.com/photo-1493836512294-502baa1986e2?w=600&q=80',
+  'Disability Support':   'https://images.unsplash.com/photo-1699547283492-7a8b85165edd?w=600',
+  'Human Trafficking':    'https://images.unsplash.com/photo-1643232878326-5aea4b622935?w=600',
+  'Sports & Youth':       'https://images.unsplash.com/photo-1593896385987-16bcbf9451e5?q=80&w=1297',
+  'Arts & Culture':       'https://images.unsplash.com/photo-1707735507542-8a1f66c380dc?q=80&w=1074',
+  'Community':            'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=600',
+  'Other':                'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=600&q=80',
+  default:                'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=600&q=80'
+};
+const CAT_CSS={
+  'Medical':              {cat:'cat-med',  fill:'fill-med'},
+  'Education':            {cat:'cat-edu',  fill:'fill-edu'},
+  'Child Welfare':        {cat:'cat-child',fill:'fill-child'},
+  'Women Empowerment':    {cat:'cat-women',fill:'fill-women'},
+  'Old Age & Elder Care': {cat:'cat-elder',fill:'fill-elder'},
+  'Animal Welfare':       {cat:'cat-animal',fill:'fill-animal'},
+  'Environment':          {cat:'cat-env',  fill:'fill-env'},
+  'Disaster Relief':      {cat:'cat-dis',  fill:'fill-dis'},
+  'Hunger & Food Security':{cat:'cat-hunger',fill:'fill-hunger'},
+  'Water & Sanitation':   {cat:'cat-water',fill:'fill-water'},
+  'Rural Development':    {cat:'cat-rural',fill:'fill-rural'},
+  'Mental Health':        {cat:'cat-mental',fill:'fill-mental'},
+  'Disability Support':   {cat:'cat-dis2', fill:'fill-dis2'},
+  'Human Trafficking':    {cat:'cat-ht',   fill:'fill-ht'},
+  'Sports & Youth':       {cat:'cat-sport',fill:'fill-sport'},
+  'Arts & Culture':       {cat:'cat-arts', fill:'fill-arts'},
+  'Community':            {cat:'cat-com',  fill:'fill-com'},
+  'Other':                {cat:'cat-gen',  fill:'fill-gen'},
+};
+
+/* ── campaigns ── */
+(async()=>{
+  try{
+    const r=await fetch('/campaigns');const data=await r.json();
+    const grid=document.getElementById('cgrid');
+    allCampaignData=data.filter(c=>c.status==='approved'||c.status==='pending').slice(0,9);
+    renderCampaignCards(allCampaignData);
+  }catch(e){document.getElementById('cgrid').innerHTML='<p style="color:#dc2626;grid-column:1/-1;text-align:center;padding:2rem;">Failed to load campaigns.</p>';}
+})();
+
+let allCampaignData = [];
+/* ── renderCampaignCards — shared by IIFE and filterByCategory ── */
+function renderCampaignCards(list){
+  const grid = document.getElementById('cgrid');
+  if(!list||!list.length){
+    grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:4rem 0;font-size:1rem;">No campaigns in this category yet. Check another or come back soon.</p>';
+    return;
+  }
+  grid.innerHTML = list.map((c,i)=>{
+    const cm  = CAT_CSS[c.category]||{cat:'cat-gen',fill:'fill-gen'};
+    const img = CAT_IMG[c.category]||CAT_IMG.default;
+    const pct = c.target_amount ? Math.min(100,((c.collected_amount/c.target_amount)*100)).toFixed(1) : 0;
+    const daysLeft = c.deadline ? Math.ceil((new Date(c.deadline)-new Date())/(1000*60*60*24)) : null;
+    const urg = pct<30 ? {cls:'urg-critical',txt:'Critical'} : pct<70 ? {cls:'urg-high',txt:'Active'} : {cls:'urg-low',txt:'Near Goal'};
+    return `<div class="ccard reveal d${(i%3)+1}" onmousemove="glow(event,this)" onmouseleave="this.style.background=''">
+      <div class="ccard-img">
+        <img src="${img}" alt="${c.category||'Campaign'}" loading="lazy">
+        <span class="ccat ${cm.cat}">${c.category||'General'}</span>
+        <span class="curg ${urg.cls}"><span class="udot"></span>${urg.txt}</span>
+        ${daysLeft!==null&&daysLeft<=30?`<span style="position:absolute;bottom:.7rem;right:.7rem;padding:.22rem .65rem;border-radius:99px;font-size:.68rem;font-weight:700;background:${daysLeft<=7?'#ef4444':'#f97316'};color:white;">${daysLeft<=0?'Ends today':daysLeft+'d left'}</span>`:''}
+      </div>
+      <div class="cbody">
+        <div class="ctitle">${c.title}</div>
+        <div class="cdesc">${(c.description||'').substring(0,95)}...</div>
+        <div class="cbar"><div class="cfill ${cm.fill}" style="width:${pct}%"></div></div>
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:.5rem;">Rs.${(c.collected_amount||0).toLocaleString('en-IN')} raised of Rs.${(c.target_amount||0).toLocaleString('en-IN')}</div>
+        <div class="cmeta">
+          <span><strong>${pct}%</strong> funded</span>
+          <span><strong>${c.total_donors||0}</strong> donors</span>
+        </div>
+        <div style="display:flex;gap:.5rem;">
+          <a href="/web/campaign?id=${c.campaign_id}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:.35rem;padding:.7rem;border:1.5px solid var(--teal);border-radius:6px;font-size:.78rem;font-weight:700;color:var(--teal);text-decoration:none;transition:all .2s;font-family:inherit;background:white;">View</a>
+          <button class="cbtn" style="flex:2;display:block;" onclick="openModal('loginModal')">Donate Now</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  setTimeout(()=>document.querySelectorAll('.ccard.reveal').forEach(el=>obs.observe(el)),80);
+}
+
+/* ── category filter ── */
+function filterByCategory(cat, btn){
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  const grid = document.getElementById('cgrid');
+  const list = cat==='all' ? allCampaignData : allCampaignData.filter(c=>c.category===cat);
+  if(!list.length){
+    grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:3rem 0;">No campaigns in this category yet.</p>';
+    return;
+  }
+  // Re-render filtered
+  renderCampaignCards(list);
+}
+
+/* ── card glow ── */
+function glow(e,card){
+  const rc=card.getBoundingClientRect();
+  card.style.background=`radial-gradient(320px circle at ${e.clientX-rc.left}px ${e.clientY-rc.top}px,rgba(249,115,22,.06),white 58%)`;
+}
+
+/* ── floating donate button ── */
+window.addEventListener('scroll',()=>{
+  const btn=document.getElementById('floatDonate');
+  if(!btn)return;
+  btn.style.display=window.scrollY>500?'flex':'none';
+});
+
+/* ── ripple ── */
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.btn-fill,.btn-hp,.msub,.cbtn,.rcta,.btn-fill');
+  if(!b)return;
+  const sp=document.createElement('span');
+  const d=Math.max(b.offsetWidth,b.offsetHeight);
+  const rc=b.getBoundingClientRect();
+  sp.style.cssText=`position:absolute;width:${d}px;height:${d}px;border-radius:50%;background:rgba(255,255,255,.28);transform:scale(0);animation:rip .5s ease;left:${e.clientX-rc.left-d/2}px;top:${e.clientY-rc.top-d/2}px;pointer-events:none;z-index:10;`;
+  b.style.position='relative';b.style.overflow='hidden';b.appendChild(sp);
+  setTimeout(()=>sp.remove(),500);
+});
+const sEl=document.createElement('style');sEl.textContent='@keyframes rip{to{transform:scale(2.5);opacity:0;}}';document.head.appendChild(sEl);
+
+/* ── scroll reveal ── */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* ── nav ── */
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50);
+  const ids=['home','campaigns','how','roles','contact'];
+  let cur='home';
+  ids.forEach(id=>{const s=document.getElementById(id);if(s&&window.scrollY>=s.offsetTop-130)cur=id;});
+  document.querySelectorAll('.nlinks a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));
+});
+
+/* ── mobile menu ── */
+function toggleMenu(){
+  const b=document.getElementById('burger'),m=document.getElementById('mmenu');
+  b.classList.toggle('open');m.classList.toggle('open');
+  document.body.style.overflow=m.classList.contains('open')?'hidden':'';
+}
+function closeMenu(){
+  document.getElementById('burger').classList.remove('open');
+  document.getElementById('mmenu').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+/* ── modals ── */
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function sw2reg(){closeModal('loginModal');openModal('registerModal');}
+function sw2login(){closeModal('registerModal');openModal('loginModal');}
+window.addEventListener('click',e=>{if(e.target.classList.contains('modal'))e.target.classList.remove('open');});
+function selRole(r){
+  document.getElementById('roleVal').value=r;
+  const dc=document.getElementById('roleCardDonor');
+  const nc=document.getElementById('roleCardNGO');
+  if(r==='donor'){
+    if(dc){dc.style.border='2px solid var(--teal)';dc.style.background='var(--teal-light)';dc.querySelector('div:nth-child(2)').style.color='var(--teal)';}
+    if(nc){nc.style.border='2px solid var(--border)';nc.style.background='white';nc.querySelector('div:nth-child(2)').style.color='var(--muted)';}
+  } else {
+    if(nc){nc.style.border='2px solid var(--teal)';nc.style.background='var(--teal-light)';nc.querySelector('div:nth-child(2)').style.color='var(--teal)';}
+    if(dc){dc.style.border='2px solid var(--border)';dc.style.background='white';dc.querySelector('div:nth-child(2)').style.color='var(--muted)';}
+  }
+  const ngoFields=document.getElementById('ngoFields');
+  if(ngoFields) ngoFields.style.display=r==='ngo'?'block':'none';
+}
+
+/* ── login ── */
+async function doLogin(e){
+  e.preventDefault();
+  const email = document.getElementById('lEmail').value.trim();
+  const pass  = document.getElementById('lPass').value;
+  const err   = document.getElementById('lErr');
+  const suc   = document.getElementById('lSuc');
+  const load  = document.getElementById('lLoad');
+  err.style.display='none'; suc.style.display='none';
+  if(!email||!pass){ err.textContent='Please enter your email and password.'; err.style.display='block'; return; }
+  load.style.display='block';
+  try{
+    const r = await fetch('/login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email, password:pass})
+    });
+    const d = await r.json();
+    load.style.display='none';
+    if(d.status==='success'){
+      suc.textContent='Signed in! Redirecting...';
+      suc.style.display='block';
+      setTimeout(()=>goTo(d.role), 900);
+    } else {
+      err.textContent = d.message||'Invalid email or password.';
+      err.style.display='block';
+    }
+  }catch(ex){
+    load.style.display='none';
+    err.textContent='Network error. Please try again.';
+    err.style.display='block';
+  }
+}
+
+/* ── register ── */
+async function doRegister(e){
+  e.preventDefault();
+  const name=document.getElementById('rName').value,email=document.getElementById('rEmail').value;
+  const pass=document.getElementById('rPass').value,conf=document.getElementById('rConf').value;
+  const role=document.getElementById('roleVal').value;
+  const err=document.getElementById('rErr'),suc=document.getElementById('rSuc'),load=document.getElementById('rLoad');
+  err.style.display='none';suc.style.display='none';
+  if(pass!==conf){err.textContent='Passwords do not match';err.style.display='block';return;}
+  load.style.display='block';
+  try{
+    const ep=role==='ngo'?'/register_ngo':'/register';
+    const body=role==='ngo'?{name,email,password:pass}:{name,email,password:pass,role};
+    const r=await fetch(ep,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();load.style.display='none';
+    if(d.status==='success'){
+      suc.textContent='Account created! Please sign in.'; suc.style.display='block';
+      setTimeout(()=>{
+        closeModal('registerModal');
+        openModal('loginModal');
+        // Pre-fill email so user doesn't have to retype
+        const lEmailEl = document.getElementById('lEmail');
+        if(lEmailEl) lEmailEl.value = email;
+      }, 1600);
+    }else{
+      err.textContent=(d.message||'').includes('Duplicate')?'Email already registered. Try logging in.':d.message||'Registration failed';
+      err.style.display='block';
+    }
+  }catch(ex){load.style.display='none';err.textContent='Network error. Try again.';err.style.display='block';}
+}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
+</script>
+<!-- Floating donate button -->
+<button id="floatDonate" onclick="document.getElementById('campaigns').scrollIntoView({behavior:'smooth'})" style="position:fixed;bottom:2rem;right:2rem;z-index:900;background:var(--orange);color:white;border:none;border-radius:99px;padding:.75rem 1.4rem;font-size:.85rem;font-weight:700;font-family:'Barlow',sans-serif;cursor:pointer;display:none;align-items:center;gap:.5rem;box-shadow:0 6px 24px rgba(249,115,22,.4);transition:all .3s;">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+  Donate Now
+</button>
+</body>
+</html>

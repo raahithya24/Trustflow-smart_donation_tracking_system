@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustFlow — Admin Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --teal:#0d3b47;--teal2:#0f4d5e;--teal3:#1a6070;--teal-light:#e8f4f8;
+  --orange:#f97316;--orange2:#fb923c;--orange-dark:#ea580c;
+  --white:#ffffff;--bg:#f2f6f8;--card:#ffffff;
+  --text:#1a2c35;--muted:#5a7a85;--border:#d0e8ef;
+  --red:#ef4444;--green:#10b981;--blue:#3b82f6;--dim:#9ca3af;
+  --sidebar-w:240px;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden;}
+
+/* ── SIDEBAR ─────────────────────────────────────── */
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--teal);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:100;
+  transition:transform .3s;
+}
+.sidebar-logo{
+  padding:1.6rem 1.4rem 1.2rem;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.sidebar-logo-wrap{display:flex;align-items:center;gap:.6rem;}
+.sidebar-logo-icon{
+  width:34px;height:34px;background:var(--orange);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.sidebar-logo-icon svg{width:18px;height:18px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.sidebar-logo-name{font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:900;color:white;letter-spacing:-.3px;}
+.sidebar-logo-name span{color:var(--orange2);}
+.sidebar-role-tag{
+  display:inline-block;margin-top:.5rem;
+  background:rgba(249,115,22,.2);border:1px solid rgba(249,115,22,.3);
+  color:var(--orange2);font-size:.68rem;font-weight:700;
+  padding:.2rem .7rem;border-radius:99px;letter-spacing:.08em;text-transform:uppercase;
+}
+.sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto;}
+.sidebar-section-lbl{
+  padding:.4rem 1.4rem .2rem;
+  font-size:.65rem;font-weight:700;color:rgba(255,255,255,.3);
+  text-transform:uppercase;letter-spacing:.1em;
+}
+.nav-item{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.72rem 1.4rem;margin:1px .6rem;border-radius:8px;
+  cursor:pointer;transition:all .2s;color:rgba(255,255,255,.65);
+  font-size:.88rem;font-weight:500;position:relative;
+}
+.nav-item:hover{background:rgba(255,255,255,.07);color:white;}
+.nav-item.active{background:var(--orange);color:white;}
+.nav-item.active .nav-icon{opacity:1;}
+.nav-icon{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.nav-badge{
+  margin-left:auto;background:rgba(239,68,68,.85);color:white;
+  font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:99px;
+}
+.sidebar-footer{
+  padding:1.2rem 1.4rem;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.sidebar-user{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;}
+.user-avatar{
+  width:36px;height:36px;background:var(--orange);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:900;color:white;flex-shrink:0;
+}
+.user-info-name{font-size:.85rem;font-weight:600;color:white;}
+.user-info-role{font-size:.72rem;color:rgba(255,255,255,.45);}
+.btn-logout{
+  width:100%;padding:.6rem;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);border-radius:7px;
+  color:rgba(255,255,255,.7);font-size:.82rem;font-weight:600;
+  cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+}
+.btn-logout:hover{background:rgba(249,115,22,.25);border-color:rgba(249,115,22,.4);color:white;}
+.btn-logout svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── MAIN ─────────────────────────────────────────── */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+/* ── TOPBAR ──────────────────────────────────────── */
+.topbar{
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:.85rem 2rem;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:90;
+}
+.topbar-left{display:flex;align-items:center;gap:1rem;}
+.page-title{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:var(--teal);letter-spacing:-.3px;}
+.topbar-date{font-size:.8rem;color:var(--muted);}
+.topbar-right{display:flex;align-items:center;gap:.8rem;}
+.topbar-btn{
+  display:flex;align-items:center;gap:.4rem;
+  padding:.5rem 1.1rem;border-radius:7px;font-size:.82rem;font-weight:600;
+  cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif;border:1.5px solid var(--border);
+  background:var(--white);color:var(--teal);
+}
+.topbar-btn:hover{border-color:var(--teal);background:var(--teal-light);}
+.topbar-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.topbar-btn.primary{background:var(--orange);border-color:var(--orange);color:white;}
+.topbar-btn.primary:hover{background:var(--orange-dark);border-color:var(--orange-dark);}
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:.4rem;}
+.hamburger span{display:block;width:20px;height:2px;background:var(--teal);border-radius:2px;}
+
+/* ── CONTENT ──────────────────────────────────────── */
+.content{padding:2rem;flex:1;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* ── STAT CARDS ───────────────────────────────────── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.2rem;margin-bottom:2rem;}
+.stat-card{
+  background:var(--card);border-radius:12px;padding:1.4rem 1.6rem;
+  border:1px solid var(--border);position:relative;overflow:hidden;
+  transition:all .3s;
+}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(13,59,71,.08);border-color:var(--teal3);}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--teal3);transition:background .3s;
+}
+.stat-card:nth-child(2)::before{background:var(--orange);}
+.stat-card:nth-child(3)::before{background:#10b981;}
+.stat-card:nth-child(4)::before{background:#3b82f6;}
+.stat-card:nth-child(5)::before{background:#f59e0b;}
+.stat-card:nth-child(6)::before{background:#ef4444;}
+.stat-card-icon{
+  width:40px;height:40px;border-radius:9px;
+  background:rgba(13,59,71,.06);
+  display:flex;align-items:center;justify-content:center;margin-bottom:1rem;
+}
+.stat-card-icon svg{width:20px;height:20px;fill:none;stroke:var(--teal3);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.stat-card h3{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:.4rem;}
+.stat-card .number{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;color:var(--teal);line-height:1;}
+.stat-card .small{font-size:.75rem;color:var(--muted);margin-top:.3rem;}
+.stat-card .number.danger{color:#ef4444;}
+.stat-card .number.warn{color:#f59e0b;}
+
+/* ── TABLE CARDS ──────────────────────────────────── */
+.table-card{
+  background:var(--card);border-radius:12px;
+  border:1px solid var(--border);margin-bottom:1.5rem;overflow:hidden;
+}
+.table-card-header{
+  padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;
+}
+.table-card-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.05rem;font-weight:800;color:var(--teal);
+  display:flex;align-items:center;gap:.5rem;
+}
+.table-card-title svg{width:17px;height:17px;fill:none;stroke:var(--orange);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.fraud-count-badge{
+  background:#fee2e2;color:#dc2626;
+  font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:99px;
+}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{
+  text-align:left;padding:.85rem 1.2rem;
+  background:var(--bg);color:var(--muted);
+  font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  white-space:nowrap;
+}
+td{
+  padding:.85rem 1.2rem;border-bottom:1px solid var(--border);
+  font-size:.87rem;color:var(--text);
+}
+tbody tr:hover td{background:var(--teal-light);}
+tbody tr:last-child td{border-bottom:none;}
+.fraud-row td{background:#fff5f5;}
+.fraud-row:hover td{background:#fff0f0;}
+
+/* ── BADGES ───────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.22rem .8rem;border-radius:99px;font-size:.72rem;font-weight:700;white-space:nowrap;}
+.badge-success {background:#d1fae5;color:#065f46;}
+.badge-warning {background:#fef3c7;color:#92400e;}
+.badge-danger  {background:#fee2e2;color:#dc2626;}
+.badge-info    {background:#dbeafe;color:#1e40af;}
+.badge-pending {background:#fef3c7;color:#d97706;}
+.badge-approved{background:#d1fae5;color:#065f46;}
+.badge-rejected{background:#fee2e2;color:#991b1b;}
+
+/* ── ACTION BUTTONS ───────────────────────────────── */
+.action-buttons{display:flex;gap:.7rem;margin-bottom:1.2rem;flex-wrap:wrap;}
+.action-btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.6rem 1.3rem;border:none;border-radius:7px;
+  font-weight:600;cursor:pointer;transition:all .25s;
+  font-size:.83rem;font-family:'Barlow',sans-serif;
+}
+.action-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.btn-teal  {background:var(--teal);color:white;}
+.btn-teal:hover{background:var(--teal2);}
+.btn-orange{background:var(--orange);color:white;}
+.btn-orange:hover{background:var(--orange-dark);}
+.btn-green {background:#10b981;color:white;}
+.btn-green:hover{background:#059669;}
+.btn-red   {background:#ef4444;color:white;}
+.btn-red:hover{background:#dc2626;}
+.btn-blue  {background:#3b82f6;color:white;}
+.btn-blue:hover{background:#2563eb;}
+/* keep old class names working */
+.btn-purple{background:var(--teal);color:white;}
+.btn-purple:hover{background:var(--teal2);}
+.action-btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(0,0,0,.12);}
+
+/* ── APPROVE/REJECT ───────────────────────────────── */
+.approve-btn{
+  display:inline-flex;align-items:center;gap:.3rem;
+  padding:.28rem .85rem;background:#10b981;color:white;
+  border:none;border-radius:6px;font-size:.76rem;font-weight:700;cursor:pointer;transition:all .2s;margin-right:.3rem;
+}
+.approve-btn:hover{background:#059669;}
+.reject-btn{
+  display:inline-flex;align-items:center;gap:.3rem;
+  padding:.28rem .85rem;background:#ef4444;color:white;
+  border:none;border-radius:6px;font-size:.76rem;font-weight:700;cursor:pointer;transition:all .2s;
+}
+.reject-btn:hover{background:#dc2626;}
+.review-btn{
+  display:inline-flex;align-items:center;gap:.3rem;
+  padding:.28rem .85rem;background:var(--teal);color:white;
+  border:none;border-radius:6px;font-size:.76rem;font-weight:700;cursor:pointer;transition:all .2s;
+}
+.review-btn:hover{background:var(--teal2);}
+
+/* ── FRAUD REVIEW PANEL ───────────────────────────── */
+.fraud-review-panel{
+  background:#fff8f8;border-left:3px solid #ef4444;
+  border-radius:0 8px 8px 0;padding:1rem 1.2rem;
+  margin-top:.4rem;font-size:.88rem;display:none;
+}
+.fraud-review-panel.open{display:block;}
+.fraud-review-panel textarea{
+  width:100%;padding:.6rem;border:1.5px solid var(--border);
+  border-radius:6px;margin:.6rem 0;font-size:.83rem;
+  resize:vertical;font-family:'Barlow',sans-serif;outline:none;
+}
+.fraud-review-panel textarea:focus{border-color:var(--teal);}
+.mark-reviewed-btn{
+  padding:.4rem 1.1rem;background:#10b981;color:white;
+  border:none;border-radius:6px;font-size:.82rem;font-weight:700;cursor:pointer;
+}
+.mark-reviewed-btn:hover{background:#059669;}
+
+/* ── AI BOX ───────────────────────────────────────── */
+.ai-box{
+  background:linear-gradient(135deg,var(--teal-light),#e0f5ee);
+  border-left:3px solid var(--teal3);border-radius:0 8px 8px 0;
+  padding:1rem 1.2rem;margin-top:.4rem;font-size:.88rem;color:var(--text);display:none;
+}
+.ai-box.open{display:block;}
+
+/* ── FILTER ROW ───────────────────────────────────── */
+.filter-row{
+  display:flex;gap:.7rem;margin-bottom:1.2rem;
+  flex-wrap:wrap;align-items:center;
+}
+.filter-row input,.filter-row select{
+  padding:.52rem .9rem;border:1.5px solid var(--border);
+  border-radius:7px;font-size:.83rem;font-family:'Barlow',sans-serif;
+  outline:none;background:var(--white);color:var(--text);transition:border-color .2s;
+}
+.filter-row input:focus,.filter-row select:focus{border-color:var(--teal);}
+
+/* ── SECTION GRID ─────────────────────────────────── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem;}
+
+/* ── TOP PERFORMERS ───────────────────────────────── */
+.top-performers{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.performer-card{
+  background:var(--bg);border-radius:9px;padding:1.1rem 1.3rem;
+  border:1px solid var(--border);
+}
+.performer-card strong{
+  font-size:.75rem;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.08em;display:block;margin-bottom:.4rem;
+}
+.performer-card span{font-size:.92rem;font-weight:600;color:var(--teal);}
+
+/* ── PROGRESS IN TABLE ────────────────────────────── */
+.prog-wrap{display:flex;flex-direction:column;gap:3px;}
+.prog-bar{height:5px;background:#e0e0e0;border-radius:99px;overflow:hidden;width:80px;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal3),var(--orange2));border-radius:99px;}
+.prog-label{font-size:.72rem;color:var(--muted);}
+
+/* ── LOADING ──────────────────────────────────────── */
+.loading{text-align:center;padding:2rem;color:var(--muted);font-style:italic;}
+
+/* ── TOAST ────────────────────────────────────────── */
+#toast{
+  position:fixed;bottom:2rem;right:2rem;z-index:9999;
+  background:var(--teal);border-left:4px solid var(--orange);
+  color:white;padding:.85rem 1.5rem;border-radius:8px;
+  font-size:.86rem;font-weight:600;
+  transform:translateY(80px);opacity:0;
+  transition:all .35s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;box-shadow:0 8px 24px rgba(13,59,71,.24);
+  max-width:320px;
+}
+#toast.show{transform:none;opacity:1;}
+
+/* ── RESPONSIVE ───────────────────────────────────── */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:none;}
+  .main{margin-left:0;}
+  .hamburger{display:flex;}
+  .two-col{grid-template-columns:1fr;}
+  .top-performers{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr;}
+  .content{padding:1.2rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-wrap">
+      <div class="sidebar-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="sidebar-logo-name">Trust<span>Flow</span></div>
+    </div>
+    <div class="sidebar-role-tag">Admin Panel</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-lbl">Main</div>
+    <div class="nav-item active" id="tab-overview" onclick="switchTab('overview')">
+      <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Overview
+    </div>
+    <div class="nav-item" id="tab-campaigns" onclick="switchTab('campaigns')">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Campaigns
+    </div>
+    <div class="nav-item" id="tab-fraud" onclick="switchTab('fraud')">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Fraud Detection
+      <span class="nav-badge" id="fraudBadge" style="display:none">0</span>
+    </div>
+    <div class="nav-item" id="tab-users" onclick="switchTab('users')">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Users
+    </div>
+    <div class="nav-item" id="tab-donations" onclick="switchTab('donations')">
+      <svg class="nav-icon" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Donations
+    </div>
+
+    <div class="sidebar-section-lbl" style="margin-top:1rem;">Platform</div>
+    <div class="nav-item" onclick="window.location.href='/'">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      View Site
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar" id="userInitial">A</div>
+      <div>
+        <div class="user-info-name" id="adminName">Admin</div>
+        <div class="user-info-role">Administrator</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign Out
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="hamburger" id="hamburger" onclick="toggleSidebar()">
+        <span></span><span></span><span></span>
+      </div>
+      <div>
+        <div class="page-title" id="pageTitle">Overview</div>
+        <div class="topbar-date" id="currentDate"></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="loadAllData()">
+        <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Refresh
+      </button>
+      <button class="topbar-btn primary" onclick="exportCSV()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- STAT CARDS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <h3>Total Donors</h3>
+        <div class="number" id="totalDonors">—</div>
+        <div class="small">Registered users</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:rgba(249,115,22,.08);"><svg viewBox="0 0 24 24" style="stroke:var(--orange);"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <h3>Total NGOs</h3>
+        <div class="number" id="totalNGOs" style="color:var(--orange);">—</div>
+        <div class="small">Active organisations</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:rgba(16,185,129,.08);"><svg viewBox="0 0 24 24" style="stroke:#10b981;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <h3>Total Donations</h3>
+        <div class="number" id="totalDonations" style="color:#10b981;">—</div>
+        <div class="small">Transactions processed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:rgba(59,130,246,.08);"><svg viewBox="0 0 24 24" style="stroke:#3b82f6;"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <h3>Total Raised</h3>
+        <div class="number" id="totalRaised" style="color:#3b82f6;font-size:1.5rem;">—</div>
+        <div class="small">Across all campaigns</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:rgba(245,158,11,.08);"><svg viewBox="0 0 24 24" style="stroke:#f59e0b;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <h3>Pending Campaigns</h3>
+        <div class="number warn" id="pendingCampaigns">—</div>
+        <div class="small">Awaiting approval</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:rgba(239,68,68,.08);"><svg viewBox="0 0 24 24" style="stroke:#ef4444;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <h3>Fraud Flags</h3>
+        <div class="number danger" id="fraudCases">—</div>
+        <div class="small">Total detected</div>
+      </div>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div class="tab-panel active" id="panel-overview">
+      <div class="two-col">
+        <div class="table-card">
+          <div class="table-card-header">
+            <div class="table-card-title">
+              <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              Campaigns by Priority
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table id="rankedCampaigns">
+              <thead><tr><th>Campaign</th><th>Category</th><th>Progress</th><th>Score</th><th>Status</th></tr></thead>
+              <tbody><tr><td colspan="5" class="loading">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-card-header">
+            <div class="table-card-title">
+              <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Fund Shortage Alerts
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table id="fundAlerts">
+            <thead><tr><th>Campaign</th><th>Progress</th><th>Deadline</th><th>Gap Amount</th><th>Alert Type</th><th>Action</th></tr></thead>
+              <tbody><tr><td colspan="4" class="loading">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="table-card-title">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Quick Stats
+          </div>
+        </div>
+        <div style="padding:1.2rem 1.5rem;">
+          <div class="top-performers">
+            <div class="performer-card">
+              <strong>Top Priority Campaign</strong>
+              <span id="topCampaign">Loading...</span>
+            </div>
+            <div class="performer-card">
+              <strong>Fraud Flags This Session</strong>
+              <span id="topNGO">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAMPAIGNS TAB -->
+    <div class="tab-panel" id="panel-campaigns">
+      <div class="action-buttons">
+        <button class="action-btn btn-teal" onclick="loadCampaigns()">
+          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
+      </div>
+      <!-- Active / Closed toggle -->
+      <div style="display:flex;gap:.5rem;margin-bottom:1rem;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;overflow:hidden;">
+          <button id="togActive" onclick="setCampaignView('active')" style="padding:.4rem 1.1rem;font-size:.8rem;font-weight:700;border:none;cursor:pointer;background:var(--teal);color:white;font-family:'Barlow',sans-serif;">Active</button>
+          <button id="togClosed" onclick="setCampaignView('closed')" style="padding:.4rem 1.1rem;font-size:.8rem;font-weight:700;border:none;cursor:pointer;background:transparent;color:var(--muted);font-family:'Barlow',sans-serif;">Closed</button>
+        </div>
+        <select id="campaignStatusFilter" onchange="applyCampaignFilter()" style="padding:.38rem .7rem;border:1.5px solid var(--border);border-radius:7px;font-size:.8rem;font-family:'Barlow',sans-serif;background:white;color:var(--text);">
+          <option value="">All</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+        </select>
+        <input type="text" id="campaignSearch" placeholder="Search title, NGO, category..." oninput="applyCampaignFilter()" style="min-width:220px;padding:.38rem .8rem;border:1.5px solid var(--border);border-radius:7px;font-size:.8rem;font-family:'Barlow',sans-serif;">
+        <button onclick="window.location.href='/admin/export_campaigns_csv'" style="display:inline-flex;align-items:center;gap:.35rem;padding:.4rem 1rem;background:var(--white);color:var(--teal);border:1.5px solid var(--teal);border-radius:7px;font-size:.78rem;font-weight:700;cursor:pointer;margin-left:auto;">
+          <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+      </div>
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="table-card-title" id="campaignTableTitle">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Active Campaigns
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="allCampaigns">
+            <thead><tr><th>ID</th><th>Title</th><th>NGO</th><th>Category</th><th>Target</th><th>Raised</th><th>Progress</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody><tr><td colspan="9" class="loading">Loading campaigns...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FRAUD TAB -->
+    <div class="tab-panel" id="panel-fraud">
+      <div class="action-buttons">
+        <button class="action-btn btn-red" onclick="loadFraudLogs();loadAIStats();">
+          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
+      </div>
+
+      <!-- AI Model Status Cards -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.4rem;">
+        <div class="stat-card" style="border-top:3px solid var(--orange);">
+          <div class="stat-card-icon" style="background:rgba(249,115,22,.08);"><svg viewBox="0 0 24 24" style="stroke:var(--orange);"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+          <h3>Isolation Forest</h3>
+          <div class="number" id="isoStatus" style="font-size:1rem;">—</div>
+          <div class="small">Anomaly detector</div>
+        </div>
+        <div class="stat-card" style="border-top:3px solid #8b5cf6;">
+          <div class="stat-card-icon" style="background:rgba(139,92,246,.08);"><svg viewBox="0 0 24 24" style="stroke:#8b5cf6;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <h3>Random Forest</h3>
+          <div class="number" id="rfStatus" style="font-size:1rem;">—</div>
+          <div class="small">Fraud classifier</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div>
+          <h3>AI Flags (7d)</h3>
+          <div class="number danger" id="aiFlags7d">—</div>
+          <div class="small">Recent detections</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background:rgba(16,185,129,.08);"><svg viewBox="0 0 24 24" style="stroke:#10b981;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <h3>Avg Priority</h3>
+          <div class="number" id="avgPriority" style="color:#10b981;">—</div>
+          <div class="small">Campaign score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background:rgba(239,68,68,.08);"><svg viewBox="0 0 24 24" style="stroke:#ef4444;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <h3>Unscored Campaigns</h3>
+          <div class="number danger" id="unscoredCamps">—</div>
+          <div class="small">Priority = 0</div>
+        </div>
+      </div>
+
+      <!-- Breakdown by detection type -->
+      <div class="table-card" style="margin-bottom:1.2rem;padding:1rem 1.4rem;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:var(--teal);margin-bottom:.9rem;">Detection Method Breakdown</div>
+        <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem;">AI Anomaly Detector</div>
+            <div style="font-size:1.4rem;font-weight:700;color:var(--orange);" id="typeAnomaly">—</div>
+          </div>
+          <div>
+            <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem;">AI Classifier</div>
+            <div style="font-size:1.4rem;font-weight:700;color:#8b5cf6;" id="typeClassifier">—</div>
+          </div>
+          <div>
+            <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem;">Hard Rule (Duplicate)</div>
+            <div style="font-size:1.4rem;font-weight:700;color:var(--muted);" id="typeHardRule">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="table-card-title">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Fraud Detection Logs
+          </div>
+          <span class="fraud-count-badge" id="fraudBadge2"></span>
+        </div>
+        <div class="table-wrap">
+          <table id="fraudTable">
+            <thead><tr><th>ID</th><th>Donor</th><th>Campaign</th><th>Reason</th><th>Detected At</th><th>Action</th></tr></thead>
+            <tbody><tr><td colspan="6" class="loading">Loading fraud logs...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS TAB -->
+    <div class="tab-panel" id="panel-users">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:.8rem;">
+        <button onclick="exportNGOsCSV()" style="display:inline-flex;align-items:center;gap:.35rem;padding:.45rem 1rem;background:var(--white);color:var(--teal);border:1.5px solid var(--teal);border-radius:7px;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .18s;" >
+          <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export NGOs CSV
+        </button>
+      </div>
+      <div class="filter-row">
+        <select id="userRoleFilter" onchange="loadUsers()">
+          <option value="">All Roles</option>
+          <option value="donor">Donors</option>
+          <option value="ngo">NGOs</option>
+          <option value="admin">Admins</option>
+        </select>
+        <input type="text" id="userSearch" placeholder="Search name or email..." oninput="filterUserTable()" style="min-width:260px;">
+      </div>
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="table-card-title">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            All Users
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="usersTable">
+            <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Phone</th><th>Joined</th><th>Verified</th><th>Badge</th><th>Actions</th></tr></thead>
+            <tbody><tr><td colspan="9" class="loading">Loading users...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- DONATIONS TAB -->
+    <div class="tab-panel" id="panel-donations">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:.8rem;gap:.5rem;">
+        <button onclick="exportDonationsCSV()" style="display:inline-flex;align-items:center;gap:.35rem;padding:.45rem 1rem;background:var(--white);color:var(--teal);border:1.5px solid var(--teal);border-radius:7px;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .18s;" >
+          <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+      </div>
+      <div class="filter-row">
+        <select id="donationStatusFilter" onchange="loadDonations()">
+          <option value="">All Statuses</option>
+          <option value="success">Success</option>
+          <option value="failed">Failed</option>
+        </select>
+        <input type="text" id="donationSearch" placeholder="Search donor or campaign..." oninput="filterDonationTable()" style="min-width:260px;">
+        <button class="action-btn btn-blue" onclick="exportCSV()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+      </div>
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="table-card-title">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            All Donations
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="donationsTable">
+            <thead><tr><th>ID</th><th>Donor</th><th>Campaign</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody><tr><td colspan="7" class="loading">Loading donations...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<div id="toast"></div>
+
+<script>
+/* ── State ──────────────────────────────────────────── */
+let allCampaignsData = [];
+let allUsersData     = [];
+let allDonationsData = [];
+
+/* ── Init ───────────────────────────────────────────── */
+document.getElementById('currentDate').textContent =
+  new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+checkAuth();
+
+async function checkAuth(){
+  try{
+    const res  = await fetch('/current_user');
+    const data = await res.json();
+    if(!data.logged_in || data.role !== 'admin'){
+      window.location.href = '/web/login';
+    } else {
+      if(data.name){
+        document.getElementById('adminName').textContent = data.name;
+        document.getElementById('userInitial').textContent = data.name[0].toUpperCase();
+      }
+      loadAllData();
+    }
+  } catch(e){ loadAllData(); }
+}
+
+async function loadAllData(){
+  await Promise.all([loadStats(),loadRankedCampaigns(),loadFundAlerts(),loadFraudLogs(),loadCampaigns(),loadUsers(),loadDonations(),loadAIStats()]);
+}
+
+/* ── Safe fetch helper ─────────────────────────────── */
+async function safeFetch(url, options){
+  try{
+    const res = await fetch(url, options);
+    const ct  = res.headers.get('content-type') || '';
+    if(!ct.includes('application/json')){
+      if(res.status===401||res.status===403){
+        console.warn('Session expired for:', url);
+        return {status:'error',message:'Not authenticated'};
+      }
+      console.warn('Non-JSON response from:', url, res.status);
+      return {status:'error',message:'Server error'};
+    }
+    return await res.json();
+  }catch(e){
+    console.warn('Fetch error:', url, e.message);
+    return {status:'error',message:e.message};
+  }
+}
+
+/* ── Stats ──────────────────────────────────────────── */
+async function loadStats(){
+  try{
+    const data = await safeFetch('/admin/stats');
+    if(data.status !== 'error'){
+      document.getElementById('totalDonors').textContent    = data.total_donors ?? 0;
+      document.getElementById('totalNGOs').textContent      = data.total_ngos ?? 0;
+      document.getElementById('totalDonations').textContent = data.total_donations ?? 0;
+      document.getElementById('totalRaised').textContent    = 'Rs.' + (data.total_amount ?? 0).toLocaleString('en-IN');
+      document.getElementById('pendingCampaigns').textContent = data.pending_campaigns ?? 0;
+      document.getElementById('fraudCases').textContent     = data.total_fraud_flags ?? 0;
+      document.getElementById('topNGO').textContent         = `${data.total_fraud_flags ?? 0} flags detected`;
+      const cnt = data.total_fraud_flags ?? 0;
+      ['fraudBadge','fraudBadge2'].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el){ el.textContent = cnt; el.style.display = cnt > 0 ? 'inline' : 'none'; }
+      });
+    }
+  } catch(e){ console.error('Stats error',e); }
+}
+
+/* ── Ranked Campaigns ───────────────────────────────── */
+async function loadRankedCampaigns(){
+  try{
+    const data = await safeFetch('/ranked_campaigns');
+    const tbody = document.querySelector('#rankedCampaigns tbody');
+    if(!data.length){ tbody.innerHTML='<tr><td colspan="5">No campaigns found</td></tr>'; return; }
+    if(data[0]) document.getElementById('topCampaign').innerHTML =
+      `${data[0].title}<br><small style="color:var(--muted);">Score: ${(data[0].priority_score||0).toFixed(1)}</small>`;
+    tbody.innerHTML = data.map(c=>{
+      const pct = c.target_amount ? ((c.collected_amount/c.target_amount)*100).toFixed(1) : 0;
+      const cls = c.priority_score>=30?'badge-danger':c.priority_score>=15?'badge-warning':'badge-success';
+      return `<tr>
+        <td style="font-weight:600;max-width:160px;">${c.title}</td>
+        <td>${c.category}</td>
+        <td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(pct,100)}%"></div></div><span class="prog-label">${pct}%</span></div></td>
+        <td><span class="badge ${cls}">${(c.priority_score||0).toFixed(1)}</span></td>
+        <td><span class="badge badge-${c.status==='approved'?'approved':c.status==='rejected'?'rejected':'pending'}">${c.status}</span></td>
+      </tr>`;
+    }).join('');
+  } catch(e){ console.error(e); }
+}
+
+/* ── Fund Alerts ────────────────────────────────────── */
+async function loadFundAlerts(){
+  try{
+    const data = await safeFetch('/fund_alerts');
+    const tbody = document.querySelector('#fundAlerts tbody');
+    if(!data.length){ tbody.innerHTML='<tr><td colspan="4" style="color:#10b981;text-align:center;">No active alerts</td></tr>'; return; }
+    const typeColor = {
+      'DEADLINE CRITICAL': '#ef4444',
+      'STALLED':           '#f97316',
+      'LOW MOMENTUM':      '#eab308',
+      'NEARLY THERE':      '#10b981'
+    };
+    const typeBg = {
+      'DEADLINE CRITICAL': 'rgba(239,68,68,.08)',
+      'STALLED':           'rgba(249,115,22,.08)',
+      'LOW MOMENTUM':      'rgba(234,179,8,.08)',
+      'NEARLY THERE':      'rgba(16,185,129,.08)'
+    };
+    tbody.innerHTML = data.map(a=>{
+      const col = typeColor[a.alert_type]||'#ef4444';
+      const bg  = typeBg[a.alert_type]||'rgba(239,68,68,.08)';
+      const daysStr = a.days_left !== null && a.days_left !== undefined
+        ? (a.days_left <= 0 ? 'Expired' : `${a.days_left}d left`) : 'No deadline';
+      return `<tr style="background:${bg};">
+        <td>
+          <div style="font-weight:700;font-size:.82rem;">${a.title}</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:2px;">${a.alert_label}</div>
+        </td>
+        <td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(a.completion_rate||0,100)}%;background:${col};"></div></div><span class="prog-label">${(a.completion_rate||0).toFixed(1)}%</span></div></td>
+        <td style="font-size:.8rem;">${daysStr}</td>
+        <td style="font-size:.78rem;color:var(--muted);">Rs.${(a.gap_amount||0).toLocaleString('en-IN')} needed</td>
+        <td><span class="badge" style="background:${bg};color:${col};border:1px solid ${col};">${a.alert_type}</span></td>
+        <td>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            
+            ${a.alert_type==='NEARLY THERE'?`<button onclick="showToast('Campaign is nearly funded — share it to close the gap!')" style="padding:.22rem .6rem;background:rgba(16,185,129,.1);color:#059669;border:1px solid rgba(16,185,129,.2);border-radius:5px;font-size:.68rem;font-weight:700;cursor:pointer;">Boost</button>`:''}
+            <button onclick="closeCampaign(${a.campaign_id})" style="padding:.22rem .6rem;background:rgba(249,115,22,.08);color:var(--orange);border:1px solid rgba(249,115,22,.2);border-radius:5px;font-size:.68rem;font-weight:700;cursor:pointer;">Close</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch(e){ console.error(e); }
+}
+
+/* ── AI Stats ───────────────────────────────────────── */
+async function loadAIStats(){
+  try{
+    const data = await safeFetch('/admin/ai_stats');
+    if(data.status !== 'success') return;
+
+    // Model status
+    const isoEl = document.getElementById('isoStatus');
+    const rfEl  = document.getElementById('rfStatus');
+    if(isoEl) isoEl.innerHTML = data.model_status.isolation_forest_trained
+      ? '<span style="color:#10b981;font-size:.8rem;">● Active</span>'
+      : '<span style="color:#ef4444;font-size:.8rem;">○ Training</span>';
+    if(rfEl) rfEl.innerHTML = data.model_status.random_forest_trained
+      ? '<span style="color:#10b981;font-size:.8rem;">● Active</span>'
+      : '<span style="color:#ef4444;font-size:.8rem;">○ Training</span>';
+
+    // Fraud metrics
+    const f = data.fraud_detection;
+    document.getElementById('aiFlags7d').textContent  = f.recent_7d ?? '—';
+    document.getElementById('typeAnomaly').textContent   = f.by_type.ai_anomaly_detection ?? 0;
+    document.getElementById('typeClassifier').textContent = f.by_type.ai_classifier ?? 0;
+    document.getElementById('typeHardRule').textContent  = f.by_type.hard_rule_duplicate ?? 0;
+
+    // Priority scoring
+    const p = data.priority_scoring;
+    document.getElementById('avgPriority').textContent   = p.avg_score ?? '—';
+    document.getElementById('unscoredCamps').textContent = p.unscored ?? '—';
+  } catch(e){ console.error('AI stats error', e); }
+}
+
+/* ── Fraud Logs ─────────────────────────────────────── */
+async function loadFraudLogs(){
+  try{
+    const data = await safeFetch('/admin/fraud_logs');
+    const tbody = document.querySelector('#fraudTable tbody');
+    if(!data.length){ tbody.innerHTML='<tr><td colspan="6" style="color:#10b981;text-align:center;">No fraud flags found</td></tr>'; return; }
+    tbody.innerHTML = data.map(f=>`
+      <tr class="fraud-row" id="fraud-row-${f.id}">
+        <td>${f.id}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:.5rem;">
+            ${ f.profile_photo
+              ? `<img src="${f.profile_photo}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0;" alt="${f.donor_name}">`
+              : `<div style="width:26px;height:26px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white;font-family:'Barlow Condensed',sans-serif;flex-shrink:0;">${(f.donor_name||'?')[0].toUpperCase()}</div>` }
+            <span style="font-weight:600;">${f.donor_name}</span>
+          </div>
+        </td>
+        <td>${f.campaign_title}</td>
+        <td style="max-width:240px;font-size:.82rem;color:var(--muted);">${f.reason}</td>
+        <td style="white-space:nowrap;">${new Date(f.detected_at).toLocaleString('en-IN')}</td>
+        <td>
+          <button class="review-btn" onclick="toggleFraudPanel(${f.id})">Review</button>
+        </td>
+      </tr>
+      <tr id="fraud-panel-${f.id}" style="display:none;">
+        <td colspan="6">
+          <div class="fraud-review-panel open">
+            <strong style="color:var(--teal);font-size:.85rem;">Admin Note:</strong>
+            <textarea id="fraud-note-${f.id}" rows="2" placeholder="Add your review note..."></textarea>
+            <button class="mark-reviewed-btn" onclick="markReviewed(${f.id})">Mark as Reviewed</button>
+          </div>
+        </td>
+      </tr>`).join('');
+  } catch(e){ console.error(e); }
+}
+
+function toggleFraudPanel(id){
+  const row = document.getElementById(`fraud-panel-${id}`);
+  row.style.display = row.style.display === 'none' ? '' : 'none';
+}
+
+async function markReviewed(id){
+  const note = document.getElementById(`fraud-note-${id}`).value;
+  try{
+    const res  = await fetch(`/admin/fraud_logs/${id}/review`,{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({note})
+    });
+    const data = await res.json();
+    if(data.status === 'success'){
+      document.getElementById(`fraud-row-${id}`).style.opacity = '0.35';
+      document.getElementById(`fraud-panel-${id}`).style.display = 'none';
+      showToast('Fraud log marked as reviewed');
+    } else { alert('Error: '+data.message); }
+  } catch(e){ alert('Network error'); }
+}
+
+/* ── Campaigns Tab ──────────────────────────────────── */
+async function loadCampaigns(){
+  try{
+    const res  = await fetch('/admin/campaigns');
+    allCampaignsData = await res.json();
+    renderCampaigns(allCampaignsData);
+  } catch(e){ console.error(e); }
+}
+
+let campaignViewMode = 'active'; // 'active' or 'closed'
+
+function setCampaignView(mode){
+  campaignViewMode = mode;
+  document.getElementById('togActive').style.background = mode==='active' ? 'var(--teal)' : 'transparent';
+  document.getElementById('togActive').style.color      = mode==='active' ? 'white' : 'var(--muted)';
+  document.getElementById('togClosed').style.background = mode==='closed' ? 'var(--teal)' : 'transparent';
+  document.getElementById('togClosed').style.color      = mode==='closed' ? 'white' : 'var(--muted)';
+  document.getElementById('campaignTableTitle').innerHTML =
+    `<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+     ${mode==='active' ? 'Active Campaigns' : 'Closed Campaigns'}`;
+  // Update status filter options
+  const sf = document.getElementById('campaignStatusFilter');
+  sf.innerHTML = mode==='active'
+    ? '<option value="">All</option><option value="pending">Pending</option><option value="approved">Approved</option>'
+    : '<option value="">All</option><option value="completed">Completed</option><option value="rejected">Closed/Rejected</option>';
+  applyCampaignFilter();
+}
+
+function applyCampaignFilter(){
+  const statusFilter = document.getElementById('campaignStatusFilter').value;
+  const q = document.getElementById('campaignSearch').value.toLowerCase();
+  const activeStatuses  = ['pending','approved'];
+  const closedStatuses  = ['completed','rejected'];
+  let filtered = allCampaignsData.filter(c=>{
+    const inView = campaignViewMode==='active'
+      ? activeStatuses.includes(c.status)
+      : closedStatuses.includes(c.status);
+    const matchStatus = !statusFilter || c.status===statusFilter;
+    const matchSearch = !q || c.title.toLowerCase().includes(q)
+      || c.ngo_name.toLowerCase().includes(q) || c.category.toLowerCase().includes(q);
+    return inView && matchStatus && matchSearch;
+  });
+  renderCampaigns(filtered);
+}
+
+function renderCampaigns(data){
+  const filtered = data;
+  const tbody = document.querySelector('#allCampaigns tbody');
+  if(!filtered.length){ tbody.innerHTML='<tr><td colspan="9">No campaigns found</td></tr>'; return; }
+  tbody.innerHTML = filtered.map(c=>{
+    const pct = c.target_amount ? ((c.collected_amount/c.target_amount)*100).toFixed(1) : 0;
+    const statusCls = c.status==='approved'?'badge-approved':c.status==='rejected'?'badge-rejected':'badge-pending';
+    const actions = c.status === 'pending'
+      ? `<div style="display:flex;gap:3px;flex-wrap:wrap;">
+           <button class="approve-btn" onclick="updateCampaignStatus(${c.id},'approved')">Approve</button>
+           <button class="reject-btn"  onclick="updateCampaignStatus(${c.id},'rejected')">Reject</button>
+           <a href="/web/campaign?id=${c.id}" target="_blank" style="display:inline-flex;align-items:center;padding:.26rem .7rem;background:rgba(13,59,71,.08);color:var(--teal);border:1px solid var(--border);border-radius:6px;font-size:.72rem;font-weight:700;text-decoration:none;">View</a>
+           <button onclick="closeCampaign(${c.id})" style="padding:.26rem .7rem;background:rgba(249,115,22,.1);color:var(--orange);border:1px solid rgba(249,115,22,.25);border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;">Close</button>
+         </div>`
+      : `<div style="display:flex;gap:3px;flex-wrap:wrap;"><span style="color:var(--muted);font-size:.8rem;">${c.status}</span>
+           <button onclick="closeCampaign(${c.id})" style="padding:.22rem .6rem;background:rgba(249,115,22,.08);color:var(--orange);border:1px solid rgba(249,115,22,.2);border-radius:5px;font-size:.68rem;font-weight:700;cursor:pointer;">Close</button>
+         </div>`;
+    const rowBorderColor = pct>=75?'#10b981':pct>=25?'#f59e0b':'#ef4444';
+    return `<tr style="border-left:3px solid ${rowBorderColor};">
+      <td style="color:var(--muted);font-size:.8rem;">${c.id}</td>
+      <td style="max-width:160px;font-weight:600;">${c.title}</td>
+      <td>${c.ngo_name}</td>
+      <td>${c.category}</td>
+      <td>Rs.${(c.target_amount||0).toLocaleString('en-IN')}</td>
+      <td style="font-weight:600;">Rs.${(c.collected_amount||0).toLocaleString('en-IN')}</td>
+      <td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(pct,100)}%"></div></div><span class="prog-label">${pct}%</span></div></td>
+      <td>
+        <span class="badge ${statusCls}">${c.status}</span>
+        ${(c.status==='rejected'||c.status==='completed')&&c.close_message
+          ? `<div style="font-size:.68rem;color:var(--muted);margin-top:2px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${c.close_message}">${c.close_message}</div>`
+          : ''}
+      </td>
+      <td style="white-space:nowrap;">${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterCampaignTable(){ applyCampaignFilter(); }
+
+async function updateCampaignStatus(id,status){
+  if(!confirm(`Are you sure you want to ${status} this campaign?`)) return;
+  try{
+    const res  = await fetch(`/admin/campaign/${id}/status`,{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})
+    });
+    const data = await res.json();
+    if(data.status==='success'){ showToast(`Campaign ${status} successfully`); loadCampaigns(); loadStats(); }
+    else{ alert('Error: '+data.message); }
+  } catch(e){ alert('Network error'); }
+}
+
+/* ── Users ──────────────────────────────────────────── */
+async function loadUsers(){
+  try{
+    const role = document.getElementById('userRoleFilter').value;
+    const url  = role ? `/admin/users?role=${role}` : '/admin/users';
+    const res  = await fetch(url);
+    allUsersData = await res.json();
+    renderUsers(allUsersData);
+  } catch(e){ console.error(e); }
+}
+
+function renderUsers(data){
+  const tbody = document.querySelector('#usersTable tbody');
+  if(!data.length){ tbody.innerHTML='<tr><td colspan="9">No users found</td></tr>'; return; }
+  tbody.innerHTML = data.map(u=>{
+    const roleCls = u.role==='admin'?'badge-danger':u.role==='ngo'?'badge-info':'badge-success';
+
+    /* verified column — only meaningful for NGOs */
+    const verifiedCell = u.role==='ngo'
+      ? (u.is_verified
+          ? '<span class="badge badge-approved">Verified</span>'
+          : '<span class="badge badge-pending">Pending</span>')
+      : '<span style="color:var(--muted);font-size:.8rem;">—</span>';
+
+    /* badge column */
+    const badgeColors = {bronze:'#f97316',silver:'#94a3b8',gold:'#eab308',platinum:'#8b5cf6'};
+    const hasBadge = u.trust_badge && u.trust_badge !== 'none';
+    const badgeCell = u.role==='ngo'
+      ? (hasBadge
+          ? `<span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.72rem;font-weight:700;text-transform:capitalize;color:${badgeColors[u.trust_badge]||'#9ca3af'};">
+               <svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+               ${u.trust_badge}</span>`
+          : '<span style="font-size:.72rem;color:var(--muted);">No badge</span>')
+      : '<span style="color:var(--muted);font-size:.8rem;">—</span>';
+
+    /* action column — only for NGOs */
+    let actionsCell = '<span style="color:var(--muted);font-size:.8rem;">—</span>';
+    if(u.role==='ngo' && u.ngo_id){
+      if(!u.is_verified){
+        actionsCell = `
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            <button onclick="toggleDocPanel(${u.ngo_id})" style="display:inline-flex;align-items:center;gap:.28rem;padding:.26rem .75rem;background:var(--bg);color:var(--teal);border:1px solid var(--border);border-radius:6px;font-size:.73rem;font-weight:700;cursor:pointer;transition:all .2s;" >
+              <svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Docs
+            </button>
+            <button onclick="verifyNGO(this)" data-ngo="${u.ngo_id}" data-badge="silver" style="display:inline-flex;align-items:center;gap:.28rem;padding:.26rem .75rem;background:#10b981;color:white;border:none;border-radius:6px;font-size:.73rem;font-weight:700;cursor:pointer;transition:all .2s;" >
+              <svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:none;stroke:white;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><polyline points="20 6 9 17 4 12"/></svg>Verify
+            </button>
+            <div class="badge-select-wrap" style="position:relative;display:inline-block;">
+              <select onchange="verifyNGO(${u.ngo_id},this.value)" style="padding:.26rem .5rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;font-size:.73rem;color:var(--text);font-family:'Barlow',sans-serif;cursor:pointer;outline:none;">
+                <option value="">Set badge…</option>
+                <option value="none">None (Unverified)</option>
+                <option value="bronze">Bronze</option>
+                <option value="silver">Silver</option>
+                <option value="gold">Gold</option>
+                <option value="platinum">Platinum</option>
+              </select>
+            </div>
+          </div>`;
+      } else {
+        actionsCell = `
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;">
+            <button onclick="toggleDocPanel(${u.ngo_id})" style="display:inline-flex;align-items:center;gap:.28rem;padding:.26rem .75rem;background:var(--bg);color:var(--teal);border:1px solid var(--border);border-radius:6px;font-size:.73rem;font-weight:700;cursor:pointer;transition:all .2s;" >
+              <svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Docs
+            </button>
+            <button onclick="revokeNGO(${u.ngo_id})" style="display:inline-flex;align-items:center;gap:.28rem;padding:.26rem .75rem;background:var(--bg);color:var(--red);border:1px solid #fecaca;border-radius:6px;font-size:.73rem;font-weight:700;cursor:pointer;transition:all .2s;" >
+              <svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Revoke
+            </button>
+            <select onchange="upgradeBadge(${u.ngo_id},this.value)" style="padding:.26rem .5rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;font-size:.73rem;color:var(--text);font-family:'Barlow',sans-serif;cursor:pointer;outline:none;">
+              <option value="">Change badge…</option>
+              <option value="none">None (Unverified)</option>
+              <option value="bronze">Bronze</option>
+              <option value="silver">Silver</option>
+              <option value="gold">Gold</option>
+              <option value="platinum">Platinum</option>
+            </select>
+          </div>`;
+      }
+    }
+
+    // Add block/unblock button for donors
+    let blockCell = '<span style="color:var(--muted);font-size:.8rem;">—</span>';
+    if(u.role === 'donor'){
+      if(!u.is_blocked){
+        blockCell = `<button onclick="blockDonor(${u.id})" style="padding:.26rem .72rem;background:var(--bg);color:var(--red);border:1px solid #fecaca;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;" >Block</button>`;
+      } else {
+        blockCell = `<span style="font-size:.7rem;font-weight:700;padding:.2rem .65rem;border-radius:99px;background:#fee2e2;color:#dc2626;display:inline-block;margin-bottom:2px;">Blocked</span><br><button onclick="unblockDonor(${u.id})" style="padding:.22rem .65rem;background:var(--bg);color:var(--green);border:1px solid #a7f3d0;border-radius:5px;font-size:.68rem;font-weight:700;cursor:pointer;margin-top:2px;">Unblock</button>`;
+      }
+    }
+
+    return `<tr id="user-row-${u.id}">
+      <td style="color:var(--muted);font-size:.8rem;">${u.id}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:.6rem;">
+          ${ u.profile_photo
+            ? `<img src="${u.profile_photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0;" alt="${u.name}">`
+            : `<div style="width:30px;height:30px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:900;color:white;flex-shrink:0;">${(u.name||'?')[0].toUpperCase()}</div>` }
+          <div>
+            <div style="font-weight:600;font-size:.84rem;">${u.name||'—'}</div>
+            <div style="font-size:.72rem;color:var(--dim);">${u.phone||''}</div>
+          </div>
+        </div>
+      </td>
+      <td style="color:var(--muted);">${u.email}</td>
+      <td><span class="badge ${roleCls}">${u.role}</span></td>
+      <td>${u.phone||'—'}</td>
+      <td>${new Date(u.created_at).toLocaleDateString('en-IN')}</td>
+      <td>${verifiedCell}</td>
+      <td>${badgeCell}</td>
+      <td>${actionsCell}${u.role==='donor'?blockCell:''}</td>
+    </tr>
+    ${u.role==='ngo' && u.ngo_id ? `<tr id="doc-panel-${u.ngo_id}" style="display:none;"><td colspan="9" style="padding:0;background:var(--teal-light);border-bottom:2px solid var(--border);"><div id="doc-panel-inner-${u.ngo_id}" style="padding:1.2rem 1.5rem;"></div></td></tr>` : ''}`;
+  }).join('');
+}
+
+function filterUserTable(){
+  const q = document.getElementById('userSearch').value.toLowerCase();
+  renderUsers(allUsersData.filter(u=>
+    (u.name||'').toLowerCase().includes(q)||u.email.toLowerCase().includes(q)
+  ));
+}
+
+/* ── NGO Document Review ──────────────────────────── */
+const DOC_LABELS = {
+  registration:     'Registration Certificate',
+  tax_exemption:    '80G / Tax Exemption',
+  audited_report:   'Audited Financial Report',
+  board_resolution: 'Board Resolution',
+  pan_card:         'PAN Card Copy'
+};
+
+async function toggleDocPanel(ngoId){
+  const panel = document.getElementById(`doc-panel-${ngoId}`);
+  if(!panel) return;
+  if(panel.style.display === 'none' || panel.style.display === ''){
+    panel.style.display = '';
+    await loadNGODocs(ngoId);
+  } else {
+    panel.style.display = 'none';
+  }
+}
+
+async function loadNGODocs(ngoId){
+  const inner = document.getElementById(`doc-panel-inner-${ngoId}`);
+  if(!inner) return;
+  inner.innerHTML = '<div style="color:var(--muted);font-size:.82rem;padding:.5rem 0;">Loading documents…</div>';
+  try{
+    const res  = await fetch(`/admin/ngo_documents/${ngoId}`);
+    const docs = await res.json();
+
+    if(!docs.length){
+      inner.innerHTML = `
+        <div style="display:flex;align-items:center;gap:.6rem;padding:.4rem 0;">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span style="font-size:.82rem;color:var(--muted);">No documents submitted by this NGO yet.</span>
+        </div>`;
+      return;
+    }
+
+    inner.innerHTML = `
+      <div style="font-size:.8rem;font-weight:700;color:var(--teal);margin-bottom:.9rem;">
+        ${docs.length} document${docs.length===1?'':'s'} submitted
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.6rem;">
+        ${docs.map(d => {
+          const statusCol = {pending:'#d97706',approved:'#059669',rejected:'#dc2626'}[d.status]||'#6b7280';
+          const statusBg  = {pending:'#fef3c7',approved:'#d1fae5',rejected:'#fee2e2'}[d.status]||'#f3f4f6';
+          return `
+          <div style="background:white;border-radius:9px;padding:1rem 1.2rem;border:1px solid var(--border);display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:start;">
+            <div>
+              <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem;">
+                <span style="font-size:.82rem;font-weight:700;color:var(--text);">${DOC_LABELS[d.doc_type]||d.doc_type}</span>
+                <span style="font-size:.68rem;font-weight:700;padding:.15rem .6rem;border-radius:99px;background:${statusBg};color:${statusCol};">${d.status}</span>
+              </div>
+              <a href="${d.doc_url}" target="_blank" style="font-size:.76rem;color:var(--blue);word-break:break-all;display:block;margin-bottom:.3rem;text-decoration:none;" >${d.doc_url}</a>
+              ${d.description ? `<div style="font-size:.73rem;color:var(--muted);">${d.description}</div>` : ''}
+              ${d.admin_note  ? `<div style="font-size:.73rem;color:var(--teal2);margin-top:.3rem;background:var(--teal-light);padding:.3rem .6rem;border-radius:5px;">Note: ${d.admin_note}</div>` : ''}
+              <div style="font-size:.68rem;color:var(--dim);margin-top:.3rem;">Submitted ${new Date(d.submitted_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
+            </div>
+            ${d.status === 'pending' ? `
+            <div style="display:flex;flex-direction:column;gap:.5rem;flex-shrink:0;">
+              <button onclick="reviewDoc(this)" data-did="${d.id}" data-ngo="${ngoId}" data-action="approved" style="display:inline-flex;align-items:center;justify-content:center;gap:.3rem;padding:.32rem .85rem;background:#10b981;color:white;border:none;border-radius:6px;font-size:.74rem;font-weight:700;cursor:pointer;white-space:nowrap;" >
+                <svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:none;stroke:white;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><polyline points="20 6 9 17 4 12"/></svg>Approve
+              </button>
+              <button onclick="reviewDoc(this)" data-did="${d.id}" data-ngo="${ngoId}" data-action="rejected" style="display:inline-flex;align-items:center;justify-content:center;gap:.3rem;padding:.32rem .85rem;background:var(--bg);color:var(--red);border:1px solid #fecaca;border-radius:6px;font-size:.74rem;font-weight:700;cursor:pointer;white-space:nowrap;" >
+                <svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Reject
+              </button>
+              <input id="doc-note-${d.id}" type="text" placeholder="Admin note…" style="padding:.28rem .55rem;border:1px solid var(--border);border-radius:6px;font-size:.72rem;font-family:'Barlow',sans-serif;outline:none;width:110px;" >
+            </div>` : `<div style="font-size:.72rem;color:var(--dim);flex-shrink:0;">${d.reviewed_at ? 'Reviewed ' + new Date(d.reviewed_at).toLocaleDateString('en-IN') : ''}</div>`}
+          </div>`;
+        }).join('')}
+      </div>`;
+  }catch(e){
+    inner.innerHTML = '<div style="color:var(--red);font-size:.82rem;">Failed to load documents.</div>';
+  }
+}
+
+async function reviewDoc(btn, docId, ngoId, action){
+  // Support both old-style call and new data-attribute call
+  if(btn && btn.dataset){
+    docId  = btn.dataset.did  || docId;
+    ngoId  = btn.dataset.ngo  || ngoId;
+    action = btn.dataset.action || action;
+  }
+  const note = (document.getElementById(`doc-note-${docId}`)?.value || '').trim();
+  try{
+    const res  = await fetch(`/admin/review_document/${docId}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action, note})
+    });
+    const data = await res.json();
+    if(data.status==='success'){
+      showToast(`Document ${action} — score now ${data.new_score}, badge: ${data.new_badge}`);
+      await loadNGODocs(ngoId);
+      loadUsers();
+      loadStats();
+    } else { showToast('Error: '+data.message); }
+  }catch(e){ showToast('Network error'); }
+}
+
+/* ── NGO Verification ─────────────────────────────── */
+async function verifyNGO(ngoIdOrBtn, badge){
+  let ngoId = ngoIdOrBtn;
+  if(ngoIdOrBtn && typeof ngoIdOrBtn === 'object' && ngoIdOrBtn.dataset){
+    ngoId = ngoIdOrBtn.dataset.ngo;
+    badge = ngoIdOrBtn.dataset.badge || badge;
+  }
+  if(!badge||badge===''){return;}
+  if(!confirm(`Verify this NGO and set badge to ${badge}?`)) return;
+  try{
+    const res  = await fetch(`/admin/verify_ngo/${ngoId}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({is_verified:true, trust_badge:badge})
+    });
+    const data = await res.json();
+    if(data.status==='success'){
+      showToast(`NGO verified — ${badge} badge assigned`);
+      loadUsers(); loadStats();
+    } else { showToast('Error: '+data.message); }
+  } catch(e){ showToast('Network error'); }
+}
+
+async function revokeNGO(ngoId){
+  if(!confirm('Revoke verification for this NGO? Their badge will reset to Bronze and campaigns will be hidden from donors.')) return;
+  try{
+    const res  = await fetch(`/admin/verify_ngo/${ngoId}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({is_verified:false, trust_badge:'bronze'})
+    });
+    const data = await res.json();
+    if(data.status==='success'){
+      showToast('NGO verification revoked');
+      loadUsers(); loadStats();
+    } else { showToast('Error: '+data.message); }
+  } catch(e){ showToast('Network error'); }
+}
+
+async function upgradeBadge(ngoId, badge){
+  if(!badge||badge===''){return;}
+  if(!confirm(`Change badge to ${badge}?`)) return;
+  try{
+    const res  = await fetch(`/admin/verify_ngo/${ngoId}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({is_verified:true, trust_badge:badge})
+    });
+    const data = await res.json();
+    if(data.status==='success'){
+      showToast(`Badge updated to ${badge}`);
+      loadUsers();
+    } else { showToast('Error: '+data.message); }
+  } catch(e){ showToast('Network error'); }
+}
+
+/* ── Export CSV ─────────────────────────────────────── */
+function exportDonationsCSV(){
+  window.location.href = '/admin/export_donations_csv';
+}
+function exportNGOsCSV(){
+  window.location.href = '/admin/export_ngos_csv';
+}
+
+/* ── Block / Unblock donor ──────────────────────────── */
+async function blockDonor(userId){
+  const reason = prompt('Reason for blocking this donor:');
+  if(!reason) return;
+  const r = await fetch(`/admin/block_donor/${userId}`,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({reason})
+  });
+  const d = await r.json();
+  showToast(d.status==='success'?'Donor blocked':'Error: '+d.message);
+  if(d.status==='success') loadUsers();
+}
+
+async function unblockDonor(userId){
+  if(!confirm('Unblock this donor after manual verification?')) return;
+  const r = await fetch(`/admin/unblock_donor/${userId}`,{
+    method:'POST',headers:{'Content-Type':'application/json'},body:'{}'
+  });
+  const d = await r.json();
+  showToast(d.status==='success'?'Donor unblocked':'Error: '+d.message);
+  if(d.status==='success') loadUsers();
+}
+
+/* ── Extend / Close campaign ────────────────────────── */
+
+async function closeCampaign(campaignId){
+  const msg = prompt('Closing message to donors (explain why):',
+    'Unfortunately this campaign could not reach its funding goal by the deadline. We are grateful for every contribution made.');
+  if(msg===null) return;
+  const r = await fetch(`/admin/campaign/${campaignId}/close`,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({message:msg})
+  });
+  const d = await r.json();
+  showToast(d.status==='success'?'Campaign closed. All donors notified.':'Error: '+d.message);
+  if(d.status==='success') loadCampaigns();
+}
+
+/* ── Donations ──────────────────────────────────────── */
+async function loadDonations(){
+  try{
+    const status = document.getElementById('donationStatusFilter').value;
+    const url    = status ? `/admin/all_donations?status=${status}` : '/admin/all_donations';
+    const res    = await fetch(url);
+    allDonationsData = await res.json();
+    renderDonations(allDonationsData);
+  } catch(e){ console.error(e); }
+}
+
+function renderDonations(data){
+  const tbody = document.querySelector('#donationsTable tbody');
+  if(!data.length){ tbody.innerHTML='<tr><td colspan="7">No donations found</td></tr>'; return; }
+  tbody.innerHTML = data.map(d=>{
+    const cls = d.status==='success'?'badge-success':'badge-danger';
+    return `<tr>
+      <td style="color:var(--muted);font-size:.8rem;">${d.id}</td>
+      <td style="font-weight:600;">${d.donor_name}</td>
+      <td>${d.campaign_title}</td>
+      <td style="font-weight:700;color:var(--teal);">Rs.${(d.amount||0).toLocaleString('en-IN')}</td>
+      <td>${d.payment_method}</td>
+      <td><span class="badge ${cls}">${d.status}</span></td>
+      <td>${new Date(d.date).toLocaleDateString('en-IN')}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterDonationTable(){
+  const q = document.getElementById('donationSearch').value.toLowerCase();
+  renderDonations(allDonationsData.filter(d=>
+    d.donor_name.toLowerCase().includes(q)||d.campaign_title.toLowerCase().includes(q)
+  ));
+}
+
+/* ── Export CSV ─────────────────────────────────────── */
+function exportCSV(){
+  if(!allDonationsData.length){ alert('No donation data to export'); return; }
+  const headers = ['ID','Donor','Campaign','Amount','Method','Status','Date'];
+  const rows    = allDonationsData.map(d=>
+    [d.id,d.donor_name,d.campaign_title,d.amount,d.payment_method,d.status,d.date].join(',')
+  );
+  const csv  = [headers.join(','),...rows].join('\n');
+  const blob = new Blob([csv],{type:'text/csv'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href=url; a.download=`trustflow_donations_${Date.now()}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ── Sidebar & Tab ──────────────────────────────────── */
+const pageTitles = {overview:'Overview',campaigns:'Campaigns',fraud:'Fraud Detection',users:'Users',donations:'Donations'};
+
+function switchTab(name){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('pageTitle').textContent = pageTitles[name]||name;
+  // close sidebar on mobile
+  if(window.innerWidth<=900){ document.getElementById('sidebar').classList.remove('open'); }
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+/* ── Toast ──────────────────────────────────────────── */
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ── Logout ─────────────────────────────────────────── */
+async function logout(){
+  await fetch('/logout');
+  window.location.href = '/';
+}
+</script>
+</body>
+</html>

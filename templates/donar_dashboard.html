@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustFlow — Donor Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --teal:#0d3b47;--teal2:#0f4d5e;--teal3:#1a6070;
+  --orange:#f97316;--orange2:#fb923c;--orange-dark:#ea580c;
+  --green:#10b981;--purple:#8b5cf6;--blue:#3b82f6;--red:#ef4444;
+  --white:#fff;--bg:#f7f9fb;--card:#fff;
+  --text:#111827;--muted:#6b7280;--dim:#9ca3af;--border:#e5e7eb;--border2:#f3f4f6;
+  --sb:56px;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+
+/* ── SLIM SIDEBAR ── */
+.sb{width:var(--sb);flex-shrink:0;background:var(--teal);display:flex;flex-direction:column;align-items:center;position:fixed;top:0;left:0;bottom:0;z-index:200;padding:.9rem 0;gap:2px;}
+.sb-logo{width:36px;height:36px;background:var(--orange);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:1.2rem;}
+.sb-logo svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.sb-item{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;color:rgba(255,255,255,.45);position:relative;}
+.sb-item svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+.sb-item:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);}
+.sb-item.active{background:var(--orange);color:#fff;}
+.sb-item::after{content:attr(data-tip);position:absolute;left:calc(100% + 10px);background:var(--text);color:#fff;font-size:.72rem;font-weight:500;white-space:nowrap;padding:.28rem .7rem;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .15s;font-family:'Inter',sans-serif;}
+.sb-item:hover::after{opacity:1;}
+.sb-sep{width:24px;height:1px;background:rgba(255,255,255,.1);margin:.4rem 0;}
+.sb-bottom{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.sb-avatar{width:32px;height:32px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:900;color:#fff;cursor:pointer;margin-bottom:.4rem;}
+.sb-out{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.35);transition:all .18s;}
+.sb-out:hover{background:rgba(239,68,68,.2);color:#fca5a5;}
+.sb-out svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sb);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar-left{display:flex;align-items:center;gap:.8rem;}
+.page-title{font-size:1rem;font-weight:700;color:var(--text);}
+.topbar-date{font-size:.75rem;color:var(--dim);}
+.topbar-right{display:flex;align-items:center;gap:.6rem;}
+.notif-wrap{position:relative;}
+.tb-btn{width:34px;height:34px;border-radius:8px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;color:var(--muted);position:relative;}
+.tb-btn:hover{border-color:var(--teal);color:var(--teal);}
+.tb-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.tb-dot{position:absolute;top:-3px;right:-3px;width:14px;height:14px;background:var(--orange);border-radius:50%;border:2px solid var(--white);font-size:.55rem;font-weight:700;color:#fff;display:none;align-items:center;justify-content:center;}
+.tb-dot.show{display:flex;}
+.notif-panel{position:absolute;top:calc(100% + 8px);right:0;width:290px;background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.1);z-index:300;display:none;overflow:hidden;}
+.notif-panel.open{display:block;}
+.notif-head{padding:.75rem 1rem;border-bottom:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center;}
+.notif-title{font-size:.82rem;font-weight:700;}
+.notif-mark{font-size:.72rem;color:var(--orange);font-weight:600;cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;}
+.notif-list{max-height:240px;overflow-y:auto;}
+.notif-item{padding:.72rem 1rem;border-bottom:1px solid var(--border2);font-size:.8rem;color:var(--muted);line-height:1.5;}
+.notif-item.unread{color:var(--text);background:#fff8f5;}
+.notif-time{font-size:.68rem;color:var(--dim);margin-top:.2rem;}
+.notif-empty{padding:1.5rem;text-align:center;color:var(--dim);font-size:.82rem;}
+.btn-donate-top{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem 1.1rem;background:var(--orange);color:#fff;border:none;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;}
+.btn-donate-top:hover{background:var(--orange-dark);}
+.btn-donate-top svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── CONTENT ── */
+.content{padding:1.6rem 2rem;flex:1;}
+.section{display:none;}.section.active{display:block;}
+
+/* ── HERO GREETING ── */
+.greeting{background:linear-gradient(120deg,var(--teal) 0%,var(--teal2) 60%,#1a6070 100%);border-radius:14px;padding:1.8rem 2rem;margin-bottom:1.4rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;position:relative;overflow:hidden;}
+.greeting::after{content:'';position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;border:1px solid rgba(249,115,22,.1);pointer-events:none;}
+.greeting-left{}
+.greeting-label{font-size:.72rem;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem;}
+.greeting-name{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;color:#fff;letter-spacing:-.3px;margin-bottom:.25rem;}
+.greeting-sub{font-size:.82rem;color:rgba(255,255,255,.55);}
+.greeting-right{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;}
+.greeting-date{font-size:.78rem;color:rgba(255,255,255,.45);}
+.btn-donate-hero{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.6rem;background:var(--orange);color:#fff;border:none;border-radius:8px;font-size:.88rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .22s;}
+.btn-donate-hero:hover{background:var(--orange-dark);transform:translateY(-1px);box-shadow:0 6px 20px rgba(249,115,22,.35);}
+.btn-donate-hero svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── KPI ROW ── */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.4rem;}
+.kpi{background:var(--white);border-radius:12px;padding:1.1rem 1.3rem;border:1px solid var(--border);transition:all .2s;position:relative;overflow:hidden;}
+.kpi:hover{box-shadow:0 4px 18px rgba(0,0,0,.06);transform:translateY(-2px);}
+.kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;}
+.kpi:nth-child(1)::after{background:var(--teal3);}
+.kpi:nth-child(2)::after{background:var(--orange);}
+.kpi:nth-child(3)::after{background:var(--green);}
+.kpi:nth-child(4)::after{background:var(--purple);}
+.kpi-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:.85rem;}
+.kpi-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.ki-teal{background:#e8f4f8;color:var(--teal3);}
+.ki-orange{background:#fff3e8;color:var(--orange);}
+.ki-green{background:#ecfdf5;color:var(--green);}
+.ki-purple{background:#f5f3ff;color:var(--purple);}
+.kpi-val{font-size:1.6rem;font-weight:700;color:var(--text);line-height:1;margin-bottom:.2rem;letter-spacing:-.4px;}
+.kpi-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;}
+.kpi-sub{font-size:.7rem;color:var(--dim);margin-top:.2rem;}
+
+/* ── SECTION HEADER ── */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.6rem;}
+.sh-title{font-size:.95rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:.4rem;}
+.sh-title svg{width:15px;height:15px;fill:none;stroke:var(--orange);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.btn-sm-ghost{display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .8rem;border:1px solid var(--border);border-radius:7px;font-size:.76rem;font-weight:600;color:var(--muted);background:var(--white);cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s;}
+.btn-sm-ghost:hover{border-color:var(--teal);color:var(--teal);}
+.btn-sm-ghost svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── CAMPAIGN CARDS ── */
+.camps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.camp{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .22s;}
+.camp:hover{box-shadow:0 6px 22px rgba(0,0,0,.07);border-color:#d1d5db;transform:translateY(-2px);}
+.camp-strip{height:3px;}
+.cat-med .camp-strip{background:linear-gradient(90deg,#ef4444,#f97316);}
+.cat-edu .camp-strip{background:linear-gradient(90deg,#3b82f6,#8b5cf6);}
+.cat-env .camp-strip{background:linear-gradient(90deg,#10b981,#06b6d4);}
+.cat-com .camp-strip{background:linear-gradient(90deg,#f59e0b,#f97316);}
+.cat-gen .camp-strip{background:linear-gradient(90deg,var(--teal3),var(--teal2));}
+.camp-body{padding:1.1rem 1.2rem;}
+.camp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;}
+.cat-pill{font-size:.65rem;font-weight:700;padding:.17rem .65rem;border-radius:99px;text-transform:uppercase;letter-spacing:.05em;}
+.cp-med{background:#fee2e2;color:#991b1b;}.cp-edu{background:#dbeafe;color:#1e40af;}
+.cp-env{background:#d1fae5;color:#065f46;}.cp-com{background:#fef3c7;color:#92400e;}
+.cp-gen{background:#f3f4f6;color:#374151;}
+.urgency{font-size:.65rem;font-weight:700;padding:.17rem .65rem;border-radius:99px;}
+.urg-high{background:#fee2e2;color:#dc2626;}.urg-med{background:#fef3c7;color:#d97706;}.urg-low{background:#d1fae5;color:#059669;}
+.camp-title{font-size:.9rem;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:.3rem;}
+.camp-desc{font-size:.75rem;color:var(--muted);line-height:1.6;margin-bottom:.85rem;}
+.prog-nums{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.3rem;}
+.prog-raised{font-size:.85rem;font-weight:700;color:var(--orange);}
+.prog-target{font-size:.7rem;color:var(--dim);}
+.prog-pct{font-size:.75rem;font-weight:700;color:var(--teal);}
+.prog-track{height:5px;background:var(--border2);border-radius:99px;overflow:hidden;margin-bottom:.75rem;}
+.prog-fill{height:100%;border-radius:99px;}
+.camp-foot{display:flex;align-items:center;justify-content:space-between;}
+.camp-donors{font-size:.72rem;color:var(--dim);display:flex;align-items:center;gap:.3rem;}
+.camp-donors svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.btn-donate-card{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem 1rem;background:var(--teal);color:#fff;border:none;border-radius:7px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s;}
+.btn-donate-card:hover{background:var(--teal2);}
+.btn-donate-card svg{width:12px;height:12px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── HISTORY TABLE ── */
+.hist-card{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.4rem;}
+.hist-filters{display:flex;gap:.6rem;padding:1rem 1.2rem;border-bottom:1px solid var(--border2);flex-wrap:wrap;}
+.fi{padding:.42rem .85rem;background:var(--bg);border:1px solid var(--border);border-radius:7px;font-size:.78rem;color:var(--text);font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;}
+.fi:focus{border-color:var(--teal);}
+.fi::placeholder{color:var(--dim);}
+.htable{width:100%;border-collapse:collapse;}
+.htable th{text-align:left;padding:.7rem 1.2rem;font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--dim);background:var(--bg);border-bottom:1px solid var(--border2);}
+.htable td{padding:.75rem 1.2rem;border-bottom:1px solid var(--border2);font-size:.82rem;color:var(--text);}
+.htable tbody tr:hover td{background:var(--bg);}
+.htable tbody tr:last-child td{border-bottom:none;}
+.stat-pill{font-size:.67rem;font-weight:700;padding:.17rem .65rem;border-radius:99px;}
+.sp-success{background:#d1fae5;color:#065f46;}.sp-failed{background:#fee2e2;color:#dc2626;}.sp-pending{background:#fef3c7;color:#92400e;}
+.method-pill{background:#dbeafe;color:#1e40af;font-size:.67rem;font-weight:600;padding:.17rem .65rem;border-radius:99px;}
+.btn-icon{width:28px;height:28px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);background:var(--bg);cursor:pointer;transition:all .18s;color:var(--muted);}
+.btn-icon:hover{border-color:var(--teal);color:var(--teal);background:var(--white);}
+.btn-icon svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+/* statements row */
+.statements-row{padding:1rem 1.2rem;border-top:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;}
+.statements-label{font-size:.82rem;font-weight:600;color:var(--text);}
+.statements-sub{font-size:.73rem;color:var(--dim);}
+.stmt-btns{display:flex;gap:.5rem;flex-wrap:wrap;}
+.stmt-btn{padding:.38rem .9rem;background:var(--white);color:var(--teal);border:1.5px solid var(--teal);border-radius:7px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s;}
+.stmt-btn:hover{background:var(--teal);color:#fff;}
+
+/* ── IMPACT TRACKER ── */
+.impact-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.3rem 1.4rem;margin-bottom:1.4rem;}
+.impact-selector{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;flex-wrap:wrap;}
+.impact-selector label{font-size:.8rem;font-weight:600;color:var(--muted);white-space:nowrap;}
+.impact-selector select{padding:.45rem .9rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:.82rem;color:var(--text);font-family:'Inter',sans-serif;outline:none;flex:1;max-width:320px;}
+.impact-selector select:focus{border-color:var(--teal);}
+.impact-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-bottom:1.2rem;}
+.impact-stat{background:var(--bg);border-radius:10px;padding:.9rem;text-align:center;border:1px solid var(--border2);}
+.impact-stat-val{font-size:1.3rem;font-weight:700;color:var(--teal);line-height:1;}
+.impact-stat-lbl{font-size:.67rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:.3rem;font-weight:500;}
+.impact-table{width:100%;border-collapse:collapse;}
+.impact-table th{text-align:left;padding:.65rem 1rem;font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--dim);background:var(--bg);border-bottom:1px solid var(--border2);}
+.impact-table td{padding:.7rem 1rem;border-bottom:1px solid var(--border2);font-size:.8rem;color:var(--text);}
+.impact-table tbody tr:last-child td{border-bottom:none;}
+.impact-msg{background:#eff6ff;border-left:3px solid var(--teal3);border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.8rem;color:var(--teal2);margin-top:1rem;line-height:1.6;}
+
+/* ── DONATION MODAL ── */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);z-index:600;justify-content:center;align-items:center;padding:1rem;}
+.modal.open{display:flex;}
+.mbox{background:#fff;border-radius:16px;width:100%;max-width:440px;overflow:hidden;animation:mIn .22s ease;box-shadow:0 20px 60px rgba(0,0,0,.15);}
+@keyframes mIn{from{opacity:0;transform:translateY(-12px) scale(.97);}to{opacity:1;transform:none;}}
+.mhead{background:var(--teal);padding:1.4rem 1.6rem;position:relative;display:flex;align-items:center;gap:.6rem;}
+.mhead-icon{width:28px;height:28px;background:rgba(249,115,22,.25);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.mhead-icon svg{width:14px;height:14px;fill:none;stroke:var(--orange2);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.mhead-title{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800;color:#fff;}
+.mclose{position:absolute;top:.9rem;right:.9rem;width:26px;height:26px;background:rgba(255,255,255,.1);border:none;border-radius:50%;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;font-size:.85rem;transition:background .18s;}
+.mclose:hover{background:rgba(255,255,255,.22);}
+.mbody{padding:1.4rem 1.6rem;}
+.mfoot{padding:.7rem 1.6rem 1.4rem;display:flex;gap:.5rem;justify-content:flex-end;}
+.flabel{display:block;font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;}
+.finput{width:100%;padding:.6rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;color:var(--text);background:#fafafa;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;margin-bottom:.9rem;}
+.finput:focus{border-color:var(--teal);background:#fff;}
+.finput::placeholder{color:var(--dim);}
+.quick-amounts{display:flex;gap:.4rem;margin-bottom:.9rem;flex-wrap:wrap;}
+.qa-btn{padding:.38rem .9rem;background:var(--bg);color:var(--teal);border:1.5px solid var(--border);border-radius:7px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s;}
+.qa-btn:hover{background:var(--teal);color:#fff;border-color:var(--teal);}
+.fraud-warning{background:#fff5f5;border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.8rem;color:#dc2626;margin-bottom:.9rem;display:none;}
+.fraud-warning.show{display:block;}
+.btn-cancel{background:var(--bg);color:var(--muted);border:1.5px solid var(--border);padding:.58rem 1.2rem;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s;}
+.btn-cancel:hover{border-color:var(--teal);color:var(--teal);}
+.btn-submit{background:var(--orange);color:#fff;border:none;padding:.58rem 1.4rem;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:background .18s;display:inline-flex;align-items:center;gap:.35rem;}
+.btn-submit:hover{background:var(--orange-dark);}
+.btn-submit svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* FAB */
+.fab{position:fixed;bottom:2rem;right:2rem;width:52px;height:52px;border-radius:50%;background:var(--orange);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(249,115,22,.4);z-index:400;transition:all .22s;}
+.fab:hover{background:var(--orange-dark);transform:scale(1.08);}
+.fab svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* TOAST */
+#toast{position:fixed;bottom:1.8rem;right:1.8rem;z-index:9999;background:var(--teal);border-left:4px solid var(--orange);color:#fff;padding:.8rem 1.3rem;border-radius:10px;font-size:.83rem;font-weight:600;transform:translateY(60px);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 8px 24px rgba(13,59,71,.2);max-width:280px;}
+#toast.show{transform:none;opacity:1;}
+
+/* RESPONSIVE */
+@media(max-width:1024px){.kpi-row{grid-template-columns:repeat(2,1fr);}.impact-stats{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:768px){.sb{display:none;}.main{margin-left:0;}.camps-grid{grid-template-columns:1fr;}.content{padding:1.2rem;}.greeting-right{display:none;}}
+</style>
+</head>
+<body>
+
+<!-- SLIM SIDEBAR -->
+<aside class="sb">
+  <div class="sb-logo"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+  <div class="sb-item active" id="nav-overview" data-tip="Overview" onclick="switchSection('overview')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+  </div>
+  <div class="sb-item" id="nav-campaigns" data-tip="Campaigns" onclick="switchSection('campaigns')">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+  </div>
+  <div class="sb-item" id="nav-history" data-tip="Donation History" onclick="switchSection('history')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+  </div>
+  <div class="sb-item" id="nav-impact" data-tip="Impact Tracker" onclick="switchSection('impact')">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+  </div>
+  <div class="sb-item" id="nav-profile" data-tip="My Profile" onclick="switchSection('profile')">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  </div>
+  <div class="sb-sep"></div>
+  <div class="sb-item" data-tip="Donate Now" onclick="openModal('donationModal')">
+    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+  </div>
+  <div class="sb-item" data-tip="View Site" onclick="window.open('/','_blank')">
+    <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+  </div>
+  <div class="sb-bottom">
+    <div class="sb-avatar" id="donorInitials" style="overflow:hidden;padding:0;">D</div>
+    <div class="sb-out" title="Sign Out" onclick="logout()">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="page-title" id="pageTitle">Overview</div>
+      <div class="topbar-date" id="currentDate"></div>
+    </div>
+    <div class="topbar-right">
+      <div class="notif-wrap">
+        <div class="tb-btn" onclick="toggleNotifPanel()">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <div class="tb-dot" id="notifDot"></div>
+        </div>
+        <div class="notif-panel" id="notifPanel">
+          <div class="notif-head"><span class="notif-title">Notifications</span><button class="notif-mark" onclick="markNotifRead()">Mark all read</button></div>
+          <div class="notif-list" id="notifList"><div class="notif-empty">Loading...</div></div>
+        </div>
+      </div>
+      <button class="btn-donate-top" onclick="openModal('donationModal')">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Donate
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ── OVERVIEW ── -->
+    <div class="section active" id="sec-overview">
+      <div class="greeting">
+        <div class="greeting-left">
+          <div class="greeting-label">Donor Portal</div>
+          <div class="greeting-name">Welcome back, <span id="bannerName">Donor</span></div>
+          <div class="greeting-sub" id="greetSub">Your generosity is making a real difference in people's lives.</div>
+        </div>
+        <div class="greeting-right">
+          <div class="greeting-date" id="greetDate"></div>
+          <button class="btn-donate-hero" onclick="openModal('donationModal')">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Donate Now
+          </button>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-icon ki-teal"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="kpi-val" id="totalDonated">—</div>
+          <div class="kpi-lbl">Total Donated</div>
+          <div class="kpi-sub">Lifetime contributions</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-icon ki-orange"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+          <div class="kpi-val" id="activeCauses">—</div>
+          <div class="kpi-lbl">Active Causes</div>
+          <div class="kpi-sub">Campaigns supported</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-icon ki-green"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <div class="kpi-val" id="lastDonationAmount">—</div>
+          <div class="kpi-lbl">Last Donation</div>
+          <div class="kpi-sub" id="lastDonationDays">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-icon ki-purple"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="kpi-val" id="receiptCount">—</div>
+          <div class="kpi-lbl">Receipts</div>
+          <div class="kpi-sub">Available to download</div>
+        </div>
+      </div>
+
+      <!-- recent campaigns on overview -->
+      <div class="sh">
+        <div class="sh-title"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Active Campaigns</div>
+        <button class="btn-sm-ghost" onclick="switchSection('campaigns')"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>View all</button>
+      </div>
+      <div class="camps-grid" id="overviewCampsGrid">
+        <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--dim);">Loading campaigns...</div>
+      </div>
+    </div>
+
+    <!-- ── CAMPAIGNS ── -->
+    <div class="section" id="sec-campaigns">
+      <div class="sh">
+        <div class="sh-title"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>All Campaigns</div>
+        <button class="btn-sm-ghost" onclick="loadCampaigns()"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Refresh</button>
+      </div>
+      <div class="camps-grid" id="campaignsGrid">
+        <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--dim);">Loading...</div>
+      </div>
+    </div>
+
+    <!-- ── HISTORY ── -->
+    <div class="section" id="sec-history">
+      <div class="sh" style="margin-bottom:.8rem;">
+        <div class="sh-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Donation History</div>
+      </div>
+      <div class="hist-card">
+        <div class="hist-filters">
+          <input class="fi" type="text" id="searchHistory" placeholder="Search campaigns..." style="min-width:180px;">
+          <select class="fi" id="filterStatus">
+            <option value="all">All Status</option><option value="success">Success</option><option value="failed">Failed</option>
+          </select>
+          <select class="fi" id="filterMethod">
+            <option value="all">All Methods</option><option value="online">Online</option><option value="upi">UPI</option><option value="bank">Bank Transfer</option><option value="cash">Cash</option>
+          </select>
+          <select class="fi" id="sortBy">
+            <option value="newest">Newest First</option><option value="oldest">Oldest First</option><option value="highest">Highest Amount</option><option value="lowest">Lowest Amount</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="htable">
+            <thead><tr><th>Date</th><th>Campaign</th><th>Amount</th><th>Method</th><th>Status</th><th>Receipt</th><th>Track</th></tr></thead>
+            <tbody id="donationHistory"><tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--dim);">Loading history...</td></tr></tbody>
+          </table>
+        </div>
+        <div class="statements-row">
+          <div>
+            <div class="statements-label">Annual Giving Statements</div>
+            <div class="statements-sub">Download a PDF summary for tax records (Section 80G)</div>
+          </div>
+          <div class="stmt-btns" id="statementButtons"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── IMPACT ── -->
+    <div class="section" id="sec-impact">
+      <div class="sh">
+        <div class="sh-title"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Impact Tracker</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-selector">
+          <label>Select a campaign to see your impact:</label>
+          <select id="campaignSelector">
+            <option value="">-- Choose a Campaign --</option>
+          </select>
+        </div>
+        <div id="individualImpactSection" style="display:none;">
+          <div class="sh" style="margin-bottom:.9rem;">
+            <div class="sh-title" id="impactCampaignTitle" style="font-size:1rem;font-weight:700;color:var(--teal);"></div>
+          </div>
+          <div class="impact-stats">
+            <div class="impact-stat"><div class="impact-stat-val" id="impactDonorAmount">—</div><div class="impact-stat-lbl">Your Donation</div></div>
+            <div class="impact-stat"><div class="impact-stat-val" id="impactUsedAmount" style="color:var(--green);">—</div><div class="impact-stat-lbl">Amount Used</div></div>
+            <div class="impact-stat"><div class="impact-stat-val" id="impactUnusedAmount" style="color:var(--orange);">—</div><div class="impact-stat-lbl">Remaining</div></div>
+            <div class="impact-stat"><div class="impact-stat-val" id="impactCampaignProgress" style="color:var(--purple);">—</div><div class="impact-stat-lbl">Campaign Progress</div></div>
+          <div id="impactShareArea"></div>
+          </div>
+          <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.6rem;">How Your Money Was Used</div>
+          <div style="overflow-x:auto;">
+            <table class="impact-table">
+              <thead><tr><th>Expense</th><th>Total Cost</th><th>Your Share</th><th>% of Donation</th><th>Date</th></tr></thead>
+              <tbody id="impactBreakdownTable"><tr><td colspan="5" style="padding:2rem;text-align:center;color:var(--dim);">Select a campaign above</td></tr></tbody>
+            </table>
+          </div>
+          <div class="impact-msg" id="impactMessage" style="display:none;"><span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROFILE ── -->
+    <div class="section" id="sec-profile">
+
+      <!-- Profile info card -->
+      <div class="sh" style="margin-bottom:1rem;">
+        <div class="sh-title">
+          <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:var(--orange);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          My Profile
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.2rem;">
+
+        <!-- Edit profile card -->
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="padding:.9rem 1.3rem;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:.5rem;">
+            <span style="font-size:.88rem;font-weight:700;color:var(--text);">Personal Information</span>
+          </div>
+          <div style="padding:1.3rem;">
+            <!-- avatar row -->
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.4rem;padding-bottom:1.2rem;border-bottom:1px solid var(--border2);">
+              <!-- Profile photo area -->
+              <div style="position:relative;flex-shrink:0;">
+                <div id="profileAvatar" style="width:72px;height:72px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;color:#fff;overflow:hidden;border:3px solid white;box-shadow:0 2px 10px rgba(0,0,0,.1);">D</div>
+                <label for="photoInput" style="position:absolute;bottom:0;right:0;width:22px;height:22px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid white;" title="Change photo">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                </label>
+                <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handlePhotoUpload(this)">
+              </div>
+              <div style="flex:1;">
+                <div id="profileFullName" style="font-size:.95rem;font-weight:700;color:var(--text);">Loading...</div>
+                <div id="profileEmail2" style="font-size:.78rem;color:var(--muted);margin-top:.15rem;"></div>
+                <div id="profileMember" style="font-size:.72rem;color:var(--dim);margin-top:.1rem;"></div>
+                <div style="display:flex;gap:.4rem;margin-top:.4rem;">
+                  <span id="photoStatus" style="font-size:.7rem;color:var(--dim);"></span>
+                  <button id="removePhotoBtn" onclick="removePhoto()" style="display:none;font-size:.7rem;color:var(--red);background:none;border:none;cursor:pointer;padding:0;font-family:'Inter',sans-serif;">Remove photo</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- form fields -->
+            <div style="margin-bottom:.9rem;">
+              <label style="display:block;font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;">Full Name</label>
+              <input type="text" id="editName" style="width:100%;padding:.6rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.86rem;color:var(--text);background:#fafafa;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'" placeholder="Your full name">
+            </div>
+            <div style="margin-bottom:.9rem;">
+              <label style="display:block;font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;">Email Address</label>
+              <input type="email" id="editEmail" style="width:100%;padding:.6rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.86rem;color:var(--text);background:#fafafa;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'" placeholder="you@example.com">
+            </div>
+            <div style="margin-bottom:1.2rem;">
+              <label style="display:block;font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;">Phone Number</label>
+              <input type="tel" id="editPhone" style="width:100%;padding:.6rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.86rem;color:var(--text);background:#fafafa;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'" placeholder="+91 00000 00000">
+            </div>
+
+            <!-- feedback -->
+            <div id="profileErr" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:7px;padding:.55rem .85rem;font-size:.78rem;color:var(--red);margin-bottom:.8rem;"></div>
+            <div id="profileOk"  style="display:none;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:7px;padding:.55rem .85rem;font-size:.78rem;color:#065f46;margin-bottom:.8rem;"></div>
+
+            <button onclick="saveProfile()" id="saveProfileBtn" style="display:inline-flex;align-items:center;gap:.4rem;padding:.65rem 1.4rem;background:var(--teal);color:#fff;border:none;border-radius:8px;font-size:.84rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:background .18s;">
+              <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="20 6 9 17 4 12"/></svg>
+              Save Changes
+            </button>
+          </div>
+        </div>
+
+        <!-- Change password card -->
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="padding:.9rem 1.3rem;border-bottom:1px solid var(--border2);">
+            <span style="font-size:.88rem;font-weight:700;color:var(--text);">Change Password</span>
+          </div>
+          <div style="padding:1.3rem;">
+            <div style="background:var(--bg);border-radius:8px;padding:.75rem 1rem;font-size:.78rem;color:var(--muted);line-height:1.6;margin-bottom:1.2rem;display:flex;align-items:flex-start;gap:.5rem;">
+              <svg viewBox="0 0 24 24" style="width:13px;height:13px;flex-shrink:0;margin-top:2px;fill:none;stroke:var(--teal3);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Use at least 8 characters. Mix letters, numbers and symbols for a stronger password.
+            </div>
+            <div style="margin-bottom:.9rem;">
+              <label style="display:block;font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;">Current Password</label>
+              <div style="position:relative;">
+                <input type="password" id="pwCurrent" style="width:100%;padding:.6rem 2.6rem .6rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.86rem;color:var(--text);background:#fafafa;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'" placeholder="••••••••">
+                <span onclick="togglePwField('pwCurrent',this)" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--dim);">
+                  <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </span>
+              </div>
+            </div>
+            <div style="margin-bottom:.9rem;">
+              <label style="display:block;font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;">New Password</label>
+              <div style="position:relative;">
+                <input type="password" id="pwNew" style="width:100%;padding:.6rem 2.6rem .6rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.86rem;color:var(--text);background:#fafafa;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'" placeholder="Min 8 characters">
+                <span onclick="togglePwField('pwNew',this)" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--dim);">
+                  <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </span>
+              </div>
+              <!-- strength bar -->
+              <div id="pwStrengthBar" style="height:3px;border-radius:99px;margin-top:.4rem;background:var(--border2);overflow:hidden;"><div id="pwStrengthFill" style="height:100%;width:0%;border-radius:99px;transition:all .3s;"></div></div>
+              <div id="pwStrengthLbl" style="font-size:.67rem;color:var(--dim);margin-top:.2rem;"></div>
+            </div>
+            <div style="margin-bottom:1.2rem;">
+              <label style="display:block;font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;">Confirm New Password</label>
+              <input type="password" id="pwConfirm" style="width:100%;padding:.6rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.86rem;color:var(--text);background:#fafafa;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'" placeholder="Repeat new password">
+            </div>
+
+            <div id="pwErr" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:7px;padding:.55rem .85rem;font-size:.78rem;color:var(--red);margin-bottom:.8rem;"></div>
+            <div id="pwOk"  style="display:none;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:7px;padding:.55rem .85rem;font-size:.78rem;color:#065f46;margin-bottom:.8rem;"></div>
+
+            <button onclick="changePassword()" id="changePwBtn" style="display:inline-flex;align-items:center;gap:.4rem;padding:.65rem 1.4rem;background:var(--orange);color:#fff;border:none;border-radius:8px;font-size:.84rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:background .18s;">
+              <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Update Password
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Danger zone -->
+      <div style="background:var(--white);border:1px solid #fecaca;border-radius:12px;padding:1.2rem 1.4rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;">
+        <div>
+          <div style="font-size:.88rem;font-weight:700;color:var(--red);margin-bottom:.2rem;">Account</div>
+          <div style="font-size:.78rem;color:var(--muted);">Sign out of your TrustFlow account on this device.</div>
+        </div>
+        <button onclick="logout()" style="display:inline-flex;align-items:center;gap:.4rem;padding:.58rem 1.2rem;background:var(--white);color:var(--red);border:1.5px solid #fecaca;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s;" >
+          <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
+      </div>
+
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- DONATION MODAL -->
+<div class="modal" id="donationModal">
+  <div class="mbox">
+    <div class="mhead">
+      <div class="mhead-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+      <span class="mhead-title">Make a Donation</span>
+      <button class="mclose" onclick="closeModal('donationModal')">&#x2715;</button>
+    </div>
+    <div class="mbody">
+      <div class="fraud-warning" id="fraudWarning"><strong>Transaction Flagged:</strong> <span id="fraudMsg"></span></div>
+      <label class="flabel">Select Campaign *</label>
+      <select class="finput" id="campaignSelect"></select>
+      <label class="flabel">Payment Method</label>
+      <select class="finput" id="paymentMethod">
+        <option value="online">Online (Card)</option><option value="upi">UPI</option>
+        <option value="bank">Bank Transfer</option><option value="cash">Cash</option>
+      </select>
+      <label class="flabel">Amount (Rs.) *</label>
+      <div class="quick-amounts">
+        <button class="qa-btn" onclick="setAmount(500)">Rs.500</button>
+        <button class="qa-btn" onclick="setAmount(1000)">Rs.1,000</button>
+        <button class="qa-btn" onclick="setAmount(2000)">Rs.2,000</button>
+        <button class="qa-btn" onclick="setAmount(5000)">Rs.5,000</button>
+      </div>
+      <input type="number" class="finput" id="donationAmount" placeholder="Or enter custom amount" min="1">
+      <label class="flabel">Transaction ID <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--dim);">(optional)</span></label>
+      <input type="text" class="finput" id="transactionId" placeholder="UPI ref / bank ref">
+    </div>
+    <div class="mfoot">
+      <button class="btn-cancel" onclick="closeModal('donationModal')">Cancel</button>
+      <button class="btn-submit" onclick="confirmDonation()">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Donate Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<button class="fab" onclick="openModal('donationModal')" title="Donate Now">
+  <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+</button>
+
+<div id="toast"></div>
+
+<script>
+let currentUserId=null;
+let donationHistory=[];
+
+document.getElementById('currentDate').textContent=
+  new Date().toLocaleDateString('en-IN',{weekday:'short',year:'numeric',month:'long',day:'numeric'});
+document.getElementById('greetDate').textContent=
+  new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+checkAuth();
+
+async function checkAuth(){
+  try{const r=await fetch('/current_user');const d=await r.json();
+    if(!d.logged_in||d.role!=='donor'){window.location.href='/web/login';return;}
+    currentUserId=d.user_id;loadDonorData();
+  }catch(e){}
+}
+
+async function loadDonorData(){
+  await Promise.all([loadProfile(),loadStats(),loadCampaigns(),loadHistory()]);
+  loadNotificationCount();renderStatementButtons();
+}
+
+/* ── Profile ── */
+async function loadProfile(){
+  try{const r=await fetch('/get_user_profile');const d=await r.json();
+    if(d.status==='success'){
+      const name=d.user.name||'Donor';
+      const init=name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+      document.getElementById('donorName')&&(document.getElementById('donorName').textContent=name);
+      document.getElementById('bannerName').textContent=name.split(' ')[0];
+      // Show photo in sidebar on page load
+      if(u.profile_photo) updateAvatarDisplay(u.profile_photo);
+      document.getElementById('donorInitials').textContent=init;
+    }
+  }catch(e){}
+}
+
+/* ── Stats ── */
+async function loadStats(){
+  try{const r=await fetch(`/donor_stats/${currentUserId}`);const d=await r.json();
+    document.getElementById('totalDonated').textContent='Rs.'+(d.total||0).toLocaleString('en-IN');
+    const subEl=document.getElementById('greetSub');
+    if(subEl){
+      const cnt=d.count||0;
+      if(cnt===0) subEl.textContent='Welcome! Start your giving journey by exploring live campaigns.';
+      else if(cnt<=2) subEl.textContent='You have supported '+cnt+' campaign'+(cnt>1?'s':'')+'. Every rupee makes a difference.';
+      else subEl.textContent='You have made '+cnt+' donations. Your generosity is changing lives.';
+    }
+    document.getElementById('activeCauses').textContent=d.active_causes||0;
+    document.getElementById('lastDonationAmount').textContent='Rs.'+(d.last_donation_amount||0).toLocaleString('en-IN');
+    if(d.last_donation_date){
+      const days=Math.floor((Date.now()-new Date(d.last_donation_date))/86400000);
+      document.getElementById('lastDonationDays').textContent=days===0?'Today':days===1?'Yesterday':`${days} days ago`;
+    }
+  }catch(e){}
+}
+
+/* ── Category helpers ── */
+const CAT={Medical:{cls:'cat-med',pill:'cp-med',pf:'linear-gradient(90deg,#ef4444,#f97316)'},Education:{cls:'cat-edu',pill:'cp-edu',pf:'linear-gradient(90deg,#3b82f6,#8b5cf6)'},Environment:{cls:'cat-env',pill:'cp-env',pf:'linear-gradient(90deg,#10b981,#06b6d4)'},Community:{cls:'cat-com',pill:'cp-com',pf:'linear-gradient(90deg,#f59e0b,#f97316)'}};
+function getCat(c){return CAT[c]||{cls:'cat-gen',pill:'cp-gen',pf:'linear-gradient(90deg,#1a6070,#0f4d5e)'};}
+
+/* ── Campaigns ── */
+async function loadCampaigns(){
+  try{const r=await fetch('/campaigns');const data=await r.json();
+    const approved=data.filter(c=>c.status==='approved'||c.status==='pending');
+    const sel=document.getElementById('campaignSelect');
+    sel.innerHTML='<option value="">-- Select Campaign --</option>'+approved.map(c=>`<option value="${c.campaign_id}">${c.title}</option>`).join('');
+    const impSel=document.getElementById('campaignSelector');
+    impSel.innerHTML='<option value="">-- Choose a Campaign --</option>'+approved.map(c=>`<option value="${c.campaign_id}">${c.title}</option>`).join('');
+    const cards=approved.length?approved.map(c=>buildCampCard(c)).join(''):'<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--dim);">No active campaigns right now.</div>';
+    document.getElementById('campaignsGrid').innerHTML=cards;
+    document.getElementById('overviewCampsGrid').innerHTML=approved.slice(0,6).length?approved.slice(0,6).map(c=>buildCampCard(c)).join(''):'<div style="text-align:center;padding:2rem;color:var(--dim);">No active campaigns.</div>';
+  }catch(e){console.error(e);}
+}
+
+function buildCampCard(c){
+  const pct=c.target_amount?Math.min(100,((c.collected_amount/c.target_amount)*100)).toFixed(1):0;
+  const cm=getCat(c.category);
+  const urg=pct<30?{cls:'urg-high',txt:'Urgent'}:pct<70?{cls:'urg-med',txt:'Needs Help'}:{cls:'urg-low',txt:'Almost Done'};
+  return `<div class="camp ${cm.cls}">
+    <div class="camp-strip"></div>
+    <div class="camp-body">
+      <div class="camp-top">
+        <span class="cat-pill ${cm.pill}">${c.category||'General'}</span>
+        <span class="urgency ${urg.cls}">${urg.txt}</span>
+      </div>
+      <div class="camp-title">${c.title}</div>
+      <div class="camp-desc">${(c.description||'').substring(0,85)}${(c.description||'').length>85?'…':''}</div>
+      <div class="prog-nums">
+        <span class="prog-raised">Rs.${(c.collected_amount||0).toLocaleString('en-IN')}</span>
+        <span class="prog-target">of Rs.${(c.target_amount||0).toLocaleString('en-IN')}</span>
+        <span class="prog-pct">${pct}%</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${cm.pf}"></div></div>
+      <div class="camp-foot">
+        <span class="camp-donors"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>${c.total_donors||0} donors</span>
+        <div style="display:flex;gap:.4rem;">
+          <button class="btn-donate-card" style="background:var(--bg);color:var(--teal);border:1px solid var(--border);" onclick="window.location.href='/web/campaign?id=${c.campaign_id}'">
+            <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>View
+          </button>
+          <button class="btn-donate-card" onclick="openDonationModalForCampaign(${c.campaign_id})">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Donate
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── History ── */
+async function loadHistory(){
+  try{const r=await fetch(`/donation_history/${currentUserId}`);
+    donationHistory=await r.json();
+    document.getElementById('receiptCount').textContent=donationHistory.length;
+    renderHistory(donationHistory);setupHistoryFilters();
+  }catch(e){console.error(e);}
+}
+
+function renderHistory(data){
+  const tb=document.getElementById('donationHistory');
+  if(!data.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--dim);">No donations yet. Make your first donation!</td></tr>';return;}
+  tb.innerHTML=data.map(item=>`<tr>
+    <td style="white-space:nowrap;color:var(--muted);">${new Date(item.date).toLocaleDateString('en-IN')}</td>
+    <td style="font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.campaign}</td>
+    <td style="font-weight:700;color:var(--teal);">Rs.${(item.amount||0).toLocaleString('en-IN')}</td>
+    <td><span class="method-pill">${item.payment_method||'online'}</span></td>
+    <td><span class="stat-pill sp-${item.status}">${item.status==='success'?'✓ Success':item.status==='failed'?'✗ Failed':'Pending'}</span></td>
+    <td style="display:flex;gap:3px;">
+      <button class="btn-icon" onclick="downloadReceipt(${item.id})" title="Download Receipt"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+      <button class="btn-icon" onclick="downloadCertificate(${item.id})" title="Download Certificate" style="color:var(--orange);"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></button>
+    </td>
+    <td><button class="btn-icon" onclick="loadImpact(${item.campaign_id})" title="Track Impact"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></button></td>
+  </tr>`).join('');
+}
+
+function setupHistoryFilters(){
+  ['searchHistory','filterStatus','filterMethod','sortBy'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.addEventListener('input',applyHistoryFilters);
+    el.addEventListener('change',applyHistoryFilters);
+  });
+}
+
+function applyHistoryFilters(){
+  let f=[...donationHistory];
+  const q=document.getElementById('searchHistory').value.toLowerCase();
+  const status=document.getElementById('filterStatus').value;
+  const method=document.getElementById('filterMethod').value;
+  const sort=document.getElementById('sortBy').value;
+  if(q)f=f.filter(d=>d.campaign.toLowerCase().includes(q));
+  if(status!=='all')f=f.filter(d=>d.status===status);
+  if(method!=='all')f=f.filter(d=>(d.payment_method||'online')===method);
+  f.sort((a,b)=>{
+    if(sort==='newest')return new Date(b.date)-new Date(a.date);
+    if(sort==='oldest')return new Date(a.date)-new Date(b.date);
+    if(sort==='highest')return b.amount-a.amount;
+    if(sort==='lowest')return a.amount-b.amount;
+    return 0;
+  });
+  renderHistory(f);
+}
+
+/* ── Statement Buttons ── */
+function renderStatementButtons(){
+  const c=document.getElementById('statementButtons');
+  const yr=new Date().getFullYear();
+  c.innerHTML=[yr,yr-1,yr-2].map(y=>`<button class="stmt-btn" onclick="downloadStatement(${y})">${y} Statement</button>`).join('');
+}
+
+async function downloadStatement(year){
+  if(!currentUserId){showToast('Please log in first');return;}
+  try{
+    const r = await fetch(`/donor_statement/${currentUserId}/${year}`);
+    const ct = r.headers.get('content-type')||'';
+    if(ct.includes('application/json')){
+      const d = await r.json();
+      showToast(d.message || `No donations found for ${year}.`);
+      return;
+    }
+    // It's a PDF — trigger download
+    const blob = await r.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = `TrustFlow_Statement_${year}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }catch(e){ showToast('Could not download statement. Please try again.'); }
+}
+
+/* ── Impact ── */
+document.getElementById('campaignSelector').addEventListener('change',function(){
+  if(this.value)loadImpact(parseInt(this.value));
+  else document.getElementById('individualImpactSection').style.display='none';
+});
+
+async function loadImpact(campaignId){
+  document.getElementById('campaignSelector').value=campaignId;
+  try{const r=await fetch(`/donor_impact/${currentUserId}/${campaignId}`);const d=await r.json();
+    if(d.status==='success'){
+      document.getElementById('individualImpactSection').style.display='block';
+      document.getElementById('impactCampaignTitle').textContent=d.campaign_title;
+      document.getElementById('impactDonorAmount').textContent='Rs.'+d.donor_amount.toLocaleString('en-IN');
+      // Share my impact
+      const __shareEl=document.getElementById('impactShareArea');
+      if(__shareEl&&d.donor_amount>0){
+        const __camp=document.getElementById('campaignSelector').selectedOptions[0]?.text||'a campaign';
+        const __items=(d.impact_breakdown||[]).length;
+        const __txt='I donated Rs.'+Math.round(d.donor_amount).toLocaleString('en-IN')+' to '+__camp+' on TrustFlow and helped fund '+__items+' expense items!';
+        __shareEl.innerHTML='<button onclick="navigator.clipboard.writeText(this.getAttribute(\'data-m\')).then(()=>showToast(\'Copied! Share with friends.\'))" data-m="'+__txt+'" style="margin-top:.6rem;display:inline-flex;align-items:center;gap:.4rem;padding:.45rem 1rem;background:var(--teal);color:white;border:none;border-radius:7px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit;">📤 Share My Impact</button>';
+      }
+      document.getElementById('impactUsedAmount').textContent='Rs.'+d.used_amount.toLocaleString('en-IN');
+      document.getElementById('impactUnusedAmount').textContent='Rs.'+d.unused_amount.toLocaleString('en-IN');
+      document.getElementById('impactCampaignProgress').textContent=d.campaign_progress+'%';
+      const tb=document.getElementById('impactBreakdownTable');
+      tb.innerHTML=d.impact_breakdown.length?d.impact_breakdown.map(i=>`<tr>
+        <td style="font-weight:600;">${i.title}</td>
+        <td>Rs.${i.total_amount.toLocaleString('en-IN')}</td>
+        <td style="font-weight:700;color:var(--green);">Rs.${i.donor_share.toLocaleString('en-IN')}</td>
+        <td>${i.percentage_of_donation}%</td>
+        <td style="color:var(--dim);">${new Date(i.date).toLocaleDateString('en-IN')}</td>
+      </tr>`).join(''):'<tr><td colspan="5" style="padding:1.5rem;text-align:center;color:var(--dim);">No expenses recorded yet</td></tr>';
+      const msg=document.getElementById('impactMessage');
+      msg.querySelector('span').textContent=d.message;
+      msg.style.display='block';
+      switchSection('impact');
+      document.getElementById('individualImpactSection').scrollIntoView({behavior:'smooth'});
+    }
+  }catch(e){console.error(e);}
+}
+
+/* ── Donation Modal ── */
+function openDonationModal(){openModal('donationModal');}
+function openDonationModalForCampaign(id){document.getElementById('campaignSelect').value=id;openModal('donationModal');}
+function setAmount(a){document.getElementById('donationAmount').value=a;}
+
+async function confirmDonation(){
+  const campaignId=document.getElementById('campaignSelect').value;
+  const amount=document.getElementById('donationAmount').value;
+  const method=document.getElementById('paymentMethod').value;
+  const txnId=document.getElementById('transactionId').value;
+  if(!campaignId){showToast('Please select a campaign');return;}
+  if(!amount||amount<=0){showToast('Please enter a valid amount');return;}
+  document.getElementById('fraudWarning').classList.remove('show');
+  try{const r=await fetch('/donate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({campaign_id:parseInt(campaignId),amount:parseFloat(amount),payment_method:method,transaction_id:txnId||null})});
+    const d=await r.json();
+    if(d.status==='success'){closeModal('donationModal');showToast('Donation successful! Thank you for your generosity.');loadDonorData();}
+    else if(d.status==='fraud'){document.getElementById('fraudMsg').textContent=d.flags?d.flags.join(' | '):d.message;document.getElementById('fraudWarning').classList.add('show');}
+    else if(d.status==='payment_failed'){showToast('Payment failed. Please try a different payment method or retry.');}
+    else if(d.status==='blocked'){showToast('Your account has been restricted. Please contact support.');}
+    else{showToast('Error: '+(d.message||'Unknown error'));}
+  }catch(e){showToast('Network error. Please try again.');}
+}
+
+/* ── Receipt ── */
+async function downloadReceipt(id){
+  try{const r=await fetch(`/generate_receipt/${id}`);const blob=await r.blob();
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
+    a.href=url;a.download=`receipt_${id}.pdf`;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  }catch(e){showToast('Failed to download receipt');}
+}
+
+/* ── Notifications ── */
+async function loadNotificationCount(){
+  try{const r=await fetch('/get_notification_count');const d=await r.json();
+    const cnt=d.count||0;const dot=document.getElementById('notifDot');
+    dot.textContent=cnt>9?'9+':cnt;cnt>0?dot.classList.add('show'):dot.classList.remove('show');
+  }catch(e){}
+}
+
+async function toggleNotifPanel(){
+  const p=document.getElementById('notifPanel');
+  if(!p.classList.contains('open')){p.classList.add('open');
+    try{const r=await fetch('/get_notifications');const d=await r.json();
+      const list=document.getElementById('notifList');
+      if(!d.length){list.innerHTML='<div class="notif-empty">No notifications yet</div>';return;}
+      list.innerHTML=d.slice(0,10).map(n=>`<div class="notif-item unread"><div>${n.message}</div><div class="notif-time">${n.created_at?new Date(n.created_at).toLocaleString('en-IN'):''}</div></div>`).join('');
+    }catch(e){}
+  } else p.classList.remove('open');
+}
+
+async function markNotifRead(){
+  try{await fetch('/mark_notifications_read',{method:'POST'});
+    document.getElementById('notifDot').classList.remove('show');
+    document.querySelectorAll('.notif-item').forEach(el=>el.classList.remove('unread'));
+  }catch(e){}
+}
+
+document.addEventListener('click',e=>{
+  const p=document.getElementById('notifPanel');
+  if(!p.contains(e.target)&&!e.target.closest('.notif-wrap'))p.classList.remove('open');
+});
+
+/* ── Sections handled below ── */
+
+/* ── Modal ── */
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+window.addEventListener('click',e=>{if(e.target.classList.contains('modal'))e.target.classList.remove('open');});
+
+/* ── Profile Photo ── */
+async function handlePhotoUpload(input){
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 2*1024*1024){
+    showToast('Image too large. Maximum size is 2MB.');
+    return;
+  }
+  const statusEl = document.getElementById('photoStatus');
+  if(statusEl) statusEl.textContent = 'Uploading...';
+  const reader = new FileReader();
+  reader.onload = async function(e){
+    const b64 = e.target.result;
+    try{
+      const r = await fetch('/upload_profile_photo',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({photo:b64})
+      });
+      const d = await r.json();
+      if(d.status==='success'){
+        updateAvatarDisplay(b64);
+        showToast('Profile photo updated!');
+        if(statusEl) statusEl.textContent = 'Photo uploaded';
+        document.getElementById('removePhotoBtn').style.display='inline';
+      } else {
+        showToast('Error: '+d.message);
+        if(statusEl) statusEl.textContent = '';
+      }
+    }catch(e){
+      showToast('Upload failed. Please try again.');
+      if(statusEl) statusEl.textContent = '';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateAvatarDisplay(photoSrc){
+  // Update profile avatar (large)
+  const pa = document.getElementById('profileAvatar');
+  if(pa){
+    if(photoSrc){
+      pa.innerHTML = '<img src="'+photoSrc+'" style="width:100%;height:100%;object-fit:cover;" alt="Profile">';
+    } else {
+      const name = document.getElementById('profileFullName')?.textContent || 'D';
+      const initials = name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+      pa.innerHTML = initials;
+      pa.style.fontSize = '1.6rem';
+    }
+  }
+  // Update sidebar avatar (small)
+  const sa = document.getElementById('donorInitials');
+  if(sa){
+    if(photoSrc){
+      sa.innerHTML = '<img src="'+photoSrc+'" style="width:32px;height:32px;object-fit:cover;border-radius:50%;" alt="Avatar">';
+    } else {
+      const name = document.getElementById('profileFullName')?.textContent || 'D';
+      sa.textContent = name.charAt(0).toUpperCase();
+    }
+  }
+}
+
+async function removePhoto(){
+  if(!confirm('Remove your profile photo?')) return;
+  try{
+    const r = await fetch('/delete_profile_photo',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+    const d = await r.json();
+    if(d.status==='success'){
+      updateAvatarDisplay(null);
+      document.getElementById('removePhotoBtn').style.display='none';
+      const statusEl = document.getElementById('photoStatus');
+      if(statusEl) statusEl.textContent = '';
+      showToast('Photo removed');
+    }
+  }catch(e){ showToast('Failed to remove photo'); }
+}
+
+/* ── Certificate ── */
+function downloadCertificate(donationId){
+  window.location.href = `/generate_certificate/${donationId}`;
+}
+
+/* ── Toast ── */
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
+
+/* ── Profile section ─────────────────────────────── */
+function switchSection(name){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sb-item[id^="nav-"]').forEach(i=>i.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  const ni=document.getElementById('nav-'+name);if(ni)ni.classList.add('active');
+  document.getElementById('pageTitle').textContent=titles[name]||name;
+  if(name==='profile') loadProfileSection();
+}
+
+async function loadProfileSection(){
+  // Load latest profile including photo
+  try{
+    const r=await fetch('/get_user_profile');const d=await r.json();
+    if(d.status==='success'){
+      const u=d.user;
+      document.getElementById('editName').value  = u.name  || '';
+      document.getElementById('editEmail').value = u.email || '';
+      document.getElementById('editPhone').value = u.phone || '';
+      // avatar initials
+      const init=(u.name||'D').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+      document.getElementById('profileAvatar').textContent  = init;
+      document.getElementById('profileFullName').textContent = u.name || '—';
+      // Show photo or initials based on whether photo is uploaded
+      if(u.profile_photo){
+        updateAvatarDisplay(u.profile_photo);
+        const rb = document.getElementById('removePhotoBtn');
+        if(rb) rb.style.display = 'inline';
+        const st = document.getElementById('photoStatus');
+        if(st) st.textContent = 'Photo uploaded ✓';
+      } else {
+        updateAvatarDisplay(null);
+      }
+      document.getElementById('profileEmail2').textContent   = u.email || '';
+      if(u.created_at){
+        const joined=new Date(u.created_at).toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+        document.getElementById('profileMember').textContent = 'Member since '+joined;
+      }
+    }
+  }catch(e){console.error(e);}
+}
+
+async function saveProfile(){
+  const name  = document.getElementById('editName').value.trim();
+  const email = document.getElementById('editEmail').value.trim();
+  const phone = document.getElementById('editPhone').value.trim();
+  const errEl = document.getElementById('profileErr');
+  const okEl  = document.getElementById('profileOk');
+  const btn   = document.getElementById('saveProfileBtn');
+  errEl.style.display='none'; okEl.style.display='none';
+
+  if(!name){errEl.textContent='Name cannot be empty.';errEl.style.display='block';return;}
+  if(!email){errEl.textContent='Email cannot be empty.';errEl.style.display='block';return;}
+
+  btn.textContent='Saving…'; btn.style.opacity='.7'; btn.style.pointerEvents='none';
+  try{
+    const r=await fetch('/update_profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,phone})});
+    const d=await r.json();
+    if(d.status==='success'){
+      okEl.textContent='Profile updated successfully.';okEl.style.display='block';
+      // refresh displayed name + avatar
+      document.getElementById('profileFullName').textContent=name;
+      document.getElementById('profileEmail2').textContent=email;
+      const init=name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+      document.getElementById('profileAvatar').textContent=init;
+      document.getElementById('donorInitials').textContent=init;
+      document.getElementById('bannerName').textContent=name.split(' ')[0];
+      showToast('Profile updated successfully');
+    } else {
+      errEl.textContent=d.message||'Update failed.';errEl.style.display='block';
+    }
+  }catch(e){errEl.textContent='Network error. Please try again.';errEl.style.display='block';}
+  finally{
+    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="20 6 9 17 4 12"/></svg> Save Changes';
+    btn.style.opacity='1';btn.style.pointerEvents='auto';
+  }
+}
+
+async function changePassword(){
+  const current = document.getElementById('pwCurrent').value;
+  const newPw   = document.getElementById('pwNew').value;
+  const confirm = document.getElementById('pwConfirm').value;
+  const errEl   = document.getElementById('pwErr');
+  const okEl    = document.getElementById('pwOk');
+  const btn     = document.getElementById('changePwBtn');
+  errEl.style.display='none'; okEl.style.display='none';
+
+  if(!current){errEl.textContent='Please enter your current password.';errEl.style.display='block';return;}
+  if(!newPw||newPw.length<8){errEl.textContent='New password must be at least 8 characters.';errEl.style.display='block';return;}
+  if(newPw!==confirm){errEl.textContent='New passwords do not match.';errEl.style.display='block';return;}
+  if(newPw===current){errEl.textContent='New password must be different from your current password.';errEl.style.display='block';return;}
+
+  btn.textContent='Updating…';btn.style.opacity='.7';btn.style.pointerEvents='none';
+  try{
+    const r=await fetch('/change_password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({current_password:current,new_password:newPw})});
+    const d=await r.json();
+    if(d.status==='success'){
+      okEl.textContent='Password changed successfully.';okEl.style.display='block';
+      document.getElementById('pwCurrent').value='';
+      document.getElementById('pwNew').value='';
+      document.getElementById('pwConfirm').value='';
+      document.getElementById('pwStrengthFill').style.width='0%';
+      document.getElementById('pwStrengthLbl').textContent='';
+      showToast('Password updated successfully');
+    } else {
+      errEl.textContent=d.message||'Password change failed.';errEl.style.display='block';
+    }
+  }catch(e){errEl.textContent='Network error. Please try again.';errEl.style.display='block';}
+  finally{
+    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\" ry=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"/></svg> Update Password';
+    btn.style.opacity='1';btn.style.pointerEvents='auto';
+  }
+}
+
+/* password strength meter */
+document.addEventListener('DOMContentLoaded',()=>{
+  const pwNew=document.getElementById('pwNew');
+  if(pwNew) pwNew.addEventListener('input',function(){
+    const v=this.value;
+    let score=0;
+    if(v.length>=8) score++;
+    if(v.length>=12) score++;
+    if(/[A-Z]/.test(v)&&/[a-z]/.test(v)) score++;
+    if(/[0-9]/.test(v)) score++;
+    if(/[^A-Za-z0-9]/.test(v)) score++;
+    const fill=document.getElementById('pwStrengthFill');
+    const lbl=document.getElementById('pwStrengthLbl');
+    const levels=[
+      {w:'0%', c:'',               t:''},
+      {w:'25%',c:'var(--red)',     t:'Weak'},
+      {w:'50%',c:'var(--orange)',  t:'Fair'},
+      {w:'75%',c:'#eab308',        t:'Good'},
+      {w:'100%',c:'var(--green)', t:'Strong'},
+    ];
+    const l=levels[Math.min(score,4)];
+    fill.style.width=l.w; fill.style.background=l.c;
+    lbl.textContent=l.t; lbl.style.color=l.c;
+  });
+});
+
+function togglePwField(id,btn){
+  const inp=document.getElementById(id);
+  if(!inp)return;
+  inp.type=inp.type==='password'?'text':'password';
+}
+
+/* ── Logout ── */
+async function logout(){await fetch('/logout');window.location.href='/';}
+</script>
+</body>
+</html>

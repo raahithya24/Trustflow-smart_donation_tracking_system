@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustFlow — Admin Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --teal:#0d3b47;--teal2:#0f4d5e;--teal3:#1a6070;--teal-light:#e8f4f8;
+  --orange:#f97316;--orange2:#fb923c;--orange-dark:#ea580c;
+  --bg:#081e28;--card:#0f2d3d;
+  --text:rgba(255,255,255,.92);--muted:rgba(255,255,255,.5);--dim:rgba(255,255,255,.25);
+  --border:rgba(255,255,255,.1);--border2:rgba(255,255,255,.06);
+  --red:#ef4444;--green:#10b981;
+}
+html,body{height:100%;}
+body{
+  font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:1.5rem;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(13,59,71,.6) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(249,115,22,.04) 0%, transparent 50%);
+}
+
+/* ── CARD ── */
+.card{
+  width:100%;max-width:420px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
+  animation:fadeUp .35s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+
+/* top accent bar */
+.card-accent{height:3px;background:linear-gradient(90deg,var(--orange-dark),var(--orange2),transparent);}
+
+/* header */
+.card-head{padding:2rem 2.2rem 1.5rem;border-bottom:1px solid var(--border2);}
+.logo{display:flex;align-items:center;gap:.55rem;margin-bottom:1.6rem;}
+.logo-box{width:34px;height:34px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;}
+.logo-box svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.logo-name{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:900;color:white;letter-spacing:-.3px;}
+.logo-name span{color:var(--orange2);}
+.head-title{font-family:'Barlow Condensed',sans-serif;font-size:1.55rem;font-weight:900;color:white;letter-spacing:-.3px;margin-bottom:.25rem;}
+.head-sub{font-size:.8rem;color:var(--muted);line-height:1.5;}
+
+/* warning badge */
+.access-badge{
+  display:inline-flex;align-items:center;gap:.4rem;
+  background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.2);
+  color:var(--orange2);padding:.3rem .9rem;border-radius:99px;
+  font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:1.3rem;
+}
+.access-badge svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* form body */
+.card-body{padding:1.8rem 2.2rem;}
+
+.field{margin-bottom:1.1rem;}
+.flabel{display:block;font-size:.7rem;font-weight:700;color:var(--muted);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.08em;}
+.finput-wrap{position:relative;}
+.finput{
+  width:100%;padding:.75rem 1rem;
+  background:rgba(255,255,255,.06);border:1.5px solid var(--border2);
+  border-radius:8px;font-size:.88rem;color:white;
+  font-family:'Inter',sans-serif;outline:none;transition:all .2s;
+}
+.finput:focus{border-color:var(--orange);background:rgba(255,255,255,.09);}
+.finput::placeholder{color:var(--dim);}
+.finput.error{border-color:var(--red);}
+.pw-toggle{position:absolute;right:.85rem;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--dim);transition:color .18s;}
+.pw-toggle:hover{color:var(--muted);}
+.pw-toggle svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* error / success */
+.alert{border-radius:8px;padding:.65rem 1rem;font-size:.8rem;margin-bottom:1rem;display:none;align-items:center;gap:.5rem;line-height:1.4;}
+.alert.show{display:flex;}
+.alert svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;stroke-linecap:round;stroke-linejoin:round;}
+.alert-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;}
+.alert-success{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);color:#6ee7b7;}
+.alert-warn{background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.2);color:var(--orange2);}
+
+/* submit */
+.btn-submit{
+  width:100%;padding:.82rem;margin-top:.2rem;
+  background:var(--orange);color:#fff;border:none;border-radius:8px;
+  font-size:.92rem;font-weight:700;cursor:pointer;
+  font-family:'Inter',sans-serif;transition:all .22s;
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+}
+.btn-submit:hover{background:var(--orange-dark);box-shadow:0 6px 20px rgba(249,115,22,.3);}
+.btn-submit.loading{opacity:.7;pointer-events:none;}
+.btn-submit svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.spin{animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* footer */
+.card-foot{
+  padding:1rem 2.2rem 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid var(--border2);
+}
+.foot-link{font-size:.75rem;color:var(--dim);cursor:pointer;transition:color .18s;text-decoration:none;display:flex;align-items:center;gap:.3rem;}
+.foot-link:hover{color:var(--muted);}
+.foot-link svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.foot-hint{font-size:.7rem;color:var(--dim);}
+
+/* attempts tracker styling */
+.attempts-bar{
+  display:flex;gap:3px;margin-top:.8rem;
+}
+.attempt-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.08);border:1px solid var(--border2);
+  transition:background .3s;
+}
+.attempt-dot.used{background:rgba(239,68,68,.5);border-color:rgba(239,68,68,.3);}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-accent"></div>
+
+  <div class="card-head">
+    <div class="logo">
+      <div class="logo-box"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="logo-name">Trust<span>Flow</span></div>
+    </div>
+    <div class="access-badge">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Restricted Access
+    </div>
+    <div class="head-title">Admin Portal</div>
+    <div class="head-sub">This page is for authorised platform administrators only. Unauthorised access attempts are logged.</div>
+  </div>
+
+  <div class="card-body">
+
+    <div class="alert alert-warn" id="warnBox">
+      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span id="warnMsg"></span>
+    </div>
+
+    <div class="alert alert-err" id="errBox">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      <span id="errMsg">Invalid credentials.</span>
+    </div>
+
+    <div class="alert alert-success" id="okBox">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      <span>Access granted. Loading admin dashboard…</span>
+    </div>
+
+    <div class="field">
+      <label class="flabel">Admin email</label>
+      <input class="finput" type="email" id="email" placeholder="admin@trustflow.in" autocomplete="username" autofocus>
+    </div>
+
+    <div class="field">
+      <label class="flabel">Password</label>
+      <div class="finput-wrap">
+        <input class="finput" type="password" id="password" placeholder="••••••••••" autocomplete="current-password" style="padding-right:2.8rem;">
+        <div class="pw-toggle" onclick="togglePw()">
+          <svg id="eyeIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- failed-attempt dots — visual only, real lockout is server-side -->
+    <div class="attempts-bar" id="attemptsDots" style="display:none;">
+      <div class="attempt-dot" id="d1"></div>
+      <div class="attempt-dot" id="d2"></div>
+      <div class="attempt-dot" id="d3"></div>
+      <div class="attempt-dot" id="d4"></div>
+      <div class="attempt-dot" id="d5"></div>
+    </div>
+
+    <button class="btn-submit" id="submitBtn" onclick="doLogin()">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Access Admin Dashboard
+    </button>
+
+  </div>
+
+  <div class="card-foot">
+    <a href="/" class="foot-link">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to site
+    </a>
+    <a href="/web/login" class="foot-link">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Donor / NGO login
+    </a>
+  </div>
+</div>
+
+<script>
+let attempts = 0;
+const MAX_ATTEMPTS = 5;
+
+/* ── Enter key ── */
+document.getElementById('password').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('email').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+/* ── PW toggle ── */
+function togglePw(){
+  const inp = document.getElementById('password');
+  const ico = document.getElementById('eyeIcon');
+  if(inp.type==='password'){
+    inp.type='text';
+    ico.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    inp.type='password';
+    ico.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+/* ── Login ── */
+async function doLogin(){
+  const email    = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const btn      = document.getElementById('submitBtn');
+
+  // hide all alerts
+  ['errBox','warnBox','okBox'].forEach(id=>document.getElementById(id).classList.remove('show'));
+  ['email','password'].forEach(id=>document.getElementById(id).classList.remove('error'));
+
+  if(!email){ showErr('Please enter your admin email.'); document.getElementById('email').classList.add('error'); return; }
+  if(!password){ showErr('Please enter your password.'); document.getElementById('password').classList.add('error'); return; }
+
+  if(attempts >= MAX_ATTEMPTS){
+    showWarn('Too many failed attempts. Please wait before trying again.');
+    return;
+  }
+
+  btn.classList.add('loading');
+  btn.innerHTML = '<svg class="spin" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Verifying…';
+
+  try{
+    const res  = await fetch('/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({email, password})
+    });
+    const data = await res.json();
+
+    if(data.status === 'success'){
+      if(data.role !== 'admin'){
+        /* logged in but NOT an admin — reject & logout */
+        await fetch('/logout');
+        attempts++;
+        updateDots();
+        showErr('These credentials do not have admin access. Please use the donor or NGO login instead.');
+        btn.classList.remove('loading');
+        resetBtn();
+      } else {
+        /* success */
+        document.getElementById('okBox').classList.add('show');
+        btn.style.display = 'none';
+        setTimeout(() => window.location.href = '/web/admin', 1000);
+      }
+    } else {
+      attempts++;
+      updateDots();
+      const remaining = MAX_ATTEMPTS - attempts;
+      if(remaining <= 0){
+        showWarn('Too many failed attempts. Please wait 15 minutes before trying again.');
+        btn.disabled = true;
+      } else {
+        showErr(`Invalid credentials. ${remaining} attempt${remaining===1?'':'s'} remaining.`);
+      }
+      btn.classList.remove('loading');
+      resetBtn();
+      document.getElementById('password').value = '';
+      document.getElementById('password').focus();
+    }
+  } catch(e){
+    showErr('Network error. Please try again.');
+    btn.classList.remove('loading');
+    resetBtn();
+  }
+}
+
+function resetBtn(){
+  document.getElementById('submitBtn').innerHTML=
+    '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Access Admin Dashboard';
+}
+
+function updateDots(){
+  const dots = document.getElementById('attemptsDots');
+  dots.style.display = 'flex';
+  for(let i=1;i<=5;i++){
+    const d = document.getElementById('d'+i);
+    d.classList.toggle('used', i<=attempts);
+  }
+}
+
+function showErr(msg){ document.getElementById('errMsg').textContent=msg; document.getElementById('errBox').classList.add('show'); }
+function showWarn(msg){ document.getElementById('warnMsg').textContent=msg; document.getElementById('warnBox').classList.add('show'); }
+</script>
+</body>
+</html>

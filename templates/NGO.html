@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustFlow — NGO Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --teal:#0d3b47;--teal2:#0f4d5e;--teal3:#1a6070;--teal-light:#e8f4f8;
+  --orange:#f97316;--orange2:#fb923c;--orange-dark:#ea580c;
+  --white:#fff;--bg:#f2f6f8;--card:#fff;
+  --text:#1a2c35;--muted:#5a7a85;--border:#d0e8ef;
+  --sidebar-w:240px;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+img{display:block;max-width:100%;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--teal3);border-radius:99px;}
+
+/* ── SIDEBAR ─────────────────────────────────────── */
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--teal);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s;}
+.sb-logo{padding:1.5rem 1.4rem 1.1rem;border-bottom:1px solid rgba(255,255,255,.08);}
+.sb-logo-wrap{display:flex;align-items:center;gap:.55rem;}
+.sb-logo-icon{width:34px;height:34px;background:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-logo-icon svg{width:18px;height:18px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.sb-logo-name{font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:900;color:white;letter-spacing:-.3px;}
+.sb-logo-name span{color:var(--orange2);}
+.sb-role{display:inline-block;margin-top:.45rem;background:rgba(249,115,22,.18);border:1px solid rgba(249,115,22,.28);color:var(--orange2);font-size:.65rem;font-weight:700;padding:.18rem .65rem;border-radius:99px;letter-spacing:.08em;text-transform:uppercase;}
+.sb-nav{flex:1;padding:1rem 0;overflow-y:auto;}
+.sb-section{padding:.4rem 1.4rem .2rem;font-size:.63rem;font-weight:700;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.1em;}
+.nav-item{display:flex;align-items:center;gap:.72rem;padding:.7rem 1.4rem;margin:1px .55rem;border-radius:8px;cursor:pointer;transition:all .2s;color:rgba(255,255,255,.62);font-size:.87rem;font-weight:500;}
+.nav-item:hover{background:rgba(255,255,255,.07);color:white;}
+.nav-item.active{background:var(--orange);color:white;}
+.nav-icon{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.sb-footer{padding:1.1rem 1.4rem;border-top:1px solid rgba(255,255,255,.08);}
+.sb-user{display:flex;align-items:center;gap:.7rem;margin-bottom:.9rem;}
+.sb-avatar{width:36px;height:36px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:900;color:white;flex-shrink:0;}
+.sb-user-name{font-size:.84rem;font-weight:600;color:white;}
+.sb-user-role{font-size:.7rem;color:rgba(255,255,255,.42);}
+.btn-logout{width:100%;padding:.58rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(255,255,255,.68);font-size:.81rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif;display:flex;align-items:center;justify-content:center;gap:.45rem;}
+.btn-logout:hover{background:rgba(249,115,22,.22);border-color:rgba(249,115,22,.35);color:white;}
+.btn-logout svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── MAIN ─────────────────────────────────────────── */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+/* ── TOPBAR ──────────────────────────────────────── */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:.82rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar-left{display:flex;align-items:center;gap:1rem;}
+.page-title{font-family:'Barlow Condensed',sans-serif;font-size:1.25rem;font-weight:800;color:var(--teal);letter-spacing:-.3px;}
+.topbar-date{font-size:.77rem;color:var(--muted);}
+.topbar-right{display:flex;align-items:center;gap:.7rem;}
+.score-pill{display:inline-flex;align-items:center;gap:.4rem;background:var(--teal-light);color:var(--teal);padding:.38rem .9rem;border-radius:99px;font-size:.8rem;font-weight:700;border:1px solid var(--border);}
+.score-pill svg{width:13px;height:13px;fill:none;stroke:var(--orange);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* Notification bell */
+.notif-wrap{position:relative;}
+.notif-btn{width:36px;height:36px;border-radius:8px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--muted);}
+.notif-btn:hover{border-color:var(--teal);color:var(--teal);}
+.notif-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.notif-dot{position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:var(--orange);border-radius:50%;border:2px solid white;display:none;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:white;}
+.notif-dot.show{display:flex;}
+/* Dropdown panel */
+.notif-panel{position:absolute;top:calc(100% + 8px);right:0;width:300px;background:white;border:1px solid var(--border);border-radius:10px;box-shadow:0 10px 30px rgba(13,59,71,.12);z-index:300;display:none;overflow:hidden;}
+.notif-panel.open{display:block;}
+.notif-panel-head{padding:.8rem 1.1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.notif-panel-title{font-size:.85rem;font-weight:700;color:var(--teal);}
+.notif-mark-btn{font-size:.73rem;color:var(--orange);font-weight:600;cursor:pointer;background:none;border:none;font-family:'Barlow',sans-serif;}
+.notif-list{max-height:260px;overflow-y:auto;}
+.notif-item{padding:.8rem 1.1rem;border-bottom:1px solid var(--border);font-size:.82rem;line-height:1.5;color:var(--text);}
+.notif-item:last-child{border-bottom:none;}
+.notif-item.unread{background:var(--teal-light);}
+.notif-time{font-size:.7rem;color:var(--muted);margin-top:.25rem;}
+.notif-empty{padding:1.5rem;text-align:center;color:var(--muted);font-size:.85rem;}
+
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:.35rem;}
+.hamburger span{display:block;width:20px;height:2px;background:var(--teal);border-radius:2px;}
+
+/* ── CONTENT ──────────────────────────────────────── */
+.content{padding:1.8rem 2rem;flex:1;}
+
+/* ── PENDING ALERT ────────────────────────────────── */
+.pending-alert{background:#fffbeb;border:1px solid #fcd34d;border-left:4px solid var(--orange);border-radius:10px;padding:1rem 1.3rem;margin-bottom:1.5rem;display:none;align-items:flex-start;gap:.9rem;}
+.pending-alert.show{display:flex;}
+.pa-icon{width:36px;height:36px;background:rgba(249,115,22,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pa-icon svg{width:18px;height:18px;fill:none;stroke:var(--orange);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.pa-title{font-size:.88rem;font-weight:700;color:#92400e;margin-bottom:.2rem;}
+.pa-desc{font-size:.8rem;color:#b45309;line-height:1.5;}
+
+/* ── STAT CARDS ───────────────────────────────────── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.2rem;margin-bottom:1.8rem;}
+.stat-card{background:var(--card);border-radius:12px;padding:1.4rem 1.5rem;border:1px solid var(--border);position:relative;overflow:hidden;transition:all .3s;}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(13,59,71,.07);border-color:var(--teal3);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.stat-card:nth-child(1)::before{background:var(--teal3);}
+.stat-card:nth-child(2)::before{background:var(--orange);}
+.stat-card:nth-child(3)::before{background:#10b981;}
+.stat-card:nth-child(4)::before{background:#8b5cf6;}
+.sc-icon{width:40px;height:40px;border-radius:9px;background:rgba(13,59,71,.06);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;}
+.sc-icon svg{width:20px;height:20px;fill:none;stroke:var(--teal3);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.stat-card h3{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:.3rem;}
+.stat-card .number{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;color:var(--teal);line-height:1;}
+.stat-card .sub{font-size:.73rem;color:var(--muted);margin-top:.3rem;}
+
+/* ── SECTION LAYOUT ───────────────────────────────── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-bottom:1.5rem;}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-bottom:1.5rem;}
+
+/* ── CARD WRAPPER ─────────────────────────────────── */
+.card{background:var(--card);border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:1.5rem;}
+.card-header{padding:1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem;}
+.card-title{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:800;color:var(--teal);display:flex;align-items:center;gap:.45rem;}
+.card-title svg{width:16px;height:16px;fill:none;stroke:var(--orange);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.card-body{padding:1.3rem 1.4rem;}
+
+/* ── TRUST BADGE CARD ─────────────────────────────── */
+.badge-display{display:flex;align-items:center;gap:1.2rem;}
+.badge-icon-wrap{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+.badge-icon-wrap svg{width:36px;height:36px;}
+.badge-bronze{background:linear-gradient(135deg,#fed7aa,#fb923c);}
+.badge-silver{background:linear-gradient(135deg,#e2e8f0,#94a3b8);}
+.badge-gold  {background:linear-gradient(135deg,#fef08a,#eab308);}
+.badge-plat  {background:linear-gradient(135deg,#e0e7ff,#6366f1);}
+.badge-none  {background:linear-gradient(135deg,#e5e7eb,#9ca3af);}
+.badge-name{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:900;color:var(--teal);}
+.badge-score{font-size:.82rem;color:var(--muted);margin-top:.1rem;}
+.badge-status{display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .8rem;border-radius:99px;font-size:.72rem;font-weight:700;margin-top:.4rem;}
+.status-verified{background:#d1fae5;color:#065f46;}
+.status-pending{background:#fef3c7;color:#92400e;}
+
+/* ── TRANSPARENCY BARS ────────────────────────────── */
+.tbar-row{display:flex;flex-direction:column;gap:.3rem;margin-bottom:1.1rem;}
+.tbar-row:last-child{margin-bottom:0;}
+.tbar-label{display:flex;justify-content:space-between;align-items:center;}
+.tbar-name{font-size:.82rem;font-weight:600;color:var(--text);}
+.tbar-val{font-size:.78rem;color:var(--muted);}
+.tbar-tip{font-size:.72rem;color:var(--orange);font-weight:500;}
+.tbar-track{height:8px;background:#e5eef2;border-radius:99px;overflow:hidden;}
+.tbar-fill{height:100%;border-radius:99px;transition:width 1s cubic-bezier(.4,0,.2,1);}
+.tbar-doc{background:linear-gradient(90deg,var(--teal3),var(--teal2));}
+.tbar-upd{background:linear-gradient(90deg,var(--orange),var(--orange2));}
+.tbar-cmp{background:linear-gradient(90deg,#10b981,#059669);}
+
+/* ── ACTION BUTTONS ───────────────────────────────── */
+.action-row{display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:1.2rem;}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.62rem 1.3rem;border-radius:7px;font-size:.84rem;font-weight:600;cursor:pointer;transition:all .22s;border:none;font-family:'Barlow',sans-serif;}
+.btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(0,0,0,.1);}
+.btn-teal{background:var(--teal);color:white;}
+.btn-teal:hover{background:var(--teal2);}
+.btn-orange{background:var(--orange);color:white;}
+.btn-orange:hover{background:var(--orange-dark);}
+.btn-green{background:#10b981;color:white;}
+.btn-green:hover{background:#059669;}
+.btn-purple{background:#7c3aed;color:white;}
+.btn-purple:hover{background:#6d28d9;}
+.btn-ghost{background:var(--bg);color:var(--text);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--teal);background:var(--teal-light);}
+/* small action buttons in table */
+.btn-sm{padding:.28rem .75rem;font-size:.76rem;border-radius:6px;display:inline-flex;align-items:center;gap:.28rem;}
+.btn-sm svg{width:12px;height:12px;}
+
+/* ── FILTER ROW ───────────────────────────────────── */
+.filter-row{display:flex;gap:.7rem;margin-bottom:1.1rem;flex-wrap:wrap;align-items:center;}
+.filter-row input,.filter-row select{padding:.5rem .9rem;border:1.5px solid var(--border);border-radius:7px;font-size:.82rem;font-family:'Barlow',sans-serif;color:var(--text);background:white;outline:none;transition:border-color .2s;}
+.filter-row input:focus,.filter-row select:focus{border-color:var(--teal);}
+.filter-row input{min-width:240px;}
+
+/* ── TABLE ────────────────────────────────────────── */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:.8rem 1.2rem;background:var(--bg);color:var(--muted);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;}
+td{padding:.82rem 1.2rem;border-bottom:1px solid var(--border);font-size:.86rem;color:var(--text);}
+tbody tr:hover td{background:var(--teal-light);}
+tbody tr:last-child td{border-bottom:none;}
+.loading{text-align:center;padding:2rem;color:var(--muted);font-style:italic;}
+
+/* ── BADGES ───────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;padding:.2rem .75rem;border-radius:99px;font-size:.7rem;font-weight:700;white-space:nowrap;}
+.badge-approved{background:#d1fae5;color:#065f46;}
+.badge-pending {background:#fef3c7;color:#d97706;}
+.badge-rejected{background:#fee2e2;color:#991b1b;}
+.badge-completed{background:#dbeafe;color:#1e40af;}
+.cat-badge{background:var(--teal-light);color:var(--teal2);padding:.2rem .75rem;border-radius:99px;font-size:.7rem;font-weight:600;}
+
+/* ── PROGRESS IN TABLE ────────────────────────────── */
+.prog-col{display:flex;flex-direction:column;gap:3px;min-width:90px;}
+.prog-bar{height:5px;background:#e5eef2;border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal3),var(--orange2));border-radius:99px;}
+.prog-lbl{font-size:.7rem;color:var(--muted);}
+
+/* ── CHART ────────────────────────────────────────── */
+.chart-wrap{position:relative;height:240px;}
+.chart-select{padding:.4rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.8rem;font-family:'Barlow',sans-serif;color:var(--text);background:white;outline:none;cursor:pointer;}
+.chart-select:focus{border-color:var(--teal);}
+
+/* ── MODALS ───────────────────────────────────────── */
+.modal{display:none;position:fixed;inset:0;background:rgba(13,59,71,.72);backdrop-filter:blur(6px);z-index:500;justify-content:center;align-items:center;padding:1rem;}
+.modal.open{display:flex;}
+.modal-box{background:white;border-radius:14px;width:100%;max-width:480px;overflow:hidden;animation:mIn .25s ease;box-shadow:0 24px 60px rgba(0,0,0,.2);}
+.modal-box.wide{max-width:620px;}
+@keyframes mIn{from{opacity:0;transform:translateY(-16px) scale(.97);}to{opacity:1;transform:none;}}
+.modal-head{background:var(--teal);padding:1.6rem 1.8rem;position:relative;display:flex;align-items:center;gap:.6rem;}
+.modal-head-icon{width:30px;height:30px;background:rgba(249,115,22,.25);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.modal-head-icon svg{width:16px;height:16px;fill:none;stroke:var(--orange2);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:white;}
+.modal-close{position:absolute;top:1rem;right:1rem;width:26px;height:26px;background:rgba(255,255,255,.1);border:none;border-radius:50%;color:white;font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;font-family:inherit;}
+.modal-close:hover{background:rgba(255,255,255,.22);}
+.modal-body{padding:1.6rem 1.8rem;}
+.modal-footer{padding:.9rem 1.8rem 1.5rem;display:flex;gap:.6rem;justify-content:flex-end;}
+.form-row{margin-bottom:1.1rem;}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.1rem;}
+.flabel{display:block;font-size:.76rem;font-weight:700;color:var(--teal);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em;}
+.finput{width:100%;padding:.68rem 1rem;border:1.5px solid var(--border);border-radius:7px;font-size:.88rem;color:var(--text);background:#f8fbfc;transition:border-color .2s;outline:none;font-family:'Barlow',sans-serif;}
+.finput:focus{border-color:var(--teal);background:white;}
+.finput::placeholder{color:#a0b4bc;}
+.ftip{background:var(--teal-light);border:1px solid var(--border);border-radius:7px;padding:.6rem .9rem;font-size:.78rem;color:var(--teal2);margin-top:.5rem;line-height:1.5;}
+.btn-cancel{background:var(--bg);color:var(--text);border:1.5px solid var(--border);padding:.62rem 1.3rem;border-radius:7px;font-size:.84rem;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .2s;}
+.btn-cancel:hover{border-color:var(--teal);}
+.btn-submit{background:var(--teal);color:white;border:none;padding:.62rem 1.6rem;border-radius:7px;font-size:.84rem;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem;}
+.btn-submit:hover{background:var(--teal2);}
+.btn-submit svg{width:14px;height:14px;fill:none;stroke:white;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── TOAST ────────────────────────────────────────── */
+#toast{position:fixed;bottom:2rem;right:2rem;z-index:9999;background:var(--teal);border-left:4px solid var(--orange);color:white;padding:.85rem 1.4rem;border-radius:8px;font-size:.85rem;font-weight:600;transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 8px 24px rgba(13,59,71,.22);max-width:300px;}
+#toast.show{transform:none;opacity:1;}
+
+/* ── RESPONSIVE ───────────────────────────────────── */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:none;}
+  .main{margin-left:0;}
+  .hamburger{display:flex;}
+  .two-col,.three-col{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .form-row-2{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr;}
+  .content{padding:1.2rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-wrap">
+      <div class="sb-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="sb-logo-name">Trust<span>Flow</span></div>
+    </div>
+    <div class="sb-role">NGO Portal</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Dashboard</div>
+    <div class="nav-item active" id="nav-overview" onclick="switchSection('overview')">
+      <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Overview
+    </div>
+    <div class="nav-item" id="nav-campaigns" onclick="switchSection('campaigns')">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Campaigns
+    </div>
+    <div class="nav-item" id="nav-transparency" onclick="switchSection('transparency')">
+      <svg class="nav-icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Transparency
+    </div>
+    <div class="nav-item" id="nav-analytics" onclick="switchSection('analytics')">
+      <svg class="nav-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Analytics
+    </div>
+    <div class="nav-item" id="nav-qa" onclick="switchSection('qa')">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Donor Q&A
+    </div>
+    <div class="sb-section" style="margin-top:1rem;">Actions</div>
+    <div class="nav-item" onclick="openModal('createModal')">
+      <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      New Campaign
+    </div>
+    <div class="nav-item" onclick="openModal('expenseModal')">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Add Expense
+    </div>
+    <div class="nav-item" onclick="openModal('updateModal')">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg>
+      Post Update
+    </div>
+    <div class="sb-section" style="margin-top:1rem;">Platform</div>
+    <div class="nav-item" onclick="window.open('/','_blank')">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      View Site
+    </div>
+  </nav>
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar" id="ngoInitials">NG</div>
+      <div>
+        <div class="sb-user-name" id="ngoName">NGO</div>
+        <div class="sb-user-role">NGO Account</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign Out
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="hamburger" id="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <span></span><span></span><span></span>
+      </div>
+      <div>
+        <div class="page-title" id="pageTitle">Overview</div>
+        <div class="topbar-date" id="currentDate"></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="score-pill">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Score: <strong id="headerScore">—</strong>
+      </div>
+      <div class="notif-wrap">
+        <div class="notif-btn" onclick="toggleNotifPanel()">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </div>
+        <div class="notif-dot" id="notifDot"></div>
+        <div class="notif-panel" id="notifPanel">
+          <div class="notif-panel-head">
+            <span class="notif-panel-title">Notifications</span>
+            <button class="notif-mark-btn" onclick="markAllRead()">Mark all read</button>
+          </div>
+          <div class="notif-list" id="notifList">
+            <div class="notif-empty">Loading notifications...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- PENDING ALERT -->
+    <div class="pending-alert" id="pendingAlert">
+      <div class="pa-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div>
+        <div class="pa-title">Verification Pending</div>
+        <div class="pa-desc">Your NGO is awaiting admin verification. Once verified, your campaigns will appear to donors and your transparency badge will be upgraded automatically.</div>
+      </div>
+    </div>
+
+    <!-- ── OVERVIEW SECTION ─────────────────────── -->
+    <div class="section" id="sec-overview" style="display:block;">
+
+      <!-- Stat cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="sc-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+          <h3>Campaigns</h3>
+          <div class="number" id="totalCampaigns">—</div>
+          <div class="sub">Total created</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon" style="background:rgba(249,115,22,.08);"><svg viewBox="0 0 24 24" style="stroke:var(--orange);"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <h3>Total Raised</h3>
+          <div class="number" id="totalRaised" style="color:var(--orange);font-size:1.55rem;">—</div>
+          <div class="sub">Across all campaigns</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon" style="background:rgba(16,185,129,.08);"><svg viewBox="0 0 24 24" style="stroke:#10b981;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <h3>Avg Completion</h3>
+          <div class="number" id="avgCompletion" style="color:#10b981;">—</div>
+          <div class="sub">Campaign performance</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon" style="background:rgba(139,92,246,.08);"><svg viewBox="0 0 24 24" style="stroke:#8b5cf6;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <h3>Trust Score</h3>
+          <div class="number" id="trustScore" style="color:#8b5cf6;">—</div>
+          <div class="sub">Transparency rating</div>
+        </div>
+      </div>
+
+      <!-- Badge + verification row -->
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Trust Badge
+            </div>
+            <span id="verificationStatus" class="badge status-pending">Pending Verification</span>
+          </div>
+          <div class="card-body">
+            <div class="badge-display">
+              <div class="badge-icon-wrap badge-bronze" id="badgeIconWrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="badge-name" id="ngoLevel">Bronze NGO</div>
+                <div class="badge-score" id="transparencyScore">Score: 0</div>
+                <div style="font-size:.78rem;color:var(--muted);margin-top:.4rem;">Post updates and log expenses to level up</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Transparency Snapshot
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="tbar-row">
+              <div class="tbar-label">
+                <span class="tbar-name">Document Score</span>
+                <span class="tbar-val" id="docScore">0 / 100</span>
+              </div>
+              <div class="tbar-track"><div class="tbar-fill tbar-doc" id="docScoreBar" style="width:0%"></div></div>
+              <span class="tbar-tip">Upload registration docs to earn points</span>
+            </div>
+            <div class="tbar-row">
+              <div class="tbar-label">
+                <span class="tbar-name">Update Score</span>
+                <span class="tbar-val" id="updateScore">0 pts</span>
+              </div>
+              <div class="tbar-track"><div class="tbar-fill tbar-upd" id="updateScoreBar" style="width:0%"></div></div>
+              <span class="tbar-tip">Post a campaign update to earn +5 pts</span>
+            </div>
+            <div class="tbar-row">
+              <div class="tbar-label">
+                <span class="tbar-name">Avg Completion</span>
+                <span class="tbar-val" id="completionScore">0%</span>
+              </div>
+              <div class="tbar-track"><div class="tbar-fill tbar-cmp" id="completionBar" style="width:0%"></div></div>
+              <span class="tbar-tip">Higher campaign completion improves score</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick action row -->
+      <div class="action-row">
+        <button class="btn btn-teal" onclick="openModal('createModal')">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          New Campaign
+        </button>
+        <button class="btn btn-orange" onclick="openModal('expenseModal')">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Add Expense
+        </button>
+        <button class="btn btn-green" onclick="openModal('updateModal')">
+          <svg viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg>
+          Post Update
+        </button>
+        <button class="btn btn-ghost" onclick="loadNGOData()">
+          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
+      </div>
+
+      <!-- Recent campaigns mini-table -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            Recent Campaigns
+          </div>
+          <button class="btn btn-ghost" style="padding:.38rem .9rem;font-size:.78rem;" onclick="switchSection('campaigns')">View All</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Title</th><th>Category</th><th>Raised</th><th>Progress</th><th>Status</th></tr></thead>
+            <tbody id="recentCampaignsBody"><tr><td colspan="5" class="loading">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CAMPAIGNS SECTION ────────────────────── -->
+    <div class="section" id="sec-campaigns" style="display:none;">
+      <div class="action-row">
+        <button class="btn btn-teal" onclick="openModal('createModal')">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          New Campaign
+        </button>
+        <button class="btn btn-ghost" onclick="loadCampaigns()">
+          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
+      </div>
+      <div class="filter-row">
+        <input type="text" id="campaignSearch" placeholder="Search campaigns by title or category..." oninput="filterCampaigns()">
+        <select id="campaignStatusFilter" onchange="filterCampaigns()">
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+            All Campaigns
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Title</th><th>Category</th><th>Target</th><th>Raised</th><th>Progress</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="campaignsBody"><tr><td colspan="7" class="loading">Loading campaigns...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TRANSPARENCY SECTION ─────────────────── -->
+    <div class="section" id="sec-transparency" style="display:none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Full Transparency Breakdown
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="tbar-row" style="margin-bottom:1.5rem;">
+            <div class="tbar-label">
+              <span class="tbar-name" style="font-size:.9rem;">Document Score</span>
+              <span class="tbar-val" id="docScore2">0 / 100</span>
+            </div>
+            <div class="tbar-track" style="height:12px;"><div class="tbar-fill tbar-doc" id="docScoreBar2" style="width:0%"></div></div>
+            <div style="font-size:.8rem;color:var(--muted);margin-top:.4rem;line-height:1.6;">Upload your NGO registration certificate, audited reports, and board resolutions to increase this score. Maximum 100 points.</div>
+          </div>
+          <div class="tbar-row" style="margin-bottom:1.5rem;">
+            <div class="tbar-label">
+              <span class="tbar-name" style="font-size:.9rem;">Update Score</span>
+              <span class="tbar-val" id="updateScore2">0 pts</span>
+            </div>
+            <div class="tbar-track" style="height:12px;"><div class="tbar-fill tbar-upd" id="updateScoreBar2" style="width:0%"></div></div>
+            <div style="font-size:.8rem;color:var(--muted);margin-top:.4rem;line-height:1.6;">Post a campaign update with proof to earn +5 points each time. Donors trust NGOs that communicate regularly.</div>
+          </div>
+          <div class="tbar-row">
+            <div class="tbar-label">
+              <span class="tbar-name" style="font-size:.9rem;">Avg Campaign Completion</span>
+              <span class="tbar-val" id="completionScore2">0%</span>
+            </div>
+            <div class="tbar-track" style="height:12px;"><div class="tbar-fill tbar-cmp" id="completionBar2" style="width:0%"></div></div>
+            <div style="font-size:.8rem;color:var(--muted);margin-top:.4rem;line-height:1.6;">The average funding completion rate across all your campaigns. Higher completion signals donor confidence.</div>
+          </div>
+          <div style="margin-top:1.8rem;padding-top:1.4rem;border-top:1px solid var(--border);display:flex;gap:1rem;flex-wrap:wrap;">
+            <button class="btn btn-green" onclick="openModal('updateModal')">Post Update (+5 pts)</button>
+            <button class="btn btn-orange" onclick="openModal('expenseModal')">Log Expense</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── DOCUMENT SUBMISSION ── -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Verification Documents
+          </div>
+          <span style="font-size:.75rem;color:var(--muted);">Paste links for admin review</span>
+        </div>
+        <div class="card-body">
+          <!-- score tiles -->
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;margin-bottom:1.3rem;">
+            <div style="background:var(--bg);border-radius:8px;padding:.6rem .5rem;text-align:center;border:1px solid var(--border);">
+              <div style="font-size:.72rem;font-weight:700;color:var(--teal);">+30 pts</div>
+              <div style="font-size:.64rem;color:var(--muted);margin-top:.15rem;">Registration</div>
+            </div>
+            <div style="background:var(--bg);border-radius:8px;padding:.6rem .5rem;text-align:center;border:1px solid var(--border);">
+              <div style="font-size:.72rem;font-weight:700;color:var(--teal);">+25 pts</div>
+              <div style="font-size:.64rem;color:var(--muted);margin-top:.15rem;">Tax Exemption</div>
+            </div>
+            <div style="background:var(--bg);border-radius:8px;padding:.6rem .5rem;text-align:center;border:1px solid var(--border);">
+              <div style="font-size:.72rem;font-weight:700;color:var(--teal);">+25 pts</div>
+              <div style="font-size:.64rem;color:var(--muted);margin-top:.15rem;">Audited Report</div>
+            </div>
+            <div style="background:var(--bg);border-radius:8px;padding:.6rem .5rem;text-align:center;border:1px solid var(--border);">
+              <div style="font-size:.72rem;font-weight:700;color:var(--teal);">+10 pts</div>
+              <div style="font-size:.64rem;color:var(--muted);margin-top:.15rem;">Board Resolution</div>
+            </div>
+            <div style="background:var(--bg);border-radius:8px;padding:.6rem .5rem;text-align:center;border:1px solid var(--border);">
+              <div style="font-size:.72rem;font-weight:700;color:var(--teal);">+10 pts</div>
+              <div style="font-size:.64rem;color:var(--muted);margin-top:.15rem;">PAN Card</div>
+            </div>
+          </div>
+
+          <!-- form -->
+          <div class="form-row-2">
+            <div>
+              <label class="flabel">Document Type *</label>
+              <select id="docType" class="finput">
+                <option value="">Select type…</option>
+                <option value="registration">Registration Certificate</option>
+                <option value="tax_exemption">80G / Tax Exemption Certificate</option>
+                <option value="audited_report">Audited Financial Report</option>
+                <option value="board_resolution">Board Resolution</option>
+                <option value="pan_card">PAN Card Copy</option>
+              </select>
+            </div>
+            <div>
+              <label class="flabel">Document URL *</label>
+              <input type="url" id="docUrl" class="finput" placeholder="https://drive.google.com/…">
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="flabel">Description <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(optional)</span></label>
+            <input type="text" id="docDesc" class="finput" placeholder="e.g. Issued by Ministry of Home Affairs, 2023">
+          </div>
+
+          <div id="docErr" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:7px;padding:.5rem .85rem;font-size:.78rem;color:#dc2626;margin-bottom:.7rem;"></div>
+          <div id="docOk"  style="display:none;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:7px;padding:.5rem .85rem;font-size:.78rem;color:#065f46;margin-bottom:.7rem;"></div>
+
+          <button class="btn btn-teal" onclick="submitDocument()">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Submit for Review
+          </button>
+
+          <!-- submitted docs list -->
+          <div id="myDocsList" style="margin-top:1.3rem;padding-top:1.1rem;border-top:1px solid var(--border);"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Q&A SECTION ───────────────────────────── -->
+    <div class="section" id="sec-qa" style="display:none;">
+      <div class="action-row">
+        <button class="btn btn-teal" onclick="loadQAForNGO()">
+          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh Questions
+        </button>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Donor Questions
+          </div>
+          <span style="font-size:.78rem;color:var(--muted);">Select a campaign to see questions</span>
+        </div>
+        <div class="card-body">
+          <div class="filter-row" style="margin-bottom:1rem;">
+            <select id="qaFilter" class="finput" onchange="loadQAForNGO()" style="padding:.5rem .9rem;border:1.5px solid var(--border);border-radius:7px;font-size:.82rem;font-family:'Barlow',sans-serif;color:var(--text);background:white;outline:none;min-width:220px;">
+              <option value="">-- Select Campaign --</option>
+            </select>
+          </div>
+          <div id="ngoQAList"><div class="loading">Select a campaign above to see questions.</div></div>
+        </div>
+      </div>
+
+      <!-- Milestone management card -->
+      <div class="card" style="margin-top:1.2rem;">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
+            Campaign Milestones
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="form-row-2">
+            <div>
+              <label class="flabel">Campaign *</label>
+              <select class="finput" id="msCampaign"></select>
+            </div>
+            <div>
+              <label class="flabel">Milestone Amount (Rs.) *</label>
+              <input type="number" class="finput" id="msAmount" placeholder="e.g. 50000" min="1">
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="flabel">Milestone Title *</label>
+            <input type="text" class="finput" id="msTitle" placeholder="e.g. Buy medical equipment for 50 patients">
+          </div>
+          <div class="form-row">
+            <label class="flabel">Description</label>
+            <textarea class="finput" id="msDesc" rows="2" placeholder="What specifically will this milestone fund?"></textarea>
+          </div>
+          <div id="msErr" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:7px;padding:.5rem .85rem;font-size:.78rem;color:#dc2626;margin-bottom:.7rem;"></div>
+          <button class="btn btn-teal" onclick="submitMilestone()">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Add Milestone
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ANALYTICS SECTION ────────────────────── -->
+    <div class="section" id="sec-analytics" style="display:none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Donations Raised Per Campaign
+          </div>
+          <select class="chart-select" id="chartCampaignFilter" onchange="renderChart()">
+            <option value="all">All Campaigns</option>
+          </select>
+        </div>
+        <div class="card-body">
+          <div class="chart-wrap">
+            <canvas id="donationsChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Campaign Performance
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Campaign</th><th>Target</th><th>Raised</th><th>Completion</th><th>Donors</th><th>Status</th></tr></thead>
+            <tbody id="perfBody"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ── CREATE CAMPAIGN MODAL ──────────────────────── -->
+<div class="modal" id="createModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-head-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+      <span class="modal-title">Create Campaign</span>
+      <button class="modal-close" onclick="closeModal('createModal')">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label class="flabel">Title *</label><input type="text" class="finput" id="createTitle" placeholder="Campaign title"></div>
+      <div class="form-row"><label class="flabel">Description *</label><textarea class="finput" id="createDesc" rows="3" placeholder="Describe the cause and how funds will be used..."></textarea></div>
+      <div class="form-row-2">
+        <div><label class="flabel">Category *</label>
+          <select class="finput" id="createCategory">
+            <option value="Medical">Medical</option><option value="Education">Education</option>
+            <option value="Environment">Environment</option><option value="Community">Community</option>
+            <option value="Disaster Relief">Disaster Relief</option><option value="Other">Other</option>
+          </select>
+        </div>
+        <div><label class="flabel">Target Amount (Rs.) *</label><input type="number" class="finput" id="createTarget" placeholder="e.g. 100000" min="1000"></div>
+      </div>
+      <div class="form-row-2">
+        <div><label class="flabel">Urgency (1-10)</label><input type="number" class="finput" id="createUrgency" min="1" max="10" value="5"></div>
+        <div><label class="flabel">Severity (1-10)</label><input type="number" class="finput" id="createSeverity" min="1" max="10" value="5"></div>
+      </div>
+      <div class="form-row"><label class="flabel">Deadline <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(optional)</span></label><input type="date" class="finput" id="createDeadline"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('createModal')">Cancel</button>
+      <button class="btn-submit" onclick="submitCampaign()">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Create Campaign
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADD EXPENSE MODAL ──────────────────────────── -->
+<div class="modal" id="expenseModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-head-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <span class="modal-title">Add Expense</span>
+      <button class="modal-close" onclick="closeModal('expenseModal')">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label class="flabel">Campaign *</label><select class="finput" id="expenseCampaign"></select></div>
+      <div class="form-row"><label class="flabel">Expense Title *</label><input type="text" class="finput" id="expenseTitle" placeholder="e.g. Medical supplies, School stationery"></div>
+      <div class="form-row-2">
+        <div><label class="flabel">Amount (Rs.) *</label><input type="number" class="finput" id="expenseAmount" min="1" placeholder="Amount"></div>
+        <div><label class="flabel">Date *</label><input type="date" class="finput" id="expenseDate"></div>
+      </div>
+      <div class="form-row"><label class="flabel">Description</label><textarea class="finput" id="expenseDesc" rows="2" placeholder="What was this expense for?"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('expenseModal')">Cancel</button>
+      <button class="btn-submit" onclick="submitExpense()">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Add Expense
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── POST UPDATE MODAL ──────────────────────────── -->
+<div class="modal" id="updateModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-head-icon"><svg viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg></div>
+      <span class="modal-title">Post Campaign Update</span>
+      <button class="modal-close" onclick="closeModal('updateModal')">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label class="flabel">Campaign *</label><select class="finput" id="updateCampaign"></select></div>
+      <div class="form-row"><label class="flabel">Update Text *</label><textarea class="finput" id="updateText" rows="4" placeholder="Share progress, milestones, stories, or photos..."></textarea></div>
+      <div class="form-row"><label class="flabel">Proof Document URL <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(optional)</span></label><input type="text" class="finput" id="updateProof" placeholder="Link to bill, photo, or report..."></div>
+      <div class="ftip">Posting updates earns +5 update score points, improving your transparency rating and donor trust.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('updateModal')">Cancel</button>
+      <button class="btn-submit" onclick="submitUpdate()">
+        <svg viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg>
+        Post Update
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── VIEW DONORS MODAL ──────────────────────────── -->
+<div class="modal" id="donorsModal">
+  <div class="modal-box wide">
+    <div class="modal-head">
+      <div class="modal-head-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+      <span class="modal-title">Campaign Donors</span>
+      <button class="modal-close" onclick="closeModal('donorsModal')">&#x2715;</button>
+    </div>
+    <div class="modal-body" style="padding:0;">
+      <div class="table-wrap" style="max-height:380px;overflow-y:auto;">
+        <table>
+          <thead><tr><th>Donor Name</th><th>Amount</th><th>Method</th><th>Date</th></tr></thead>
+          <tbody id="donorsList"><tr><td colspan="4" class="loading">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('donorsModal')">Close</button></div>
+  </div>
+</div>
+
+<!-- EXTEND DEADLINE MODAL -->
+<div class="modal" id="extendModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-head-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <span class="modal-title">Extend Campaign Deadline</span>
+      <button class="modal-close" onclick="closeModal('extendModal')">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="extendCampaignId">
+      <div class="form-row">
+        <label class="flabel">Current Deadline</label>
+        <div id="extendCurrentDate" style="font-size:.9rem;color:var(--muted);padding:.4rem 0;">Not set</div>
+      </div>
+      <div class="form-row">
+        <label class="flabel">New Deadline *</label>
+        <input type="date" class="finput" id="extendNewDate">
+        <div class="ftip">Must be a future date. Only active or pending campaigns can be extended.</div>
+      </div>
+      <div id="extendErr" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:7px;padding:.5rem .85rem;font-size:.78rem;color:#dc2626;margin-bottom:.7rem;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('extendModal')">Cancel</button>
+      <button class="btn-submit" onclick="submitExtendDeadline()">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Extend Deadline
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+let myCampaigns = [];
+let donationsChart = null;
+
+/* ── Init ───────────────────────────────────────────── */
+document.getElementById('currentDate').textContent =
+  new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+checkAuth();
+
+async function checkAuth(){
+  try{
+    const res  = await fetch('/current_user');
+    const data = await res.json();
+    if(!data.logged_in || data.role !== 'ngo'){window.location.href='/web/login';return;}
+    loadNGOData();
+  }catch(e){loadNGOData();}
+}
+
+async function loadNGOData(){
+  await Promise.all([loadProfile(),loadStats(),loadCampaigns()]);
+  loadNotificationCount();
+}
+
+/* ── Profile ────────────────────────────────────────── */
+async function loadProfile(){
+  try{
+    const res  = await fetch('/get_user_profile');
+    const data = await res.json();
+    if(data.status==='success'){
+      const name = data.user.name||'NGO';
+      const init = name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+      document.getElementById('ngoName').textContent     = name;
+      document.getElementById('ngoInitials').textContent = init;
+    }
+  }catch(e){}
+}
+
+/* ── Stats ──────────────────────────────────────────── */
+async function loadStats(){
+  try{
+    const res  = await fetch('/get_ngo_stats');
+    const data = await res.json();
+    if(data.status==='success'){
+      document.getElementById('totalCampaigns').textContent = data.total_campaigns||0;
+      document.getElementById('totalRaised').textContent    = 'Rs.'+(data.total_raised||0).toLocaleString('en-IN');
+      document.getElementById('avgCompletion').textContent  = (data.avg_completion||0).toFixed(1)+'%';
+      document.getElementById('trustScore').textContent     = (data.transparency_score||0).toFixed(1);
+      document.getElementById('headerScore').textContent    = (data.transparency_score||0).toFixed(1);
+
+      /* bars — overview */
+      const db = Math.min(data.document_score||0,100);
+      const ub = Math.min((data.update_score||0)/2,100);
+      const cb = Math.min(data.avg_completion||0,100);
+      document.getElementById('docScoreBar').style.width   = db+'%';
+      document.getElementById('docScore').textContent      = `${data.document_score||0} / 100`;
+      document.getElementById('updateScoreBar').style.width= ub+'%';
+      document.getElementById('updateScore').textContent   = `${data.update_score||0} pts`;
+      document.getElementById('completionBar').style.width = cb+'%';
+      document.getElementById('completionScore').textContent= `${(data.avg_completion||0).toFixed(1)}%`;
+
+      /* bars — transparency section */
+      document.getElementById('docScoreBar2').style.width   = db+'%';
+      document.getElementById('docScore2').textContent      = `${data.document_score||0} / 100`;
+      document.getElementById('updateScoreBar2').style.width= ub+'%';
+      document.getElementById('updateScore2').textContent   = `${data.update_score||0} pts`;
+      document.getElementById('completionBar2').style.width = cb+'%';
+      document.getElementById('completionScore2').textContent= `${(data.avg_completion||0).toFixed(1)}%`;
+
+      /* badge */
+      const badge = (data.trust_badge && data.trust_badge !== 'none') ? data.trust_badge.toLowerCase() : null;
+      const badgeWrap = document.getElementById('badgeIconWrap');
+      if(badge){
+        badgeWrap.className = 'badge-icon-wrap badge-'+badge;
+        document.getElementById('ngoLevel').textContent = badge.charAt(0).toUpperCase()+badge.slice(1)+' NGO';
+      } else {
+        badgeWrap.className = 'badge-icon-wrap badge-none';
+        document.getElementById('ngoLevel').textContent = 'No Badge Yet';
+      }
+      document.getElementById('transparencyScore').textContent = 'Score: '+(data.transparency_score||0).toFixed(1);
+
+      /* verification */
+      const vs = document.getElementById('verificationStatus');
+      if(data.is_verified){
+        vs.className='badge status-verified'; vs.textContent='Verified NGO';
+        document.getElementById('pendingAlert').classList.remove('show');
+      } else {
+        vs.className='badge status-pending'; vs.textContent='Pending Verification';
+        document.getElementById('pendingAlert').classList.add('show');
+      }
+    }
+  }catch(e){console.error(e);}
+}
+
+/* ── Campaigns ──────────────────────────────────────── */
+async function loadCampaigns(){
+  try{
+    const res  = await fetch('/get_ngo_campaigns');
+    myCampaigns = await res.json();
+    renderCampaigns(myCampaigns);
+    renderRecentCampaigns(myCampaigns);
+    renderPerfTable(myCampaigns);
+    populateCampaignSelects(myCampaigns);
+    populateChartFilter(myCampaigns);
+    renderChart();
+  }catch(e){console.error(e);}
+}
+
+function renderRecentCampaigns(data){
+  const tbody = document.getElementById('recentCampaignsBody');
+  const slice = data.slice(0,5);
+  if(!slice.length){tbody.innerHTML='<tr><td colspan="5" class="loading">No campaigns yet.</td></tr>';return;}
+  tbody.innerHTML = slice.map(c=>{
+    const pct = c.target_amount?((c.collected_amount/c.target_amount)*100).toFixed(1):0;
+    const cls = {approved:'badge-approved',pending:'badge-pending',rejected:'badge-rejected',completed:'badge-completed'}[c.status]||'badge-pending';
+    return `<tr>
+      <td style="font-weight:600;">${c.title}</td>
+      <td><span class="cat-badge">${c.category}</span></td>
+      <td style="font-weight:600;color:var(--orange);">Rs.${(c.collected_amount||0).toLocaleString('en-IN')}</td>
+      <td><div class="prog-col"><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(pct,100)}%"></div></div><span class="prog-lbl">${pct}%</span></div></td>
+      <td><span class="badge ${cls}">${c.status}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderCampaigns(data){
+  const tbody = document.getElementById('campaignsBody');
+  if(!data.length){tbody.innerHTML='<tr><td colspan="7" class="loading">No campaigns yet. Create your first one!</td></tr>';return;}
+  tbody.innerHTML = data.map(c=>{
+    const pct = c.target_amount?((c.collected_amount/c.target_amount)*100).toFixed(1):0;
+    const cls = {approved:'badge-approved',pending:'badge-pending',rejected:'badge-rejected',completed:'badge-completed'}[c.status]||'badge-pending';
+    return `<tr>
+      <td style="font-weight:600;max-width:180px;">${c.title}</td>
+      <td><span class="cat-badge">${c.category}</span></td>
+      <td>Rs.${(c.target_amount||0).toLocaleString('en-IN')}</td>
+      <td style="font-weight:600;color:var(--orange);">Rs.${(c.collected_amount||0).toLocaleString('en-IN')}</td>
+      <td><div class="prog-col"><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(pct,100)}%"></div></div><span class="prog-lbl">${pct}%</span></div></td>
+      <td><span class="badge ${cls}">${c.status}</span></td>
+      <td>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <button class="btn btn-teal btn-sm" onclick="viewDonors(${c.id})">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Donors
+          </button>
+          <button class="btn btn-orange btn-sm" onclick="prefillExpense(${c.id})">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Expense
+          </button>
+          <button class="btn btn-green btn-sm" onclick="prefillUpdate(${c.id})">
+            <svg viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg>Update
+          </button>
+          ${(c.status!=='rejected'&&c.status!=='completed')?`<button class="btn btn-sm" style="background:rgba(59,130,246,.1);color:#2563eb;border:1px solid rgba(59,130,246,.25);" onclick="openExtendModal(${c.id},'${c.deadline||''}')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Extend</button>`:''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterCampaigns(){
+  const q   = document.getElementById('campaignSearch').value.toLowerCase();
+  const sta = document.getElementById('campaignStatusFilter').value;
+  renderCampaigns(myCampaigns.filter(c=>
+    (c.title.toLowerCase().includes(q)||c.category.toLowerCase().includes(q))&&
+    (!sta||c.status===sta)
+  ));
+}
+
+function renderPerfTable(data){
+  const tbody = document.getElementById('perfBody');
+  if(!data.length){tbody.innerHTML='<tr><td colspan="6" class="loading">No data yet.</td></tr>';return;}
+  tbody.innerHTML = data.map(c=>{
+    const pct = c.target_amount?((c.collected_amount/c.target_amount)*100).toFixed(1):0;
+    const cls = {approved:'badge-approved',pending:'badge-pending',rejected:'badge-rejected',completed:'badge-completed'}[c.status]||'badge-pending';
+    return `<tr>
+      <td style="font-weight:600;">${c.title}</td>
+      <td>Rs.${(c.target_amount||0).toLocaleString('en-IN')}</td>
+      <td style="font-weight:700;color:var(--orange);">Rs.${(c.collected_amount||0).toLocaleString('en-IN')}</td>
+      <td><div class="prog-col"><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(pct,100)}%"></div></div><span class="prog-lbl">${pct}%</span></div></td>
+      <td>${c.total_donors||0}</td>
+      <td><span class="badge ${cls}">${c.status}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function populateCampaignSelects(data){
+  const opts = data.map(c=>`<option value="${c.id}">${c.title}</option>`).join('');
+  ['expenseCampaign','updateCampaign'].forEach(id=>{
+    document.getElementById(id).innerHTML='<option value="">-- Select Campaign --</option>'+opts;
+  });
+}
+
+/* ── Chart ──────────────────────────────────────────── */
+function populateChartFilter(data){
+  const sel = document.getElementById('chartCampaignFilter');
+  sel.innerHTML = '<option value="all">All Campaigns</option>';
+  data.forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent=c.title; sel.appendChild(o); });
+}
+
+function renderChart(){
+  const sel   = document.getElementById('chartCampaignFilter');
+  const val   = sel.value;
+  const data  = val==='all' ? myCampaigns : myCampaigns.filter(c=>String(c.id)===val);
+  const labels= data.map(c=>c.title.length>20?c.title.slice(0,20)+'…':c.title);
+  const raised= data.map(c=>c.collected_amount||0);
+  const target= data.map(c=>c.target_amount||0);
+  const ctx   = document.getElementById('donationsChart').getContext('2d');
+  if(donationsChart) donationsChart.destroy();
+  donationsChart = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {label:'Amount Raised',data:raised,backgroundColor:'rgba(13,59,71,.8)',borderRadius:5,borderSkipped:false},
+        {label:'Target Amount',data:target,backgroundColor:'rgba(249,115,22,.25)',borderRadius:5,borderSkipped:false}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'top',labels:{font:{family:'Barlow',size:12},color:'#5a7a85'}},
+        tooltip:{callbacks:{label:ctx=>`Rs.${ctx.parsed.y.toLocaleString('en-IN')}`}}
+      },
+      scales:{
+        y:{ticks:{callback:v=>'Rs.'+Number(v).toLocaleString('en-IN'),font:{family:'Barlow',size:11},color:'#5a7a85'},grid:{color:'rgba(0,0,0,.04)'}},
+        x:{ticks:{font:{family:'Barlow',size:11},color:'#5a7a85'},grid:{display:false}}
+      }
+    }
+  });
+}
+
+/* ── Create Campaign ────────────────────────────────── */
+async function submitCampaign(){
+  const data={
+    title:          document.getElementById('createTitle').value.trim(),
+    description:    document.getElementById('createDesc').value.trim(),
+    category:       document.getElementById('createCategory').value,
+    target_amount:  parseFloat(document.getElementById('createTarget').value),
+    urgency_level:  parseInt(document.getElementById('createUrgency').value),
+    severity_score: parseInt(document.getElementById('createSeverity').value),
+    deadline:       document.getElementById('createDeadline').value
+  };
+  if(!data.title||!data.description||!data.target_amount){showToast('Please fill all required fields');return;}
+  try{
+    const res    = await fetch('/create_campaign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    const result = await res.json();
+    if(result.status==='success'){
+      closeModal('createModal');
+      document.getElementById('createTitle').value='';
+      document.getElementById('createDesc').value='';
+      showToast('Campaign created — awaiting admin approval');
+      loadCampaigns(); loadStats();
+    } else { showToast('Error: '+result.message); }
+  }catch(e){showToast('Network error');}
+}
+
+/* ── Add Expense ────────────────────────────────────── */
+function prefillExpense(id){document.getElementById('expenseCampaign').value=id;openModal('expenseModal');}
+function openExpenseModal(){openModal('expenseModal');}
+
+async function submitExpense(){
+  const data={
+    campaign_id:  parseInt(document.getElementById('expenseCampaign').value),
+    title:        document.getElementById('expenseTitle').value.trim(),
+    amount:       parseFloat(document.getElementById('expenseAmount').value),
+    expense_date: document.getElementById('expenseDate').value,
+    description:  document.getElementById('expenseDesc').value.trim()
+  };
+  if(!data.campaign_id||!data.title||!data.amount||!data.expense_date){showToast('Please fill all required fields');return;}
+  try{
+    const res    = await fetch('/add_expense',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    const result = await res.json();
+    if(result.status==='success'){closeModal('expenseModal');showToast('Expense added — donor impact updated');}
+    else{showToast('Error: '+result.message);}
+  }catch(e){showToast('Network error');}
+}
+
+/* ── Post Update ────────────────────────────────────── */
+function prefillUpdate(id){document.getElementById('updateCampaign').value=id;openModal('updateModal');}
+function openUpdateModal(){openModal('updateModal');}
+
+async function submitUpdate(){
+  const data={
+    campaign_id:    parseInt(document.getElementById('updateCampaign').value),
+    update_text:    document.getElementById('updateText').value.trim(),
+    proof_document: document.getElementById('updateProof').value.trim()||null
+  };
+  if(!data.campaign_id||!data.update_text){showToast('Please fill all required fields');return;}
+  try{
+    const res    = await fetch('/add_campaign_update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    const result = await res.json();
+    if(result.status==='success'){
+      closeModal('updateModal');
+      document.getElementById('updateText').value='';
+      document.getElementById('updateProof').value='';
+      showToast('Update posted — +5 transparency score earned');
+      loadStats();
+    } else { showToast('Error: '+result.message); }
+  }catch(e){showToast('Network error');}
+}
+
+/* ── View Donors ────────────────────────────────────── */
+async function viewDonors(campaignId){
+  try{
+    const res    = await fetch(`/campaign_donors/${campaignId}`);
+    const donors = await res.json();
+    const tbody  = document.getElementById('donorsList');
+    tbody.innerHTML = donors.length
+      ? donors.map(d=>`<tr>
+          <td style="font-weight:600;">${d.donor_name}</td>
+          <td style="font-weight:700;color:var(--orange);">Rs.${d.amount.toLocaleString('en-IN')}</td>
+          <td><span class="cat-badge">${d.payment_method||'online'}</span></td>
+          <td>${new Date(d.date).toLocaleDateString('en-IN')}</td>
+        </tr>`).join('')
+      : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:2rem;">No donors yet</td></tr>';
+    openModal('donorsModal');
+  }catch(e){console.error(e);}
+}
+
+/* ── Notifications ──────────────────────────────────── */
+async function loadNotificationCount(){
+  try{
+    const res  = await fetch('/get_notification_count');
+    const data = await res.json();
+    const cnt  = data.count||0;
+    const dot  = document.getElementById('notifDot');
+    dot.textContent = cnt>9?'9+':cnt;
+    cnt>0 ? dot.classList.add('show') : dot.classList.remove('show');
+  }catch(e){}
+}
+
+async function toggleNotifPanel(){
+  const panel = document.getElementById('notifPanel');
+  if(!panel.classList.contains('open')){
+    panel.classList.add('open');
+    await fetchNotifications();
+  } else {
+    panel.classList.remove('open');
+  }
+}
+
+async function fetchNotifications(){
+  try{
+    const res  = await fetch('/get_notifications');
+    const data = await res.json();
+    const list = document.getElementById('notifList');
+    if(!data.length){list.innerHTML='<div class="notif-empty">No notifications yet</div>';return;}
+    list.innerHTML = data.slice(0,10).map(n=>`
+      <div class="notif-item unread">
+        <div>${n.message}</div>
+        <div class="notif-time">${n.created_at?new Date(n.created_at).toLocaleString('en-IN'):''}</div>
+      </div>`).join('');
+  }catch(e){}
+}
+
+async function markAllRead(){
+  try{
+    await fetch('/mark_notifications_read',{method:'POST'});
+    document.getElementById('notifDot').classList.remove('show');
+    document.getElementById('notifList').querySelectorAll('.notif-item').forEach(el=>el.classList.remove('unread'));
+  }catch(e){}
+}
+
+/* close notif panel when clicking outside */
+document.addEventListener('click',e=>{
+  const wrap = document.getElementById('notifPanel');
+  const btn  = e.target.closest('.notif-btn');
+  if(!wrap.contains(e.target)&&!btn) wrap.classList.remove('open');
+});
+
+/* ── Section navigation ─────────────────────────────── */
+
+const sectionTitles = {overview:'Overview',campaigns:'Campaigns',transparency:'Transparency',analytics:'Analytics',qa:'Donor Q&A'};
+function switchSection(name){
+  document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById('sec-'+name).style.display='block';
+  const nav=document.getElementById('nav-'+name);if(nav)nav.classList.add('active');
+  document.getElementById('pageTitle').textContent = sectionTitles[name]||name;
+  if(window.innerWidth<=900) document.getElementById('sidebar').classList.remove('open');
+  if(name==='analytics'&&myCampaigns.length) renderChart();
+  if(name==='transparency') loadMyDocuments();
+  if(name==='qa') loadQAForNGO();
+}
+
+/* ── Q&A for NGO ───────────────────────────────────── */
+async function loadQAForNGO(){
+  // Populate campaign selector from myCampaigns
+  const sel = document.getElementById('qaFilter');
+  if(sel && myCampaigns.length && sel.options.length <= 1){
+    myCampaigns.forEach(c=>{
+      const o = document.createElement('option');
+      o.value = c.id; o.textContent = c.title;
+      sel.appendChild(o);
+    });
+    // also populate milestone campaign select
+    const msSel = document.getElementById('msCampaign');
+    if(msSel){
+      msSel.innerHTML = '<option value="">-- Select --</option>';
+      myCampaigns.forEach(c=>{
+        const o=document.createElement('option');o.value=c.id;o.textContent=c.title;msSel.appendChild(o);
+      });
+    }
+  }
+  const campaignId = sel?.value;
+  if(!campaignId){ document.getElementById('ngoQAList').innerHTML='<div class="loading">Select a campaign above.</div>'; return; }
+  try{
+    const r = await fetch(`/get_questions/${campaignId}`);
+    const data = await r.json();
+    const el = document.getElementById('ngoQAList');
+    if(!data.length){ el.innerHTML='<div class="loading">No questions yet for this campaign.</div>'; return; }
+    el.innerHTML = data.map(q=>`
+      <div style="padding:.9rem 0;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:flex-start;gap:.7rem;margin-bottom:.5rem;">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:900;color:white;flex-shrink:0;">${q.donor_name[0]}</div>
+          <div style="flex:1;">
+            <div style="font-size:.78rem;font-weight:600;color:var(--text);">${q.donor_name} · ${new Date(q.asked_at).toLocaleDateString('en-IN')}</div>
+            <div style="font-size:.86rem;color:var(--text);margin-top:.2rem;">${q.question}</div>
+          </div>
+        </div>
+        ${q.answer
+          ? `<div style="margin-left:2rem;background:var(--teal-light);border-left:3px solid var(--teal);padding:.6rem .9rem;border-radius:0 8px 8px 0;font-size:.82rem;color:var(--teal2);">${q.answer}</div>`
+          : `<div style="margin-left:2rem;display:flex;gap:.5rem;align-items:flex-end;">
+               <textarea id="ans-${q.id}" rows="2" placeholder="Type your answer..." style="flex:1;padding:.5rem .8rem;border:1.5px solid var(--border);border-radius:7px;font-size:.82rem;font-family:'Barlow',sans-serif;outline:none;resize:vertical;" ></textarea>
+               <button onclick="answerQuestion(${q.id},'${campaignId}')" class="btn btn-teal btn-sm">Reply</button>
+             </div>`
+        }
+      </div>`).join('');
+  }catch(e){ console.error(e); }
+}
+
+async function answerQuestion(questionId, campaignId){
+  const ans = document.getElementById('ans-'+questionId)?.value?.trim();
+  if(!ans){ showToast('Please enter an answer'); return; }
+  try{
+    const r = await fetch(`/answer_question/${questionId}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({answer:ans})
+    });
+    const d = await r.json();
+    if(d.status==='success'){ showToast('Answer posted — donor notified!'); loadQAForNGO(); }
+    else showToast('Error: '+d.message);
+  }catch(e){ showToast('Network error'); }
+}
+
+/* ── Milestones for NGO ────────────────────────────── */
+async function submitMilestone(){
+  const cid   = document.getElementById('msCampaign').value;
+  const amt   = parseFloat(document.getElementById('msAmount').value);
+  const title = document.getElementById('msTitle').value.trim();
+  const desc  = document.getElementById('msDesc').value.trim();
+  const errEl = document.getElementById('msErr');
+  errEl.style.display='none';
+
+  if(!cid){errEl.textContent='Please select a campaign.';errEl.style.display='block';return;}
+  if(!amt||amt<=0){errEl.textContent='Please enter a valid amount.';errEl.style.display='block';return;}
+  if(!title){errEl.textContent='Please enter a milestone title.';errEl.style.display='block';return;}
+
+  try{
+    const r = await fetch('/add_milestone',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({campaign_id:parseInt(cid),amount:amt,title,description:desc})});
+    const d = await r.json();
+    if(d.status==='success'){
+      showToast('Milestone added — donors will celebrate when it\'s reached!');
+      document.getElementById('msTitle').value='';
+      document.getElementById('msAmount').value='';
+      document.getElementById('msDesc').value='';
+    } else showToast('Error: '+d.message);
+  }catch(e){ showToast('Network error'); }
+}
+
+/* ── Documents ─────────────────────────────────────── */
+async function submitDocument(){
+  const docType = document.getElementById('docType').value;
+  const docUrl  = document.getElementById('docUrl').value.trim();
+  const docDesc = document.getElementById('docDesc').value.trim();
+  const errEl   = document.getElementById('docErr');
+  const okEl    = document.getElementById('docOk');
+  errEl.style.display='none'; okEl.style.display='none';
+
+  if(!docType){errEl.textContent='Please select a document type.';errEl.style.display='block';return;}
+  if(!docUrl) {errEl.textContent='Please enter the document URL.';errEl.style.display='block';return;}
+  if(!docUrl.startsWith('http')){errEl.textContent='URL must start with http:// or https://';errEl.style.display='block';return;}
+
+  try{
+    const r=await fetch('/submit_document',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({doc_type:docType,doc_url:docUrl,description:docDesc})});
+    const d=await r.json();
+    if(d.status==='success'){
+      okEl.textContent='Document submitted. Admin will review it shortly.';
+      okEl.style.display='block';
+      document.getElementById('docType').value='';
+      document.getElementById('docUrl').value='';
+      document.getElementById('docDesc').value='';
+      loadMyDocuments();
+      showToast('Document submitted for review');
+    } else {
+      errEl.textContent=d.message||'Submission failed.';
+      errEl.style.display='block';
+    }
+  }catch(e){errEl.textContent='Network error. Please try again.';errEl.style.display='block';}
+}
+
+async function loadMyDocuments(){
+  try{
+    const r=await fetch('/get_my_documents');
+    const docs=await r.json();
+    const el=document.getElementById('myDocsList');
+    if(!el)return;
+    if(!docs.length){
+      el.innerHTML='<div style="font-size:.8rem;color:var(--muted);text-align:center;padding:.5rem 0;">No documents submitted yet.</div>';
+      return;
+    }
+    const docLabels={
+      registration:'Registration Certificate',
+      tax_exemption:'80G / Tax Exemption',
+      audited_report:'Audited Financial Report',
+      board_resolution:'Board Resolution',
+      pan_card:'PAN Card'
+    };
+    const statusStyle={
+      pending: 'background:#fef3c7;color:#92400e;',
+      approved:'background:#d1fae5;color:#065f46;',
+      rejected:'background:#fee2e2;color:#991b1b;'
+    };
+    el.innerHTML='<div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:.7rem;">Submitted Documents</div>'+
+      docs.map(d=>`
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.65rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);margin-bottom:.5rem;flex-wrap:wrap;gap:.6rem;">
+          <div style="display:flex;align-items:center;gap:.7rem;flex:1;min-width:0;">
+            <div style="width:32px;height:32px;border-radius:8px;background:white;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:var(--teal3);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div style="min-width:0;">
+              <div style="font-size:.82rem;font-weight:600;color:var(--text);">${docLabels[d.doc_type]||d.doc_type}</div>
+              <a href="${d.doc_url}" target="_blank" style="font-size:.72rem;color:#3b82f6;text-decoration:none;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:320px;">${d.doc_url}</a>
+              ${d.admin_note?`<div style="font-size:.71rem;color:var(--muted);margin-top:.15rem;">Admin note: ${d.admin_note}</div>`:''}
+            </div>
+          </div>
+          <span style="font-size:.7rem;font-weight:700;padding:.2rem .7rem;border-radius:99px;flex-shrink:0;${statusStyle[d.status]||''}">${d.status}</span>
+        </div>`
+      ).join('');
+  }catch(e){console.error(e);}
+}
+
+/* ── Modal helpers ──────────────────────────────────── */
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+window.addEventListener('click',e=>{if(e.target.classList.contains('modal'))e.target.classList.remove('open');});
+
+/* ── Toast ──────────────────────────────────────────── */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ── Logout ─────────────────────────────────────────── */
+async function logout(){
+  await fetch('/logout');
+  window.location.href='/';
+}
+
+/* ── Keep old bootstrap modal calls working ─────────── */
+function openCreateModal(){openModal('createModal');}
+function openExpenseModal2(){openModal('expenseModal');}
+
+/* -- Extend Deadline -- */
+function openExtendModal(campaignId, currentDeadline){
+  document.getElementById('extendCampaignId').value = campaignId;
+  document.getElementById('extendCurrentDate').textContent = currentDeadline || 'Not set';
+  document.getElementById('extendNewDate').value = '';
+  document.getElementById('extendErr').style.display = 'none';
+  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate()+1);
+  document.getElementById('extendNewDate').min = tomorrow.toISOString().split('T')[0];
+  openModal('extendModal');
+}
+async function submitExtendDeadline(){
+  const campaignId = document.getElementById('extendCampaignId').value;
+  const newDate    = document.getElementById('extendNewDate').value;
+  const errEl      = document.getElementById('extendErr');
+  errEl.style.display = 'none';
+  if(!newDate){ errEl.textContent='Please select a new deadline.'; errEl.style.display='block'; return; }
+  if(new Date(newDate) <= new Date()){ errEl.textContent='New deadline must be a future date.'; errEl.style.display='block'; return; }
+  try{
+    const r = await fetch(`/ngo/campaign/${campaignId}/extend`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({new_deadline: newDate})
+    });
+    const d = await r.json();
+    if(d.status==='success'){
+      closeModal('extendModal');
+      showToast('Deadline extended to '+newDate);
+      loadCampaigns();
+    } else {
+      errEl.textContent = d.message || 'Failed to extend deadline.';
+      errEl.style.display = 'block';
+    }
+  } catch(e){ errEl.textContent='Network error.'; errEl.style.display='block'; }
+}
+</script>
+</body>
+</html>
